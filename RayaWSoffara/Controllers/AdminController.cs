@@ -1261,7 +1261,7 @@ namespace RayaWSoffara.Controllers
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            int total_rows = _postRepo.GetArticles(null).Count();
+            int total_rows = _postRepo.GetPosts(1, null).Count();
             if (length == -1)
             {
                 length = total_rows;
@@ -1282,7 +1282,7 @@ namespace RayaWSoffara.Controllers
             dataTableData.recordsTotal = total_rows;
             int recordsFiltered = total_rows;
             List<DataItem> posts = new List<DataItem>();
-            IQueryable<Post> posts_items = _postRepo.GetArticles(start, length);
+            IQueryable<Post> posts_items = _postRepo.GetPosts(1, start, length);
             foreach (var item in posts_items)
             {
                 string status;
@@ -1374,14 +1374,6 @@ namespace RayaWSoffara.Controllers
                 ViewBag.ErrorMsg = 1;
                 return View();
             }
-        }
-
-        [CustomAuthorize(Roles = "Admin")]
-        public ActionResult DeletePost(int PostId)
-        {
-            Post post = _postRepo.GetPostById(PostId);
-            _postRepo.DeletePost(post);
-            return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
@@ -1476,6 +1468,212 @@ namespace RayaWSoffara.Controllers
         {
             _postRepo.ActivatePost(PostId);
             return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult DeletePost(int PostId)
+        {
+            Post post = _postRepo.GetPostById(PostId);
+            _postRepo.DeletePost(post);
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
+        #region Opinions
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult Opinions()
+        {
+            ViewBag.SubSidebarItem = "opinions";
+            ViewBag.SidebarItem = "posts-management";
+            ViewBag.PageHeader = "Posts Management";
+            return View();
+        }
+
+        public ActionResult AjaxGetOpinions(int draw, int start, int length)
+        {
+            string search = Request.QueryString["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+            int total_rows = _postRepo.GetPosts(3, null).Count();
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+
+            // note: we only sort one column at a time
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.QueryString["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.QueryString["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            dataTableData.recordsTotal = total_rows;
+            int recordsFiltered = total_rows;
+            List<DataItem> posts = new List<DataItem>();
+            IQueryable<Post> posts_items = _postRepo.GetPosts(3, start, length);
+            foreach (var item in posts_items)
+            {
+                string status;
+                if (item.IsActive == true)
+                {
+                    status = "<span onclick='Deactivate(this)' class='status-action label label-success'>Active</span>";
+                }
+                else
+                {
+                    status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
+                }
+                string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
+
+                posts.Add(new DataItem { ItemName = item.Content, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
+            }
+            dataTableData.data = posts;
+            dataTableData.recordsFiltered = recordsFiltered;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult AddOpinion()
+        {
+            ViewBag.SubSidebarItem = "opinions";
+            ViewBag.SidebarItem = "posts-management";
+            ViewBag.PageHeader = "Posts Management";
+            return View();
+        }
+
+        [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
+        [ValidateInput(false)]
+        public ActionResult AddOpinion(UserArticleVM article, string article_picture_path, string video_url)
+        {
+            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+            article.newArticle.CreatedBy = currentUser.UserId;
+            article.newArticle.CreationDate = DateTime.Now;
+            article.newArticle.MetaTags = "";
+            List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
+            HttpPostedFileBase picture = Request.Files[0];
+            if (picture.FileName != "" || article_picture_path != "")
+            {
+                if (article_picture_path != "")
+                {
+                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                    if (System.IO.File.Exists(path))
+                    {
+                        string[] separator = new string[] { "Temp/" };
+                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        article.newArticle.FeaturedImage = imgName;
+                    }
+                }
+                else if (picture.FileName != "")
+                {
+                    string picName = System.IO.Path.GetFileName(picture.FileName);
+                    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                    picture.SaveAs(path);
+                    article.newArticle.FeaturedImage = picName;
+                }
+
+                article.newArticle.HasImage = true;
+            }
+            else if (video_url != null || video_url != string.Empty)
+            {
+                article.newArticle.HasImage = false;
+                article.newArticle.FeaturedVideo = video_url;
+            }
+
+            article.newArticle.Tags = null;
+            article.newArticle.MetaTags = "";
+            article.newArticle.ViewsCount = 0;
+            article.newArticle.SharesCount = 0;
+            article.newArticle.PostTypeId = 3;
+            Post addedArticle = _postRepo.AddPost(article.newArticle);
+            _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+            if (addedArticle != null)
+            {
+                ViewBag.ErrorMsg = 0;
+                return RedirectToAction("Opinions");
+            }
+            else
+            {
+                ViewBag.ErrorMsg = 1;
+                return View();
+            }
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult EditOpinion(int PostId)
+        {
+            Post opinion = _postRepo.GetPostById(PostId);
+            UserArticleVM articleVM = new UserArticleVM();
+            articleVM.newArticle = opinion;
+            ViewBag.SubSidebarItem = "opinions";
+            ViewBag.SidebarItem = "posts-management";
+            ViewBag.PageHeader = "Posts Management";
+            if (articleVM.newArticle.FeaturedImage == null)
+            {
+                articleVM.newArticle.FeaturedImage = "";
+            }
+            return View(articleVM);
+        }
+
+        [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
+        [ValidateInput(false)]
+        public ActionResult EditOpinion(UserArticleVM articleVM, string article_picture_path, string video_url)
+        {
+            Post article = _postRepo.GetPostById(articleVM.newArticle.PostId);
+            article.Title = articleVM.newArticle.Title;
+            article.Content = articleVM.newArticle.Content;
+            List<Tag> tags = _postRepo.getSelectedTags(articleVM.SelectedTags).ToList();
+            HttpPostedFileBase picture = Request.Files[0];
+            if (picture.FileName != "" || article_picture_path != "")
+            {
+                if (article_picture_path != "")
+                {
+                    if (article_picture_path.Contains("Temp"))
+                    {
+                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                        if (System.IO.File.Exists(path))
+                        {
+                            string[] separator = new string[] { "Temp/" };
+                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                            article.FeaturedImage = imgName;
+                        }
+                    }
+                    else
+                    {
+                        string[] imgName = article_picture_path.Split('/');
+                        article.FeaturedImage = imgName.Last();
+                    }
+                }
+                else if (picture.FileName != "")
+                {
+                    string picName = System.IO.Path.GetFileName(picture.FileName);
+                    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                    picture.SaveAs(path);
+                    article.FeaturedImage = picName;
+                }
+
+                article.HasImage = true;
+            }
+            else if (video_url != null || video_url != string.Empty)
+            {
+                article.HasImage = false;
+                article.FeaturedVideo = video_url;
+            }
+            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+            _postRepo.UpdateArticle(article, currentUser);
+            _postRepo.UpdatedArticleTags(articleVM.newArticle.PostId, tags);
+            return Redirect("/Admin/Articles");
         }
         #endregion
     }

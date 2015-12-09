@@ -110,7 +110,7 @@
         </div>
         <!-- panel-body -->
         <div class="panel-footer">
-            <button id="submit-btn" type="submit" class="btn btn-primary">Add Article</button>
+            <button id="submit-btn" type="submit" class="btn btn-primary">Submit Changes</button>
         </div>
         <!-- panel-footer -->
     </div>
@@ -197,10 +197,8 @@
     });
 
     $.validator.addMethod("ImageOrVideo", function (value, element) {
-        alert("in");
         img_src = $("#media_0 .media_img").attr("src");
         vid_src = $("#video_url_0").attr("value");
-        alert((img_src != "") || (vid_src != ""));
         return ((img_src != "") || (vid_src != ""));
     });
 
@@ -209,15 +207,20 @@
         return (tags_count > 1) ? true : false;
     });
 
+    $.validator.addMethod("minChars", function (value, element) {
+        return $(value).length > 300;
+    });
+
     $("#editForm").validate({
         ignore: [],
         rules: {
             "newArticle.Title": "required",
-            "newArticle.Content": "required",
+            "newArticle.Content": { required: true, minChars: true },
             article_picture_path: "required",
             mySelect: { RequiredTag: true }
         },
         messages: {
+            "newArticle.Content": { required: "This field is required.", minChars: "You have to enter at least 300 words." },
             article_picture_path: "This field is required.",
             mySelect: "This field is required."
         },
@@ -244,5 +247,10 @@
     //});
     if ($(".media_img").attr("src") != "") {
         $(".media_img").parent().children(".media_dropbox").css("display", "none");
+        var media_id = $(".media_img").parent().attr("id");
+        $("#media_id").val(media_id);
+        $("#" + media_id + " .article_picture_btn").click();
     }
+
+
 </script>

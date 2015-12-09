@@ -33,15 +33,15 @@ namespace RWSDataLayer.Repositories
             return Context.Posts.OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(10);
         }
 
-        public IQueryable<Post> GetArticles(int? startIndex, int count = 10)
+        public IQueryable<Post> GetPosts(int postTypeId, int? startIndex, int count = 10)
         {
             if (startIndex == null)
             {
-                return Context.Posts.Where(i => i.PostTypeId == 1).OrderByDescending(i => i.CreationDate);
+                return Context.Posts.Where(i => i.PostTypeId == postTypeId).OrderByDescending(i => i.CreationDate);
             }
             else
             {
-                return Context.Posts.Where(i => i.PostTypeId == 1).OrderByDescending(i => i.CreationDate).Skip(startIndex.Value).Take(10);
+                return Context.Posts.Where(i => i.PostTypeId == postTypeId).OrderByDescending(i => i.CreationDate).Skip(startIndex.Value).Take(10);
             }
         }
 

@@ -341,6 +341,44 @@ namespace RayaWSoffara
             );
             #endregion
 
+            #region Opinions
+            routes.MapRoute(
+                name: "Admin/Opinions",
+                url: "Admin/Opinions",
+                defaults: new { controller = "Admin", action = "Opinions", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/AddOpinion",
+                url: "Admin/AddOpinion",
+                defaults: new { controller = "Admin", action = "AddOpinion", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/EditOpinion",
+                url: "Admin/EditOpinion",
+                defaults: new { controller = "Admin", action = "EditOpinion", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/DeleteOpinion",
+                url: "Admin/DeleteOpinion",
+                defaults: new { controller = "Admin", action = "DeleteOpinion", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/DeactivateOpinion",
+                url: "Admin/DeactivateOpinion",
+                defaults: new { controller = "Admin", action = "DeactivateOpinion", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/ActivateOpinion",
+                url: "Admin/ActivateOpinion",
+                defaults: new { controller = "Admin", action = "ActivateOpinion", id = UrlParameter.Optional }
+            );
+            #endregion
+
             routes.MapRoute(
                 name: "Login",
                 url: "Login",
