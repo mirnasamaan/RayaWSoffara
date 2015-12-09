@@ -1,0 +1,82 @@
+﻿@*@model RWSDataLayer.Models.LoginModel*@
+@model RayaWSoffara.Models.LoginModel
+
+@{
+    ViewBag.Title = "الدخول";
+}
+
+<div class="clear-fix"></div>
+<div id="registration_container">
+    <div class="title">
+        <span>@ViewBag.Title</span>
+    </div>
+
+    <div class="clear-fix"></div>
+
+    @using (Html.BeginForm("Login", "Account", null, FormMethod.Post, new { @id = "form", @name = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true)
+
+        <div id="account">
+            <div class="form-group">
+                @Html.LabelFor(m => m.UserName, new { @class = "pull-left" })
+                @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", @id = "displayName", @name = "DisplayName" })
+                @Html.ValidationMessageFor(m => m.UserName)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.Password, new { @class = "pull-left" })
+                @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                @Html.ValidationMessageFor(m => m.Password)
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(m => m.RememberMe, new { @class = "pull-left" })
+                @Html.CheckBoxFor(m => m.RememberMe, new { @class = "pull-left" })
+            </div>
+            <div class="clear-fix"></div>
+        </div>
+        <div id="btn_reg_div">
+            <input type="submit" value="دخول" id="btn_reg" />
+        </div>
+
+        <div class="clear-fix"></div>
+        
+        <div class="links">
+            <p class="pull-left">
+                @Html.ActionLink("سجل", "Register") الأن إذا لم يكن لديك حساب.
+            </p>
+            <div class="clear-fix"></div>
+            <p class="pull-left">
+                @Html.ActionLink("نسيت كلمة السر.", "ForgotPassword")
+            </p>
+            <div class="clear-fix"></div>
+        </div>
+    }
+
+</div>
+
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $("#form").validate({
+        rules: {
+            UserName: "required",
+            Password: "required"
+        },
+        messages: {
+            UserName: "يجب إدخال إسم المستخدم",
+            Password: "يجب إدخال كلمة السر"
+        }
+    });
+</script>
+
+@*</section>*@
+
+@*<section class="social" id="socialLoginForm">
+    <h2>Use another service to log in.</h2>
+    @Html.Action("ExternalLoginsList", new { ReturnUrl = ViewBag.ReturnUrl })
+</section>*@
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}

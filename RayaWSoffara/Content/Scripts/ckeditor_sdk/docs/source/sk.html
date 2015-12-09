@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;sk&#39;, {
+	title: &#39;Inštrukcie prístupnosti&#39;,
+	contents: &#39;Pomocný obsah. Pre zatvorenie tohto okna, stlačte ESC.&#39;,
+	legend: [
+		{
+		name: &#39;Všeobecne&#39;,
+		items: [
+			{
+			name: &#39;Lišta nástrojov editora&#39;,
+			legend: &#39;Stlačte ${toolbarFocus} pre navigáciu na lištu nástrojov. Medzi ďalšou a predchádzajúcou lištou nástrojov sa pohybujete s TAB a SHIFT+TAB. Medzi ďalším a predchádzajúcim tlačidlom na lište nástrojov sa pohybujete s pravou šípkou a ľavou šípkou. Stlačte medzerník alebo ENTER pre aktiváciu tlačidla lišty nástrojov.&#39;
+		},
+
+			{
+			name: &#39;Editorový dialóg&#39;,
+			legend:
+				&#39;Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.&#39;  // MISSING
+		},
+
+			{
+			name: &#39;Editorové kontextové menu&#39;,
+			legend: &#39;Stlačte ${contextMenu} alebo APPLICATION KEY pre otvorenie kontextového menu. Potom sa presúvajte na ďalšie možnosti menu s TAB alebo dolnou šípkou. Presunte sa k predchádzajúcej možnosti s SHIFT+TAB alebo hornou šípkou. Stlačte medzerník alebo ENTER pre výber možnosti menu. Otvorte pod-menu danej možnosti s medzerníkom, alebo ENTER, alebo pravou šípkou. Vráťte sa späť do položky rodičovského menu s ESC alebo ľavou šípkou. Zatvorte kontextové menu s ESC.&#39;
+		},
+
+			{
+			name: &#39;Editorov box zoznamu&#39;,
+			legend: &#39;V boxe zoznamu, presuňte sa na ďalšiu položku v zozname s TAB alebo dolnou šípkou. Presuňte sa k predchádzajúcej položke v zozname so SHIFT+TAB alebo hornou šípkou. Stlačte medzerník alebo ENTER pre výber možnosti zoznamu. Stlačte ESC pre zatvorenie boxu zoznamu.&#39;
+		},
+
+			{
+			name: &#39;Editorove pásmo cesty prvku&#39;,
+			legend: &#39;Stlačte ${elementsPathFocus} pre navigovanie na pásmo cesty elementu. Presuňte sa na tlačidlo ďalšieho prvku s TAB alebo pravou šípkou. Presuňte sa k predchádzajúcemu tlačidlu s SHIFT+TAB alebo ľavou šípkou. Stlačte medzerník alebo ENTER pre výber prvku v editore.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Príkazy&#39;,
+		items: [
+			{
+			name: &#39;Vrátiť príkazy&#39;,
+			legend: &#39;Stlačte ${undo}&#39;
+		},
+			{
+			name: &#39;Nanovo vrátiť príkaz&#39;,
+			legend: &#39;Stlačte ${redo}&#39;
+		},
+			{
+			name: &#39;Príkaz na stučnenie&#39;,
+			legend: &#39;Stlačte ${bold}&#39;
+		},
+			{
+			name: &#39;Príkaz na kurzívu&#39;,
+			legend: &#39;Stlačte ${italic}&#39;
+		},
+			{
+			name: &#39;Príkaz na podčiarknutie&#39;,
+			legend: &#39;Stlačte ${underline}&#39;
+		},
+			{
+			name: &#39;Príkaz na odkaz&#39;,
+			legend: &#39;Stlačte ${link}&#39;
+		},
+			{
+			name: &#39;Príkaz na zbalenie lišty nástrojov&#39;,
+			legend: &#39;Stlačte ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;Prejsť na predchádzajúcu zamerateľnú medzeru príkazu&#39;,
+			legend: &#39;Stlačte ${accessPreviousSpace} pre prístup na najbližšie nedosiahnuteľné zamerateľné medzery pred vsuvkuo. Napríklad: dve za sebou idúce horizontálne čiary. Opakujte kombináciu klávesov pre dosiahnutie vzdialených zamerateľných medzier.&#39;
+		},
+			{
+			name: &#39;Prejsť na ďalší &#39;,
+			legend: &#39;Stlačte ${accessNextSpace} pre prístup na najbližšie nedosiahnuteľné zamerateľné medzery po vsuvke. Napríklad: dve za sebou idúce horizontálne čiary. Opakujte kombináciu klávesov pre dosiahnutie vzdialených zamerateľných medzier.&#39;
+		},
+			{
+			name: &#39;Pomoc prístupnosti&#39;,
+			legend: &#39;Stlačte ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Backspace&#39;,
+	tab: &#39;Tab&#39;,
+	enter: &#39;Enter&#39;,
+	shift: &#39;Shift&#39;,
+	ctrl: &#39;Ctrl&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Pause&#39;,
+	capslock: &#39;Caps Lock&#39;,
+	escape: &#39;Escape&#39;,
+	pageUp: &#39;Stránka hore&#39;,
+	pageDown: &#39;Stránka dole&#39;,
+	end: &#39;End&#39;,
+	home: &#39;Home&#39;,
+	leftArrow: &#39;Šípka naľavo&#39;,
+	upArrow: &#39;Šípka hore&#39;,
+	rightArrow: &#39;Šípka napravo&#39;,
+	downArrow: &#39;Šípka dole&#39;,
+	insert: &#39;Insert&#39;,
+	&#39;delete&#39;: &#39;Delete&#39;,
+	leftWindowKey: &#39;Ľavé Windows tlačidlo&#39;,
+	rightWindowKey: &#39;Pravé Windows tlačidlo&#39;,
+	selectKey: &#39;Tlačidlo Select&#39;,
+	numpad0: &#39;Numpad 0&#39;,
+	numpad1: &#39;Numpad 1&#39;,
+	numpad2: &#39;Numpad 2&#39;,
+	numpad3: &#39;Numpad 3&#39;,
+	numpad4: &#39;Numpad 4&#39;,
+	numpad5: &#39;Numpad 5&#39;,
+	numpad6: &#39;Numpad 6&#39;,
+	numpad7: &#39;Numpad 7&#39;,
+	numpad8: &#39;Numpad 8&#39;,
+	numpad9: &#39;Numpad 9&#39;,
+	multiply: &#39;Násobenie&#39;,
+	add: &#39;Sčítanie&#39;,
+	subtract: &#39;Odčítanie&#39;,
+	decimalPoint: &#39;Desatinná čiarka&#39;,
+	divide: &#39;Delenie&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lock&#39;,
+	scrollLock: &#39;Scroll Lock&#39;,
+	semiColon: &#39;Bodkočiarka&#39;,
+	equalSign: &#39;Rovná sa&#39;,
+	comma: &#39;Čiarka&#39;,
+	dash: &#39;Pomĺčka&#39;,
+	period: &#39;Bodka&#39;,
+	forwardSlash: &#39;Lomítko&#39;,
+	graveAccent: &#39;Zdôrazňovanie prízvuku&#39;,
+	openBracket: &#39;Hranatá zátvorka otváracia&#39;,
+	backSlash: &#39;Backslash&#39;,
+	closeBracket: &#39;Hranatá zátvorka zatváracia&#39;,
+	singleQuote: &#39;Jednoduché úvodzovky&#39;
+} );
+</pre>
+</body>
+</html>

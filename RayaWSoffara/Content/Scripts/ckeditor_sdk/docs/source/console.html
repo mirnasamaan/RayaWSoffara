@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+/* global CKCONSOLE */
+
+&#39;use strict&#39;;
+
+( function() {
+	var pasteType, pasteValue;
+
+	CKCONSOLE.add( &#39;paste&#39;, {
+		panels: [
+			{
+				type: &#39;box&#39;,
+				content:
+				&#39;&lt;ul class=&quot;ckconsole_list&quot;&gt;&#39; +
+					&#39;&lt;li&gt;type: &lt;span class=&quot;ckconsole_value&quot; data-value=&quot;type&quot;&gt;&lt;/span&gt;&lt;/li&gt;&#39; +
+					&#39;&lt;li&gt;value: &lt;span class=&quot;ckconsole_value&quot; data-value=&quot;value&quot;&gt;&lt;/span&gt;&lt;/li&gt;&#39; +
+				&#39;&lt;/ul&gt;&#39;,
+
+				refresh: function() {
+					return {
+						header: &#39;Paste&#39;,
+						type: pasteType,
+						value: pasteValue
+					};
+				},
+
+				refreshOn: function( editor, refresh ) {
+					editor.on( &#39;paste&#39;, function( evt ) {
+						pasteType = evt.data.type;
+						pasteValue = CKEDITOR.tools.htmlEncode( evt.data.dataValue );
+						refresh();
+					} );
+				}
+			},
+			{
+				type: &#39;log&#39;,
+				on: function( editor, log, logFn ) {
+					editor.on( &#39;paste&#39;, function( evt ) {
+						logFn( &#39;paste; type:&#39; + evt.data.type )();
+					} );
+				}
+			}
+		]
+	} );
+} )();
+</pre>
+</body>
+</html>

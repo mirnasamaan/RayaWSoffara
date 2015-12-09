@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+( function() {
+	&#39;use strict&#39;;
+
+	CKEDITOR.plugins.add( &#39;embedsemantic&#39;, {
+		icons: &#39;embedsemantic&#39;, // %REMOVE_LINE_CORE%
+		hidpi: true, // %REMOVE_LINE_CORE%
+		requires: &#39;embedbase&#39;,
+
+		onLoad: function() {
+			this.registerOembedTag();
+		},
+
+		init: function( editor ) {
+			var widgetDefinition = CKEDITOR.plugins.embedBase.createWidgetBaseDefinition( editor ),
+				origInit = widgetDefinition.init;
+
+			CKEDITOR.tools.extend( widgetDefinition, {
+				// Use a dialog exposed by the embedbase plugin.
+				dialog: &#39;embedBase&#39;,
+				button: editor.lang.embedbase.button,
+				allowedContent: &#39;oembed&#39;,
+				requiredContent: &#39;oembed&#39;,
+				styleableElements: &#39;oembed&#39;,
+				// Share config with the embed plugin.
+				providerUrl: new CKEDITOR.template(
+					editor.config.embed_provider ||
+					&#39;//ckeditor.iframe.ly/api/oembed?url={url}&amp;callback={callback}&#39;
+				),
+
+				init: function() {
+					var that = this;
+
+					origInit.call( this );
+
+					// Need to wait for #ready with the initial content loading, because on #init there&#39;s no data yet.
+					this.once( &#39;ready&#39;, function() {
+						// When widget is created using dialog, the dialog&#39;s code will handle loading the content
+						// (because it handles success and error), so do load the content only when loading data.
+						if ( this.data.loadOnReady ) {
+							this.loadContent( this.data.url, {
+								callback: function() {
+									// Do not load the content again on widget&#39;s next initialization (e.g. after undo or paste).
+									// Plus, this is a small trick that we change loadOnReady now, inside the callback.
+									// It guarantees that if the content was not loaded (an error occurred or someone
+									// undid/copied sth to fast) the content will be loaded on the next initialization.
+									that.setData( &#39;loadOnReady&#39;, false );
+									editor.fire( &#39;updateSnapshot&#39; );
+								}
+							} );
+						}
+					} );
+				},
+
+				upcast: function( element, data ) {
+					if ( element.name != &#39;oembed&#39; ) {
+						return;
+					}
+
+					var text = element.children[ 0 ],
+						div;
+
+					if ( text &amp;&amp; text.type == CKEDITOR.NODE_TEXT &amp;&amp; text.value ) {
+						data.url = text.value;
+						data.loadOnReady = true;
+						div = new CKEDITOR.htmlParser.element( &#39;div&#39; );
+						element.replaceWith( div );
+
+						// Transfer widget classes from data to widget element (#13199).
+						div.attributes[ &#39;class&#39; ] = element.attributes[ &#39;class&#39; ];
+
+						return div;
+					}
+				},
+
+				downcast: function( element ) {
+					var ret = new CKEDITOR.htmlParser.element( &#39;oembed&#39; );
+					ret.add( new CKEDITOR.htmlParser.text( this.data.url ) );
+
+					// Transfer widget classes from widget element back to data (#13199).
+					if ( element.attributes[ &#39;class&#39; ] ) {
+						ret.attributes[ &#39;class&#39; ] = element.attributes[ &#39;class&#39; ];
+					}
+
+					return ret;
+				}
+			}, true );
+
+			editor.widgets.add( &#39;embedSemantic&#39;, widgetDefinition );
+		},
+
+		// Extends CKEDITOR.dtd so editor accepts &lt;oembed&gt; tag.
+		registerOembedTag: function() {
+			var dtd = CKEDITOR.dtd,
+				name;
+
+			// The oembed tag may contain text only.
+			dtd.oembed = { &#39;#&#39;: 1 };
+
+			// Register oembed tag as allowed child, in each tag that can contain a div.
+			// It also registers the oembed tag in objects like $block, $blockLimit, etc.
+			for ( name in dtd ) {
+				if ( dtd[ name ].div ) {
+					dtd[ name ].oembed = 1;
+				}
+			}
+		}
+	} );
+
+} )();</pre>
+</body>
+</html>

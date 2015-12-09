@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;ko&#39;, {
+	title: &#39;접근성 설명&#39;,
+	contents: &#39;도움말. 이 창을 닫으시려면 ESC 를 누르세요.&#39;,
+	legend: [
+		{
+		name: &#39;일반&#39;,
+		items: [
+			{
+			name: &#39;편집기 툴바&#39;,
+			legend: &#39;툴바를 탐색하시려면 ${toolbarFocus} 를 투르세요. 이전/다음 툴바 그룹으로 이동하시려면 TAB 키 또는 SHIFT+TAB 키를 누르세요. 이전/다음 툴바 버튼으로 이동하시려면 오른쪽 화살표 키 또는 왼쪽 화살표 키를 누르세요. 툴바 버튼을 활성화 하려면 SPACE 키 또는 ENTER 키를 누르세요.&#39;
+		},
+
+			{
+			name: &#39;편집기 다이얼로그&#39;,
+			legend:
+				&#39;TAB 키를 누르면 다음 대화상자로 이동하고, SHIFT+TAB 키를 누르면 이전 대화상자로 이동합니다. 대화상자를 제출하려면 ENTER 키를 누르고, ESC 키를 누르면 대화상자를 취소합니다. 대화상자에 탭이 여러개 있을 때, ALT+F10 키 또는 TAB 키를 누르면 순서에 따라 탭 목록에 도달할 수 있습니다. 탭 목록에 초점이 맞을 때, 오른쪽과 왼쪽 화살표 키를 이용하면 각각 다음과 이전 탭으로 이동할 수 있습니다.&#39; 
+		},
+
+			{
+			name: &#39;편집기 환경 메뉴&#39;,
+			legend: &#39;${contextMenu} 또는 어플리케이션 키를 누르면 환경-메뉴를 열 수 있습니다. 환경-메뉴에서 TAB 키 또는 아래 화살표 키를 누르면 다음 메뉴 옵션으로 이동할 수 있습니다. 이전 옵션으로 이동은 SHIFT+TAB 키 또는 위 화살표 키를 눌러서 할 수 있습니다. 스페이스 키 또는 ENTER 키를 눌러서 메뉴 옵션을 선택할 수 있습니다. 스페이스 키 또는 ENTER 키 또는 오른쪽 화살표 키를 눌러서 하위 메뉴를 열 수 있습니다. 부모 메뉴 항목으로 돌아가려면 ESC 키 또는 왼쪽 화살표 키를 누릅니다. ESC 키를 눌러서 환경-메뉴를 닫습니다.&#39;
+		},
+
+			{
+			name: &#39;편집기 목록 박스&#39;,
+			legend: &#39;리스트-박스 내에서, 목록의 다음 항목으로 이동하려면 TAB 키 또는 아래쪽 화살표 키를 누릅니다. 목록의 이전 항목으로 이동하려면 SHIFT+TAB 키 또는 위쪽 화살표 키를 누릅니다. 스페이스 키 또는 ENTER 키를 누르면 목록의 해당 옵션을 선택합니다. ESC 키를 눌러서 리스트-박스를 닫을 수 있습니다.&#39;
+		},
+
+			{
+			name: &#39;편집기 요소 경로 막대&#39;,
+			legend: &#39;${elementsPathFocus}를 눌러서 요소 경로 막대를 탐색할 수 있습니다. 다음 요소로 이동하려면 TAB 키 또는 오른쪽 화살표 키를 누릅니다. SHIFT+TAB 키 또는 왼쪽 화살표 키를 누르면 이전 버튼으로 이동할 수 있습니다. 스페이스 키나 ENTER 키를 누르면 편집기의 해당 항목을 선택합니다.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;명령&#39;,
+		items: [
+			{
+			name: &#39; 명령 실행 취소&#39;,
+			legend: &#39;${undo} 누르시오&#39;
+		},
+			{
+			name: &#39; 명령 다시 실행&#39;,
+			legend: &#39;${redo} 누르시오&#39;
+		},
+			{
+			name: &#39; 굵게 명령&#39;,
+			legend: &#39;${bold} 누르시오&#39;
+		},
+			{
+			name: &#39; 기울임 꼴 명령&#39;,
+			legend: &#39;${italic} 누르시오&#39;
+		},
+			{
+			name: &#39; 밑줄 명령&#39;,
+			legend: &#39;${underline} 누르시오&#39;
+		},
+			{
+			name: &#39; 링크 명령&#39;,
+			legend: &#39;${link} 누르시오&#39;
+		},
+			{
+			name: &#39; 툴바 줄이기 명령&#39;,
+			legend: &#39;${toolbarCollapse} 누르시오&#39;
+		},
+			{
+			name: &#39; 이전 포커스 공간 접근 명령&#39;,
+			legend: &#39;탈자 기호(^) 이전에 ${accessPreviousSpace} 를 누르면, 접근 불가능하면서 가장 가까운 포커스 영역에 접근합니다. 예를 들면, 두 인접한 HR 요소가 있습니다. 키 조합을 반복해서 멀리있는 포커스 영역들에 도달할 수 있습니다.&#39;
+		},
+			{
+			name: &#39;다음 포커스 공간 접근 명령&#39;,
+			legend: &#39;탈자 기호(^) 다음에 ${accessNextSpace} 를 누르면, 접근 불가능하면서 가장 가까운 포커스 영역에 접근합니다. 예를 들면, 두 인접한 HR 요소가 있습니다. 키 조합을 반복해서 멀리있는 포커스 영역들에 도달할 수 있습니다. &#39;
+		},
+			{
+			name: &#39; 접근성 도움말&#39;,
+			legend: &#39;${a11yHelp} 누르시오&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Backspace 키&#39;,
+	tab: &#39;탭 키&#39;,
+	enter: &#39;엔터 키&#39;,
+	shift: &#39;시프트 키&#39;,
+	ctrl: &#39;컨트롤 키&#39;,
+	alt: &#39;알트 키&#39;,
+	pause: &#39;일시정지 키&#39;,
+	capslock: &#39;캡스 록 키&#39;,
+	escape: &#39;이스케이프 키&#39;,
+	pageUp: &#39;페이지 업 키&#39;,
+	pageDown: &#39;페이지 다운 키&#39;,
+	end: &#39;엔드 키&#39;,
+	home: &#39;홈 키&#39;,
+	leftArrow: &#39;왼쪽 화살표 키&#39;,
+	upArrow: &#39;위쪽 화살표 키&#39;,
+	rightArrow: &#39;오른쪽 화살표 키&#39;,
+	downArrow: &#39;아래쪽 화살표 키&#39;,
+	insert: &#39;인서트 키&#39;,
+	&#39;delete&#39;: &#39;삭제 키&#39;,
+	leftWindowKey: &#39;왼쪽 윈도우 키&#39;,
+	rightWindowKey: &#39;오른쪽 윈도우 키&#39;,
+	selectKey: &#39;셀렉트 키&#39;,
+	numpad0: &#39;숫자 패드 0 키&#39;,
+	numpad1: &#39;숫자 패드 1 키&#39;,
+	numpad2: &#39;숫자 패드 2 키&#39;,
+	numpad3: &#39;숫자 패드 3 키&#39;,
+	numpad4: &#39;숫자 패드 4 키&#39;,
+	numpad5: &#39;숫자 패드 5 키&#39;,
+	numpad6: &#39;숫자 패드 6 키&#39;,
+	numpad7: &#39;숫자 패드 7 키&#39;,
+	numpad8: &#39;숫자 패드 8 키&#39;,
+	numpad9: &#39;숫자 패드 9 키&#39;,
+	multiply: &#39;곱셈(*) 키&#39;,
+	add: &#39;덧셈(+) 키&#39;,
+	subtract: &#39;뺄셈(-) 키&#39;,
+	decimalPoint: &#39;온점(.) 키&#39;,
+	divide: &#39;나눗셈(/) 키&#39;,
+	f1: &#39;F1 키&#39;,
+	f2: &#39;F2 키&#39;,
+	f3: &#39;F3 키&#39;,
+	f4: &#39;F4 키&#39;,
+	f5: &#39;F5 키&#39;,
+	f6: &#39;F6 키&#39;,
+	f7: &#39;F7 키&#39;,
+	f8: &#39;F8 키&#39;,
+	f9: &#39;F9 키&#39;,
+	f10: &#39;F10 키&#39;,
+	f11: &#39;F11 키&#39;,
+	f12: &#39;F12 키&#39;,
+	numLock: &#39;Num Lock 키&#39;,
+	scrollLock: &#39;Scroll Lock 키&#39;,
+	semiColon: &#39;세미콜론(;) 키&#39;,
+	equalSign: &#39;등호(=) 키&#39;,
+	comma: &#39;쉼표(,) 키&#39;,
+	dash: &#39;대시(-) 키&#39;,
+	period: &#39;온점(.) 키&#39;,
+	forwardSlash: &#39;슬래시(/) 키&#39;,
+	graveAccent: &#39;억음 악센트(`) 키&#39;,
+	openBracket: &#39;브라켓 열기([) 키&#39;,
+	backSlash: &#39;역슬래시(\\\\) 키&#39;,
+	closeBracket: &#39;브라켓 닫기(]) 키&#39;,
+	singleQuote: &#39;외 따옴표(\&#39;) 키&#39;
+} );
+</pre>
+</body>
+</html>

@@ -1,0 +1,129 @@
+﻿@model RWSDataLayer.Context.Player
+@{
+    ViewBag.Title = "Edit Player";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<form id="editForm" class="form-horizontal" action="/Admin/EditPlayer" method="post" enctype = "multipart/form-data">
+    <input type="hidden" value="@Model.PlayerId" name="PlayerId" id="PlayerId" />
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-btns">
+                <a href="" class="panel-close">&times;</a>
+                <a href="" class="minimize">&minus;</a>
+            </div>
+            <h4 class="panel-title">Edit Player</h4>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Player Name:</label>
+                <div class="col-sm-8">
+                    <input type="text" name="PlayerName" class="form-control" value="@Model.PlayerName" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Player Icon:</label>
+                <div class="col-sm-8">
+                    <input name="path" class="form-control" type="file" accept="image/*" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Teams</label>
+                <div class="col-sm-8">
+                    <ul id="tags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <input id="teams" name="teams" type="hidden" />
+
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-primary">Submit Changes</button>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel-default -->
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+    var availableTags = [];
+    var availableTagsID = [];
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "/Admin/GetTeams",
+        success: function (teams) {
+            for (i = 0; i < teams.length; i++) {
+                availableTags.push(teams[i].ItemName);
+                availableTagsID.push(teams[i].ItemId);
+            }
+        }
+    });
+
+    var teamItems = [];
+    $.ajax({
+        type: "POST",
+        data: { PlayerId: $("#PlayerId").val() },
+        url: "/Admin/GetTeamsByPlayerId",
+        success: function (teams) {
+            teamItems = teams;
+        }
+    }).done(function () {
+        $.getScript("/Content/Scripts/tag-it.js").done(function () {
+            $('#tags').tagit({
+                tagSource: availableTags,
+                select: true,
+                sortable: true,
+                allowNewTags: false,
+                triggerKeys: ['enter', 'tab'],
+                beforeTagAdded: function (event, ui) {
+                    if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                        return false;
+                    }
+                },
+                afterTagAdded: function (event, ui) {
+                    var index = availableTags.indexOf(ui.tagLabel);
+                    var id = availableTagsID[index];
+                    $("#tags li").eq(-2).attr("data-id", id);
+                }
+            });
+        }).done(function () {
+            for (i = 0; i < teamItems.length; i++) {
+                $('#tags').tagit("createTag", teamItems[i].ItemName);
+            }
+        });
+    });
+
+    $("#editForm").submit(function (e) {
+        var teams = "";
+        var noOfTeams = parseInt($("#tags li").length - 1);
+
+        $('#tags').children('li').each(function (e) {
+            if (parseInt(e) == parseInt(noOfTeams)) {
+                return false;
+            }
+            var teamId = $(this).attr('data-id');
+            teams = teams + teamId + ",";
+        });
+        teams = teams.substring(0, teams.length - 1);
+        $("#teams").val(teams);
+        return true;
+    });
+
+    $("#editForm").validate({
+        rules: {
+            PlayerName: "required"
+        }
+    });
+</script>

@@ -1,0 +1,999 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Transactions;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Security;
+using System.IO;
+using DotNetOpenAuth.AspNet;
+using Microsoft.Web.WebPages.OAuth;
+using WebMatrix.WebData;
+using RayaWSoffara.Filters;
+using RWSDataLayer;
+using RayaWSoffara.Models;
+using Postal;
+using System.Net;
+using RWSDataLayer.Repositories;
+using System.Web.Routing;
+using RWSInfrastructure.Services;
+using RWSDataLayer.Context;
+using RWSInfrastructure.Interfaces;
+using System.Security.Cryptography;
+using System.Text;
+using System.Globalization;
+
+
+namespace RayaWSoffara.Controllers
+{
+    [Authorize]
+    public class AccountController : Controller
+    {
+        public IFormsAuthenticationService FormsService { get; set; }
+        public IMembershipService MembershipService { get; set; }
+        private UserRepository _userRepo;
+
+        protected override void Initialize(RequestContext requestContext)
+        {
+            if (FormsService == null) { FormsService = new FormsAuthenticationService(); }
+            if (MembershipService == null) { MembershipService = new AccountMembershipService(); }
+            _userRepo = new UserRepository();
+
+            base.Initialize(requestContext);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public bool DoesUserEmailExist(string Email)
+        {
+            var email = _userRepo.IsValidEmail(Email);
+
+            return (email);
+        }
+
+        //[HttpPost]
+        //[AllowAnonymous]
+        //public JsonResult DoesUserNameExist(string UserName)
+        //{
+        //    var user = Membership.GetUser(UserName);
+        //    JsonResult result = Json(user == null);
+        //    return result;
+        //}
+
+        [HttpPost]
+        [AllowAnonymous]
+        public bool DoesUserNameExist(string UserName)
+        {
+            var user = _userRepo.GetUserByUsername(UserName);
+
+            return (user == null);
+        }
+
+        [AllowAnonymous]
+        public ActionResult Login(string returnUrl)
+        {
+            if (User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+            else
+            {
+                ViewBag.ReturnUrl = returnUrl;
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Login(LoginModel model, string returnUrl)
+        {
+            if (ModelState.IsValid)
+            {
+                if (MembershipService.ValidateUser(model.UserName, model.Password))
+                {
+                    bool confirmed = _userRepo.GetUserByUsernameAndPassword(model.UserName, model.Password).IsConfirmed.Value;
+                    if (confirmed == null || confirmed == false)
+                    {
+                        ModelState.AddModelError("", "أسم المستخدم أو كلمة السر غير صحيح.");
+                        return View(model);
+                    }
+                    FormsService.SignIn(model.UserName, model.RememberMe);
+                    if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
+                        && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
+                    {
+                        return Redirect(returnUrl);
+                    }
+                    return RedirectToAction("Index", "Home");
+                }
+
+                ModelState.AddModelError("", "أسم المستخدم أو كلمة السر غير صحيح.");
+            }
+            return View(model);
+        }
+
+        [ValidateAntiForgeryToken]
+        public ActionResult LogOff()
+        {
+            FormsService.SignOut();
+            return RedirectToAction("Index", "Home");
+        }
+
+        [AllowAnonymous]
+        public ActionResult Register()
+        {
+            ViewBag.Countries = GetAllCountries();
+            return View();
+        }
+
+        public List<string> GetAllCountries()
+        {
+            List<string> cultureList = new List<string>();
+            
+            foreach (var cultureInfo in CultureInfo.GetCultures(CultureTypes.SpecificCultures))
+            {
+                RegionInfo region = new RegionInfo(cultureInfo.LCID);
+
+                if (!(cultureList.Contains(region.EnglishName)))
+                {
+                    cultureList.Add(region.EnglishName);
+                }
+            }
+            cultureList.Sort();
+            return cultureList;
+        }
+
+        [AllowAnonymous]
+        public ActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public ActionResult ForgotPassword(string Email)
+        {
+            RWSUser user = _userRepo.GetUserByEmail(Email);
+            if (user != null)
+            {
+                dynamic email = new Email("ChngPasswordEmail");
+                email.To = Email;
+                email.UserName = user.UserName;
+                email.ConfirmationToken = user.PasswordVerificationToken;
+                email.BaseUrl = Request.Url.Authority;
+                email.Send();
+                ViewBag.Message = "لقد تم ارسال رسالة الى بريدك الالكتروني";
+                return RedirectToAction("ConfirmationEmailSent", "Account", new { message = "لقد تم ارسال رسالة الى بريدك الالكتروني" });
+            }
+            ViewBag.ErrorMsg = "البريد الالكتروني غير مسجل.";
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ActionResult NewPassword(string Id)
+        {
+            ViewBag.PasswordToken = Id;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult NewPassword(string password, string Id)
+        {
+            RWSUser user = _userRepo.GetUserByPasswordToken(Id);
+            if (user != null)
+            {
+                user.Password = password;
+                _userRepo.UpdateUserDetails(user);
+                ViewBag.Message = "تم تغيير كلمة المرور.";
+                return RedirectToAction("ConfirmationEmailSent", "Account", new { message = "تم تغيير كلمة المرور." });
+            }
+            //ViewBag.ErrorMsg = "البريد الالكتروني غير مسجل.";
+            return View();
+        }
+
+        [AllowAnonymous]
+        public ActionResult ConfirmationEmailSent(string message)
+        {
+            ViewBag.Message = message;
+            return View();
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register(RegisterModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                var createStatus = MembershipService.CreateUser(model.UserName, model.Password, model.Email);
+
+                if (createStatus == MembershipCreateStatus.Success)
+                {
+                    RWSUser user = _userRepo.GetUserByUsername(model.UserName);
+                    user.FirstName = model.FirstName;
+                    user.LastName = model.LastName;
+                    user.Country = model.Country;
+                    user.ConfirmationToken = Guid.NewGuid().ToString();
+                    user.IsConfirmed = false;
+                    user.PasswordVerificationToken = Guid.NewGuid().ToString();
+                    user.RWSRoles.Add(_userRepo.GetRoleByName("Admin"));
+                    _userRepo.UpdateUserDetails(user);
+                    dynamic email = new Email("RegEmail");
+                    email.To = model.Email;
+                    email.UserName = model.UserName;
+                    email.ConfirmationToken = user.ConfirmationToken;
+                    email.BaseUrl = Request.Url.Authority;
+                    try
+                    {
+                        email.Send();
+                        return RedirectToAction("ConfirmationEmailSent", "Account", new { message = "لقد تم ارسال رسالة الى بريدك الالكتروني" });
+                    }
+                    catch (Exception ex)
+                    {
+                        return RedirectToAction("ConfirmationFailure", "Account", new { message = "العملية لم تتم بنجاح" });
+                    }
+                }
+                ModelState.AddModelError("", ErrorCodeToString(createStatus));
+                }
+                catch (MembershipCreateUserException e)
+                {
+                    ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        public static string GetFacebookPictureUrl(string FaceBookUserId)
+        {
+            WebResponse response = null;
+            string pictureUrl = string.Empty;
+            try
+            {
+                WebRequest request = WebRequest.Create(string.Format("http://graph.facebook.com/" + FaceBookUserId + "/picture?type=large"));
+                response = request.GetResponse();
+                pictureUrl = response.ResponseUri.ToString();
+            }
+            catch (Exception ex)
+            {
+                //? handle
+            }
+            finally
+            {
+                if (response != null) response.Close();
+            }
+            return pictureUrl;
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult Register2(RegisterExternalLoginModel model, string returnUrl, string provider, string providerUserId)
+        {
+            if (ModelState.IsValid)
+            {
+                // Attempt to register the user
+                try
+                {
+                    var createStatus = MembershipService.CreateUser(model.UserName, model.Password, model.Email);
+
+                    if (createStatus == MembershipCreateStatus.Success)
+                    {
+                        RWSUser user = _userRepo.GetUserByUsername(model.UserName);
+                        user.FirstName = model.FirstName;
+                        user.LastName = model.LastName;
+                        user.Country = model.Country;
+                        user.PasswordVerificationToken = Guid.NewGuid().ToString();
+                        user.IsConfirmed = true;
+                        user.ConfirmationDate = DateTime.Now;
+                        user.ProfileImagePath = model.PicturePath;
+                        _userRepo.UpdateUserDetails(user);
+
+                        string FacebookPictureUrl = GetFacebookPictureUrl(providerUserId);
+                        WebClient webClient = new WebClient();
+                        webClient.DownloadFile(FacebookPictureUrl, @AppDomain.CurrentDomain.BaseDirectory + model.PicturePath);
+                        
+                        RWSProviderUser provider_user = new RWSProviderUser();
+                        provider_user.UserId = user.UserId;
+                        provider_user.Provider = provider;
+                        provider_user.ProviderUserId = providerUserId;
+                        _userRepo.AddProviderUser(provider_user);
+                        //dynamic email = new Email("RegEmail");
+                        //email.To = model.Email;
+                        //email.UserName = model.UserName;
+                        //email.ConfirmationToken = user.ConfirmationToken;
+                        //email.Send();
+
+                        return RedirectToAction("Index", "Home");
+                    }
+                    ModelState.AddModelError("", ErrorCodeToString(createStatus));
+                }
+                catch (MembershipCreateUserException e)
+                {
+                    ModelState.AddModelError("", ErrorCodeToString(e.StatusCode));
+                }
+            }
+
+            // If we got this far, something failed, redisplay form
+            return View(model);
+        }
+
+        [AllowAnonymous]
+        public ActionResult RegisterConfirmation(string Id)
+        {
+            RWSUser user = _userRepo.GetUserByConfirmationToken(Id);
+            if (_userRepo.ConfirmUser(user))
+            {
+                user.ConfirmationDate = DateTime.Now;
+                user.IsConfirmed = true;
+                _userRepo.UpdateUserDetails(user);
+                return RedirectToAction("ConfirmationSuccess");
+            }
+            return RedirectToAction("ConfirmationFailure");
+        }
+
+        [AllowAnonymous]
+        public ActionResult ConfirmationSuccess()
+        {
+            return View();
+        }
+ 
+        [AllowAnonymous]
+        public ActionResult ConfirmationFailure()
+        {
+            return View();
+        }
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Disassociate(string provider, string providerUserId)
+        {
+            string ownerAccount = OAuthWebSecurity.GetUserName(provider, providerUserId);
+            ManageMessageId? message = null;
+
+            // Only disassociate the account if the currently logged in user is the owner
+            if (ownerAccount == User.Identity.Name)
+            {
+                // Use a transaction to prevent the user from deleting their last login credential
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions { IsolationLevel = IsolationLevel.Serializable }))
+                {
+                    bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+                    if (hasLocalAccount || OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name).Count > 1)
+                    {
+                        OAuthWebSecurity.DeleteAccount(provider, providerUserId);
+                        scope.Complete();
+                        message = ManageMessageId.RemoveLoginSuccess;
+                    }
+                }
+            }
+
+            return RedirectToAction("Manage", new { Message = message });
+        }
+
+        [AllowAnonymous]
+        public ActionResult Profile(UserProfileVM rws_user)
+        {
+            _userRepo.UpdateUserDetails(rws_user);
+            //return Profile(rws_user.UserName);
+            return RedirectToAction("Profile", new { Username = rws_user.UserName });
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult Profile(string Username)
+        {
+            UserProfileVM userProfile = new UserProfileVM();
+
+            RWSUser user = _userRepo.GetUserByUsername(Username);
+            userProfile.UserId = user.UserId;
+            userProfile.UserName = user.UserName;
+            userProfile.FirstName = user.FirstName;
+            userProfile.LastName = user.LastName;
+            userProfile.articlesCount = user.Posts.Where(i => i.IsActive == true).Count();
+            userProfile.profileImgUrl = user.ProfileImagePath;
+            userProfile.DisplayName = user.DisplayName;
+
+            ArticleRepository _articleRepo = new ArticleRepository();
+            userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
+            userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
+
+            ViewBag.userProfile = userProfile;
+
+            int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.Now.Year * 12 + DateTime.Now.Month)) + 1;
+            //int membershipMonthCount = (((DateTime.Now.Year-1) - (user.ConfirmationDate.Value.Year+1))*12) + (12-user.ConfirmationDate.Value.Month+1) + (DateTime.Now.Month);
+            List<UserPointsVM> totalPoints = new List<UserPointsVM>();
+            int monthId = DateTime.Now.Month;
+            int yearId = DateTime.Now.Year;
+            for (int i = 0; i < membershipMonthCount; i++)
+            {
+                UserPointsVM points = new UserPointsVM();
+                points.UserId = userProfile.UserId;
+                points.UserName = Username;
+                points.ViewsCount = _userRepo.GetUserViewsByMonthId(userProfile.UserId, monthId, yearId);
+                points.LikesCount = _userRepo.GetUserLikesByMonthId(userProfile.UserId, monthId, yearId);
+                points.SharesCount = _userRepo.GetUserSharesByMonthId(userProfile.UserId, monthId, yearId);
+                points.MonthId = monthId;
+                switch (monthId)
+                {
+                    case 1: points.MonthName = "يناير"; break;
+                    case 2: points.MonthName = "فبراير"; break;
+                    case 3: points.MonthName = "مارس"; break;
+                    case 4: points.MonthName = "ابريل"; break;
+                    case 5: points.MonthName = "مايو"; break;
+                    case 6: points.MonthName = "يونيو"; break;
+                    case 7: points.MonthName = "يوليو"; break;
+                    case 8: points.MonthName = "أغسطس"; break;
+                    case 9: points.MonthName = "سبتمبر"; break;
+                    case 10: points.MonthName = "أكتوبر"; break;
+                    case 11: points.MonthName = "نوفمبر"; break;
+                    case 12: points.MonthName = "ديسمبر"; break;
+                    default: points.MonthName = ""; break;
+                }
+                points.YearId = yearId;
+                points.PointsValue = _userRepo.GetUserPointsByMonthId(userProfile.UserId, monthId, yearId);
+                totalPoints.Add(points);
+
+                monthId--;
+                if (monthId == 0)
+                {
+                    monthId = 12;
+                    yearId--;
+                }
+            }
+            ViewBag.TotalPoints = totalPoints;
+
+            return View();
+        }
+
+        [AllowAnonymous]
+        [HttpGet]
+        public ActionResult Points(string Username, int MonthId, int YearId)
+        {
+            UserProfileVM userProfile = new UserProfileVM();
+
+            RWSUser user = _userRepo.GetUserByUsername(Username);
+            userProfile.UserId = user.UserId;
+            userProfile.UserName = user.UserName;
+            userProfile.FirstName = user.FirstName;
+            userProfile.LastName = user.LastName;
+            userProfile.articlesCount = user.Posts.Where(i => i.IsActive == true).Count();
+            userProfile.profileImgUrl = user.ProfileImagePath;
+            userProfile.DisplayName = user.DisplayName;
+
+            ArticleRepository _articleRepo = new ArticleRepository();
+            userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
+            userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
+
+            ViewBag.userProfile = userProfile;
+
+            UserPointsDetailsVM points = new UserPointsDetailsVM();
+            points.UserId = userProfile.UserId;
+            points.UserName = Username;
+            points.MonthId = MonthId;
+            switch (MonthId)
+            {
+                case 1: points.MonthName = "يناير"; break;
+                case 2: points.MonthName = "فبراير"; break;
+                case 3: points.MonthName = "مارس"; break;
+                case 4: points.MonthName = "ابريل"; break;
+                case 5: points.MonthName = "مايو"; break;
+                case 6: points.MonthName = "يونيو"; break;
+                case 7: points.MonthName = "يوليو"; break;
+                case 8: points.MonthName = "أغسطس"; break;
+                case 9: points.MonthName = "سبتمبر"; break;
+                case 10: points.MonthName = "أكتوبر"; break;
+                case 11: points.MonthName = "نوفمبر"; break;
+                case 12: points.MonthName = "ديسمبر"; break;
+                default: points.MonthName = ""; break;
+            }
+            points.YearId = YearId;
+            points.TotalPointsValue = _userRepo.GetUserPointsByMonthId(userProfile.UserId, MonthId, YearId);
+            points.PostsPoints = new List<PostPointsVM>();
+
+            IQueryable<Post> posts = _articleRepo.GeUserPostsWithMonthId(userProfile.UserId, MonthId, YearId);
+
+            foreach (var item in posts)
+            {
+                PostPointsVM post_points = new PostPointsVM();
+                post_points.PostId = item.PostId;
+                post_points.PostTitle = item.Title;
+                post_points.PostFeaturedImage = item.FeaturedImage;
+                post_points.PostFeaturedVideo = item.FeaturedVideo;
+
+                post_points.PostSharesCount = _userRepo.GetPostSharesByMonthId(item.PostId, MonthId, YearId);
+                post_points.PostSharesValue = post_points.PostSharesCount * _articleRepo.GetEngagementTypeWeight(1);
+                post_points.PostLikesCount = _userRepo.GetPostLikesByMonthId(item.PostId, MonthId, YearId);
+                post_points.PostLikesValue = post_points.PostLikesCount * _articleRepo.GetEngagementTypeWeight(2);
+                post_points.PostViewsCount = _userRepo.GetPostViewsByMonthId(item.PostId, MonthId, YearId);
+                post_points.PostViewsValue = post_points.PostViewsCount * _articleRepo.GetEngagementTypeWeight(3);
+                points.PostsPoints.Add(post_points);
+            }
+
+            ViewBag.PointsDetails = points;
+
+            return View();
+        }
+
+        [Authorize]
+        [HttpGet]
+        public ActionResult Settings(string Username)
+        {
+            UserProfileVM userProfile = new UserProfileVM();
+            CompetitionRepository _compRepo = new CompetitionRepository();
+
+            RWSUser user = _userRepo.GetUserByUsername(Username);
+            userProfile.UserId = user.UserId;
+            userProfile.UserName = user.UserName;
+            userProfile.FirstName = user.FirstName;
+            userProfile.LastName = user.LastName;
+            userProfile.articlesCount = user.Posts.Where(i => i.IsActive == true).Count();
+            userProfile.profileImgUrl = user.ProfileImagePath;
+            userProfile.DisplayName = user.DisplayName;
+            userProfile.Google = user.Google;
+            userProfile.Twitter = user.Twitter;
+            userProfile.AboutYou = user.AboutYou;
+            if (user.FavTeam != null && user.FavTeam.Value != 0)
+            {
+                userProfile.FavTeamId = user.FavTeam.Value;
+                userProfile.FavTeamName = _compRepo.GetTeamById(user.FavTeam.Value).TeamName;
+            }
+            if (user.FavComp != null && user.FavComp.Value != 0)
+            {
+                userProfile.FavCompId = user.FavComp.Value;
+                userProfile.FavCompName = _compRepo.GetCompetetionById(user.FavComp.Value).CompetitionName;
+            }
+
+            ArticleRepository _articleRepo = new ArticleRepository();
+            userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
+            userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
+
+            ViewBag.userProfile = userProfile;
+            ViewBag.loggedInUser = User.Identity.Name;
+
+            return View();
+        }
+
+        //
+        // GET: /Account/Manage
+
+        //public ActionResult Manage(ManageMessageId? message)
+        //{
+        //    ViewBag.StatusMessage =
+        //        message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
+        //        : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
+        //        : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
+        //        : "";
+        //    try
+        //    {
+        //        ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+        //        ViewBag.ReturnUrl = Url.Action("Manage");
+        //    }
+        //    catch (Exception ex) { }
+        //    return View();
+        //}
+
+        ////
+        //// POST: /Account/Manage
+
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult Manage(LocalPasswordModel model)
+        //{
+        //    bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+        //    ViewBag.HasLocalPassword = hasLocalAccount;
+        //    ViewBag.ReturnUrl = Url.Action("Manage");
+        //    if (hasLocalAccount)
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            // ChangePassword will throw an exception rather than return false in certain failure scenarios.
+        //            bool changePasswordSucceeded;
+        //            try
+        //            {
+        //                changePasswordSucceeded = WebSecurity.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
+        //            }
+        //            catch (Exception)
+        //            {
+        //                changePasswordSucceeded = false;
+        //            }
+
+        //            if (changePasswordSucceeded)
+        //            {
+        //                return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
+        //            }
+        //            else
+        //            {
+        //                ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
+        //            }
+        //        }
+        //    }
+        //    else
+        //    {
+        //        // User does not have a local password so remove any validation errors caused by a missing
+        //        // OldPassword field
+        //        ModelState state = ModelState["OldPassword"];
+        //        if (state != null)
+        //        {
+        //            state.Errors.Clear();
+        //        }
+
+        //        if (ModelState.IsValid)
+        //        {
+        //            try
+        //            {
+        //                WebSecurity.CreateAccount(User.Identity.Name, model.NewPassword);
+        //                return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
+        //            }
+        //            catch (Exception e)
+        //            {
+        //                ModelState.AddModelError("", e);
+        //            }
+        //        }
+        //    }
+
+        //    // If we got this far, something failed, redisplay form
+        //    return View(model);
+        //}
+
+        //
+        // POST: /Account/ExternalLogin
+
+        [HttpPost]
+        [AllowAnonymous]
+        [ValidateAntiForgeryToken]
+        public ActionResult ExternalLogin(string provider, string returnUrl)
+        {
+            return new ExternalLoginResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
+        }
+
+        //
+        // GET: /Account/ExternalLoginCallback
+
+        [HttpPost]
+        public ActionResult UpdateProfileImg(string UserName, HttpPostedFileBase localPath)
+        {
+            // Verify that the user selected a file
+            if (localPath != null && localPath.ContentLength > 0)
+            {
+                // extract only the fielname
+                var fileName = Path.GetFileName(localPath.FileName);
+                // store the file inside ~/App_Data/uploads folder
+                var path = Path.Combine(Server.MapPath("/Content/Profile_Pictures"), fileName);
+                localPath.SaveAs(path);
+                RWSUser user = _userRepo.GetUserByUsername(UserName);
+                _userRepo.UpdateProfileImg(user, "/Content/Profile_Pictures/" + fileName);
+            }
+            
+            return Redirect("/Settings?Username=" + UserName);
+        }
+
+        [AllowAnonymous]
+        public ActionResult ExternalLoginCallback(string returnUrl)
+        {
+            AuthenticationResult result = OAuthWebSecurity.VerifyAuthentication(Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
+            if (!result.IsSuccessful)
+            {
+                return RedirectToAction("ExternalLoginFailure");
+            }
+
+            if (_userRepo.ExternalUserExists(result.ProviderUserId, result.Provider))
+            {
+                RWSUser user = _userRepo.GetExternalUser(result.ProviderUserId, result.Provider);
+                FormsService.SignIn(user.UserName, true);
+                if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
+                    && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
+                {
+                    return Redirect(returnUrl);
+                }
+                return RedirectToAction("Index", "Home");
+            }
+
+            if (result.ExtraData.Keys.Contains("accesstoken"))
+            {
+                Session["facebooktoken"] = result.ExtraData["accesstoken"];
+            }
+
+            if (User.Identity.IsAuthenticated)
+            {
+                _userRepo.CreateOrUpdateExternalUser(result.Provider, result.ProviderUserId);
+                return RedirectToLocal(returnUrl);
+            }
+            else
+            {
+                // User is new, ask for their desired membership name
+                string loginData = OAuthWebSecurity.SerializeProviderUserId(result.Provider, result.ProviderUserId);
+                ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(result.Provider).DisplayName;
+                ViewBag.ReturnUrl = returnUrl;
+
+                RegisterExternalLoginModel registrationData = new RegisterExternalLoginModel {
+                    ExternalLoginData = loginData,
+                    FullName = result.ExtraData["name"]
+                };
+
+                string provider = null;
+                string providerUserId = null;
+
+                if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(registrationData.ExternalLoginData, out provider, out providerUserId))
+                {
+                    return RedirectToAction("Manage");
+                }
+
+                if (ModelState.IsValid)
+                {
+                    if (!_userRepo.IsValidEmail(registrationData.Email))
+                    {
+                        ViewBag.provider = provider;
+                        ViewBag.providerUserId = providerUserId;
+                        var client = new Facebook.FacebookClient(Session["facebooktoken"].ToString());
+                        dynamic response = client.Get("me", new
+                        {
+                            fields = "first_name, last_name, email"
+                        });
+                        dynamic picResponse = client.Get("me/picture", new { access_token = result.ExtraData["accesstoken"], redirect = false, height = 180, width = 180 });
+                        string remoteImgPath = picResponse.data["url"];
+                        Uri remoteImgPathUri = new Uri(remoteImgPath);
+                        string remoteImgPathWithoutQuery = remoteImgPathUri.GetLeftPart(UriPartial.Path);
+                        //string fileName = Path.GetFileName(remoteImgPathWithoutQuery);
+                        string extention = Path.GetExtension(remoteImgPathWithoutQuery);
+                        string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                        string fileName = time + "_" + response["first_name"] + "_" + response["last_name"]+extention;
+                        string localPath = AppDomain.CurrentDomain.BaseDirectory + "Content\\Profile_Pictures\\" + fileName;
+                        //string localPath = "Content\\Profile_Pictures\\" + fileName;
+                        WebClient webClient = new WebClient();
+                        webClient.DownloadFile(remoteImgPath, localPath);
+                        registrationData.FirstName = response["first_name"];
+                        registrationData.LastName = response["last_name"];
+                        registrationData.Email = response["email"];
+                        //registrationData.PicturePath = fileName;
+                        registrationData.Link = "https://www.facebook.com/" + response["first_name"] + "/" + response["last_name"];
+                        registrationData.PicturePath = "Content/Profile_Pictures/" + fileName;
+
+                        if (_userRepo.CheckIfEmailExists(registrationData.Email))
+                        {
+                            RWSUser user = _userRepo.GetUserByEmail(registrationData.Email);
+                            if (user.ProfileImagePath == null)
+                            {
+                                _userRepo.UpdateProfileImg(user, localPath);
+                            }
+                            RWSProviderUser provider_user = new RWSProviderUser();
+                            provider_user.UserId = user.UserId;
+                            provider_user.Provider = provider;
+                            provider_user.ProviderUserId = providerUserId;
+                            _userRepo.AddProviderUser(provider_user);
+
+                            user = _userRepo.GetExternalUser(provider_user.ProviderUserId, provider_user.Provider);
+                            FormsService.SignIn(user.UserName, true);
+                            if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
+                                && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
+                            {
+                                return Redirect(returnUrl);
+                            }
+                            return RedirectToAction("Index", "Home");
+                        } 
+                        else if (_userRepo.CheckIfEmailExists(registrationData.Email))
+                        {
+                            return View("Register2", registrationData);
+                        }
+                    }
+                    else
+                    {
+                        //string email = registrationData.Email;
+                        //RWSUser user = _userRepo.GetUserByEmail(email);
+                        //LoginModel user_login = new LoginModel();
+                        //user_login.UserName = user.UserName;
+                        //user_login.Password = user.Password;
+                        //Login(user_login, "");
+                        //ModelState.AddModelError("UserName", "إسم المستخدم موجود بالفعل. يرجى إختيار إسم أخر.");
+                    }
+                }
+                return View("Register2", registrationData);
+            }
+        }
+
+        //
+        // POST: /Account/ExternalLoginConfirmation
+
+        //[HttpPost]
+        //[AllowAnonymous]
+        //[ValidateAntiForgeryToken]
+        //public ActionResult ExternalLoginConfirmation(RegisterExternalLoginModel model, string returnUrl)
+        //{
+        //    string provider = null;
+        //    string providerUserId = null;
+
+        //    if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
+        //    {
+        //        return RedirectToAction("Manage");
+        //    }
+
+        //    if (ModelState.IsValid)
+        //    {
+        //        // Insert a new user into the database
+        //        using (UsersContext db = new UsersContext())
+        //        {
+        //            UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
+        //            // Check if user already exists
+        //            if (user == null)
+        //            {
+        //                var client = new Facebook.FacebookClient(Session["facebooktoken"].ToString());
+        //                dynamic response = client.Get("me", new
+        //                {
+        //                    fields = "first_name, last_name, email, location"
+        //                });
+        //                model.FirstName = response["first_name"];
+        //                model.LastName = response["last_name"];
+        //                model.Email = response["email"];
+        //                model.Country = response["location"];
+
+        //                // Insert name into the profile table
+        //                UserProfile newUser = db.UserProfiles.Add(new UserProfile { UserName = model.UserName, FirstName = model.FirstName, LastName = model.LastName, Email = model.Email, Country = model.Country  });
+        //                db.SaveChanges();
+
+        //                //db.ExternalUsers.Add(new ExternalUserInformation
+        //                //{
+        //                //    UserId = newUser.UserId,
+        //                //    FullName = model.FullName,
+        //                //    Link = model.Link
+        //                //});
+        //                //db.SaveChanges();
+
+        //                OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
+        //                OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
+
+        //                return RedirectToLocal(returnUrl);
+        //                // Insert name into the profile table
+        //                //db.UserProfiles.Add(new UserProfile { UserName = model.UserName });
+        //                //db.SaveChanges();
+
+        //                //OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
+        //                //OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
+
+        //                //return RedirectToLocal(returnUrl);
+        //            }
+        //            else
+        //            {
+        //                ModelState.AddModelError("UserName", "User name already exists. Please enter a different user name.");
+        //            }
+        //        }
+        //    }
+
+        //    ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(provider).DisplayName;
+        //    ViewBag.ReturnUrl = returnUrl;
+        //    return RedirectToAction("Register", "Account");
+        //    //return View(model);
+        //}
+
+        //
+        // GET: /Account/ExternalLoginFailure
+
+        [AllowAnonymous]
+        public ActionResult ExternalLoginFailure()
+        {
+            return View();
+        }
+
+        [ChildActionOnly]
+        public ActionResult RemoveExternalLogins()
+        {
+            ICollection<OAuthAccount> accounts = OAuthWebSecurity.GetAccountsFromUserName(User.Identity.Name);
+            List<ExternalLogin> externalLogins = new List<ExternalLogin>();
+            foreach (OAuthAccount account in accounts)
+            {
+                AuthenticationClientData clientData = OAuthWebSecurity.GetOAuthClientData(account.Provider);
+
+                externalLogins.Add(new ExternalLogin
+                {
+                    Provider = account.Provider,
+                    ProviderDisplayName = clientData.DisplayName,
+                    ProviderUserId = account.ProviderUserId,
+                });
+            }
+
+            ViewBag.ShowRemoveButton = externalLogins.Count > 1 || OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
+            return PartialView("_RemoveExternalLoginsPartial", externalLogins);
+        }
+
+        #region Helpers
+        private ActionResult RedirectToLocal(string returnUrl)
+        {
+            if (Url.IsLocalUrl(returnUrl))
+            {
+                return Redirect(returnUrl);
+            }
+            else
+            {
+                return RedirectToAction("Index", "Home");
+            }
+        }
+
+        public enum ManageMessageId
+        {
+            ChangePasswordSuccess,
+            SetPasswordSuccess,
+            RemoveLoginSuccess,
+        }
+
+        internal class ExternalLoginResult : ActionResult
+        {
+            public ExternalLoginResult(string provider, string returnUrl)
+            {
+                Provider = provider;
+                ReturnUrl = returnUrl;
+            }
+
+            public string Provider { get; private set; }
+            public string ReturnUrl { get; private set; }
+
+            public override void ExecuteResult(ControllerContext context)
+            {
+                OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
+            }
+        }
+
+        //public static string GetPictureUrl(string faceBookId)
+        //{
+        //    WebResponse response = null;
+        //    string pictureUrl = string.Empty;
+        //    try
+        //    {
+        //        WebRequest request = WebRequest.Create(string.Format("https://graph.facebook.com/{0}/picture", faceBookId));
+        //        response = request.GetResponse();
+        //        pictureUrl = response.ResponseUri.ToString();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        //? handle
+        //    }
+        //    finally
+        //    {
+        //        if (response != null) response.Close();
+        //    }
+        //    return pictureUrl;
+        //}
+
+        private static string ErrorCodeToString(MembershipCreateStatus createStatus)
+        {
+            // See http://go.microsoft.com/fwlink/?LinkID=177550 for
+            // a full list of status codes.
+            switch (createStatus)
+            {
+                case MembershipCreateStatus.DuplicateUserName:
+                    return "User name already exists. Please enter a different user name.";
+
+                case MembershipCreateStatus.DuplicateEmail:
+                    return "A user name for that e-mail address already exists. Please enter a different e-mail address.";
+
+                case MembershipCreateStatus.InvalidPassword:
+                    return "The password provided is invalid. Please enter a valid password value.";
+
+                case MembershipCreateStatus.InvalidEmail:
+                    return "The e-mail address provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidAnswer:
+                    return "The password retrieval answer provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidQuestion:
+                    return "The password retrieval question provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.InvalidUserName:
+                    return "The user name provided is invalid. Please check the value and try again.";
+
+                case MembershipCreateStatus.ProviderError:
+                    return "The authentication provider returned an error. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+
+                case MembershipCreateStatus.UserRejected:
+                    return "The user creation request has been canceled. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+
+                default:
+                    return "An unknown error occurred. Please verify your entry and try again. If the problem persists, please contact your system administrator.";
+            }
+        }
+        #endregion
+    }
+}

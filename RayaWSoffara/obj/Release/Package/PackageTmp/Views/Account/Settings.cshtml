@@ -1,0 +1,185 @@
+﻿@model RayaWSoffara.Models.UserProfileVM
+@{
+    ViewBag.Title = "";
+}
+
+<div class="clear-fix"></div>
+<div id="profile_container">
+    <div class="profile-title">
+        <div class="user-data-title">
+            <span>البيانات الشخصية</span>
+        </div>
+        <div class="clear-fix"></div>
+        <div class="user-image">
+            @if (@ViewBag.userProfile.profileImgUrl != null)
+            {
+                <img class="pull-left" src="@ViewBag.userProfile.profileImgUrl?w=120&h=120&mode=crop" />
+            }
+            else
+            {
+                <img class="pull-left" src="~/Content/Images/img_writer.jpg?w=120&h=120&mode=crop" />
+            }
+        </div>
+        <div class="clear-fix"></div>
+        <div class="edit-user-image">
+            <button data-toggle="modal" data-target="#myModal">تعديل الصورة</button>
+
+            <!-- Modal -->
+            <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+                <div class="modal-dialog modal-sm" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">أختر صورة</h4>
+                        </div>
+                        @using (Html.BeginForm("UpdateProfileImg", "Account", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+                            <div class="modal-body">
+                                <input type="file" name="localPath" class="update-user-image" accept="image/gif, image/jpeg, image/png">
+                                <input type="hidden" name="UserName" value="@ViewBag.userProfile.UserName" />
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">تعديل</button>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="clear-fix"></div>
+
+    <div class="settings">
+
+        <div id="account" class="">
+            <div class="sub-title">
+                <div>معلومات شخصية</div>
+            </div>
+            @using (Html.BeginForm("Profile", "Account", FormMethod.Post, new { enctype = "multipart/form-data", Username = User.Identity.Name }))
+            {
+                <input type="hidden" name="Username" value="@ViewBag.userProfile.UserName" />
+                if (@ViewBag.loggedInUser == @ViewBag.userProfile.UserName)
+                {
+                <div class="form-group">
+                    <label class="pull-left">البطولة المفضلة</label>
+                    <select id="competitions" name="FavCompId" class="form-control">
+                        <option></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">الفريق المفضل</label>
+                    <select id="teams" name="FavTeamId" class="form-control">
+                        <option></option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">أسم المستخدم</label>
+                    <input type="text" class="form-control" id="displayName" name="DisplayName" value="@ViewBag.userProfile.UserName" />
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">نبذة عنك</label>
+                    <textarea class="form-control" id="AboutYou" name="AboutYou">@ViewBag.userProfile.AboutYou</textarea>
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">حساب تويتر</label>
+                    <input type="text" class="form-control" id="twitter" name="Twitter" value="@ViewBag.userProfile.Twitter" />
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">حساب جوجل بلس</label>
+                    <input type="text" class="form-control" id="google" name="Google" value="@ViewBag.userProfile.Google" />
+                </div>
+                }
+                else
+                {
+@*<div class="form-group">
+                    <label>Competitions</label>
+                    <input class="form-control input-lg" value="@ViewBag.userProfile.FavCompName" disabled />
+                </div>
+                <div class="form-group">
+                    <label>Teams</label>
+                    <input class="form-control input-lg" value="@ViewBag.userProfile.FavTeamName" disabled />
+                </div>
+                <div class="form-group">
+                    <label>Display Name</label>
+                    <input type="text" class="form-control input-lg" name="DisplayName" value="@ViewBag.userProfile.DisplayName" disabled />
+                </div>
+                <div>
+                    <label>About @ViewBag.userProfile.FirstName</label>
+                    <textarea class="form-control input-lg" name="AboutYou" disabled>@ViewBag.userProfile.AboutYou</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Twitter Link</label>
+                    <input type="text" class="form-control input-lg" name="Twitter" value="@ViewBag.userProfile.Twitter" disabled />
+                </div>
+                <div class="form-group">
+                    <label>Google+ Link</label>
+                    <input type="text" class="form-control input-lg" name="Google" value="@ViewBag.userProfile.Google" disabled />
+                </div>*@
+                }
+            }
+
+            @*</form>*@
+        </div>
+
+        @*<div id="notifications" class="">
+            <div class="sub-title">
+                <div>اشعارات</div>
+            </div>
+        </div>*@
+
+
+        <button type="submit" class="btn btn-primary">تعديل</button>
+    </div>
+
+
+
+</div>
+
+
+<script>
+    if ($("#competitions").length > 0){
+        $.ajax({
+            type: 'GET',
+            url: '/Competition/GetAllCompetetions',
+            success: function (competitions) {
+                for (var i = 0; i < competitions.length; i++) {
+                    html = '<option value="' + competitions[i].CompetitionId + '">' + competitions[i].CompetitionName + '</option>';
+                    $("#competitions").append(html);
+                }
+                var FavCompId = @ViewBag.userProfile.FavCompId;
+                if(FavCompId != ""){
+                    $.when($("#competitions").val(@ViewBag.userProfile.FavCompId)).done(function (x) {
+                        $.ajax({
+                            type: 'POST',
+                            url: '/Competition/GetTeamsForCompetition',
+                            data: { compId: $("#competitions").val() },
+                            success: function (teams) {
+                                for (var i = 0; i < teams.length; i++) {
+                                    html = '<option value="' + teams[i].TeamId + '">' + teams[i].TeamName + '</option>';
+                                    $("#teams").append(html);
+                                }
+                                $("#teams").val(@ViewBag.userProfile.FavTeamId);
+                            }
+                        });
+                    });
+                }
+            }
+        });
+
+        $("#competitions").change(function () {
+            $.ajax({
+                type: 'POST',
+                url: '/Competition/GetTeamsForCompetition',
+                data: { compId : $("#competitions").val() },
+                success: function (teams) {
+                    for (var i = 0; i < teams.length; i++) {
+                        html = '<option value="' + teams[i].TeamId + '">' + teams[i].TeamName + '</option>';
+                        $("#teams").append(html);
+                    }
+                }
+            });
+        });
+    }
+
+</script>

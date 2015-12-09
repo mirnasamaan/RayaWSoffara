@@ -1,0 +1,229 @@
+﻿@model RayaWSoffara.Models.RegisterExternalLoginModel
+
+@{
+    ViewBag.Title = "التسجيل";
+}
+
+<div class="clear-fix"></div>
+<div id="registration_container">
+    <div class="title">
+        <span>@ViewBag.Title</span>
+    </div>
+
+    @*using (Html.BeginForm("Register2", "Account", new { ReturnUrl = ViewBag.ReturnUrl }))*@
+    @using (Html.BeginForm("Register2", "Account", null, FormMethod.Post, new { id = "form", name = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+
+        <input value="@ViewBag.provider" type="hidden" name="provider" />
+        <input value="@ViewBag.providerUserId" type="hidden" name="providerUserId" />
+        <fieldset>
+            <legend>Registration Form</legend>
+            <div id="reg_div">
+                <div class="form-group">
+                    <label class="pull-left">الأسم الأول</label>
+                    @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.FirstName)
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">أسم العائلة</label>
+                    @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.LastName)
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">أسم المستخدم</label>
+                    @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", onfocusout = "checkusername($(this).val())" })
+                    @Html.ValidationMessageFor(model => model.UserName)
+                    <div class="pull-right">
+                        <div class="full_width" id="tick_div"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">البريد الالكتروني</label>
+                    @Html.TextBoxFor(m => m.Email, new { @class = "form-control", onfocusout = "checkemail($(this).val())" })
+                    @Html.ValidationMessageFor(model => model.Email)
+                    <div class="pull-right">
+                        <div class="full_width" id="email_tick_div"></div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">كلمة السر</label>
+                    @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Password)
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">تأكيد كلمة السر</label>
+                    @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
+                </div>
+                <div class="form-group">
+                    <label class="pull-left">البلد</label>
+                    @Html.TextBoxFor(m => m.Country, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.Country)
+                </div>
+                @Html.HiddenFor(m => m.PicturePath)
+            </div>
+            <div id="btn_reg_div">
+                <input type="submit" value="تسجيل" id="btn_reg"/>
+            </div>
+            
+        </fieldset>
+    }
+
+</div>
+
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    function checkusername(username) {
+        $.ajax({
+            type: 'POST',
+            url: '/Account/DoesUserNameExist',
+            data: { UserName: username },
+            beforeSend: function () {
+                $('#myModal').modal({
+                    show: true,
+                    backdrop: 'static',
+                    keyboard: false
+                })
+            },
+            success: function (data) {
+                $('#myModal').modal('hide');
+                if (data == 'True' && username != "") {
+                    $('#tick_div').html('');
+                    $('#tick_div').append('<img src="/Content/Images/icon_tick.png" id="icon_tick"/>');
+                } else if (data == 'False') {
+                    $('#tick_div').html('');
+                    $('#tick_div').append('<img src="/Content/Images/false_tick.png" id="icon_tick" class="false_tick" />');
+                }
+                return data;
+            },
+            error: function () {
+                $('#myModal').modal('hide');
+            }
+        });
+    }
+
+    function isValidEmailAddress(emailAddress) {
+        var filter = /^([\w-\.]+)@@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+        return (filter.test(emailAddress));
+    };
+
+    function checkemail(email) {
+        if (isValidEmailAddress(email)) {
+            $.ajax({
+                type: 'POST',
+                url: '/Account/DoesUserEmailExist',
+                data: { Email: email },
+                beforeSend: function () {
+                    $('#myModal').modal({
+                        show: true,
+                        backdrop: 'static',
+                        keyboard: false
+                    })
+                },
+                success: function (data) {
+                    $('#myModal').modal('hide');
+                    if (data == 'False' && email != "") {
+                        $('#email_tick_div').html('');
+                        $('#email_tick_div').append('<img src="/Content/Images/icon_tick.png" id="icon_tick"/>');
+                    } else if (data == 'True') {
+                        $('#email_tick_div').html('');
+                        $('#email_tick_div').append('<img src="/Content/Images/false_tick.png" id="icon_tick" class="false_tick" />');
+                    }
+                    return data;
+                },
+                error: function () {
+                    $('#myModal').modal('hide');
+                }
+            });
+        }
+    }
+
+    jQuery.validator.addMethod("UsernameExist", function (value, element) {
+        var result = "";
+        $.ajax({
+            type: 'POST',
+            url: '/Account/DoesUserNameExist',
+            data: { UserName: value },
+            async: false,
+            success: function (data) {
+                if (data == 'True') {
+                    result = 'true';
+                } else {
+                    result = 'false';
+                }
+            }
+        });
+        return (result == 'true');
+    }, "إسم المستخدم مسجل. من فضلك أختر إسم آخر.");
+
+    jQuery.validator.addMethod("UserEmailExist", function (value, element) {
+        var result = "";
+        $.ajax({
+            type: 'POST',
+            url: '/Account/DoesUserEmailExist',
+            data: { Email: value },
+            async: false,
+            success: function (data) {
+                if (data == 'False') {
+                    result = 'true';
+                } else {
+                    result = 'false';
+                }
+            }
+        });
+        return (result == 'true');
+    }, "البريد الإلكتروني مسجل.");
+
+    $("#form").validate({
+        rules: {
+            UserName: {
+                required: true,
+                UsernameExist: true
+                },
+            Password: {
+                required: true,
+                minlength: 6
+            },
+            ConfirmPassword: {
+                required: true,
+                equalTo: "#Password"
+            },
+            Country: "required",
+            Email: {
+                required: true,
+                email: true,
+                UserEmailExist: true
+            }
+        },
+        messages: {
+            FirstName: "يجب إدخال الاسم الاول",
+            LastName: "يجب إدخال إسم العائلة",
+            UserName: {
+                required: "يجب إدخال إسم المستخدم"
+            },
+            Password: {
+                required: "يجب إدخال كلمة السر",
+                minlength: "يجب أن تكون على الأقل {6} أحرف."
+            },
+            ConfirmPassword: {
+                required: "يجب إدخال تأكيد كلمة السر",
+                equalTo: "كلمة السر غير متطابقة."
+            },
+            Country: "يجب إدخال البلد .",
+            Email: {
+                required: "يجب إدخال البريد الالكتروني.",
+                email: "البريد الالكتروني غير صحيح."
+            }
+        }
+    });
+</script>
+
+@*<div>
+    @Html.ActionLink("Back to List", "Index")
+</div>*@
+
+@section Scripts {
+    @*@Scripts.Render("~/bundles/jqueryval")*@
+}

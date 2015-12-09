@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;de&#39;, {
+	title: &#39;Barrierefreiheitinformationen&#39;,
+	contents: &#39;Hilfeinhalt. Um den Dialog zu schliessen die Taste ESC drücken.&#39;,
+	legend: [
+		{
+		name: &#39;Allgemein&#39;,
+		items: [
+			{
+			name: &#39;Editorwerkzeugleiste&#39;,
+			legend: &#39;Drücken Sie ${toolbarFocus} auf der Symbolleiste. Gehen Sie zur nächsten oder vorherigen Symbolleistengruppe mit TAB und SHIFT+TAB. Gehen Sie zur nächsten oder vorherigen Symbolleiste auf die Schaltfläche mit dem RECHTS- oder LINKS-Pfeil. Drücken Sie die Leertaste oder Eingabetaste, um die Schaltfläche in der Symbolleiste aktivieren.&#39;
+		},
+
+			{
+			name: &#39;Editordialog&#39;,
+			legend:
+				&#39;Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.&#39;  // MISSING
+		},
+
+			{
+			name: &#39;Editor-Kontextmenü&#39;,
+			legend: &#39;Dürcken Sie ${contextMenu} oder die Anwendungstaste um das Kontextmenü zu öffnen. Man kann die Pfeiltasten zum Wechsel benutzen. Mit der Leertaste oder der Enter-Taste kann man den Menüpunkt aufrufen. Schliessen Sie das Kontextmenü mit der ESC-Taste.&#39;
+		},
+
+			{
+			name: &#39;Editor-Listenbox&#39;,
+			legend: &#39;Innerhalb einer Listenbox kann man mit der TAB-Taste oder den Pfeilrunter-Taste den nächsten Menüeintrag wählen. Mit der SHIFT+TAB Tastenkombination oder der Pfeilhoch-Taste gelangt man zum vorherigen Menüpunkt. Mit der Leertaste oder Enter kann man den Menüpunkt auswählen. Drücken Sie ESC zum Verlassen des Menüs.&#39;
+		},
+
+			{
+			name: &#39;Editor-Elementpfadleiste&#39;,
+			legend: &#39;Drücken Sie ${elementsPathFocus} um sich durch die Pfadleiste zu bewegen. Um zum nächsten Element zu gelangen drücken Sie TAB oder die Pfeilrechts-Taste. Zum vorherigen Element gelangen Sie mit der SHIFT+TAB oder der Pfeillinks-Taste. Drücken Sie die Leertaste oder Enter um das Element auszuwählen.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Befehle&#39;,
+		items: [
+			{
+			name: &#39;Rückgängig-Befehl&#39;,
+			legend: &#39;Drücken Sie ${undo}&#39;
+		},
+			{
+			name: &#39;Wiederherstellen-Befehl&#39;,
+			legend: &#39;Drücken Sie ${redo}&#39;
+		},
+			{
+			name: &#39;Fettschrift-Befehl&#39;,
+			legend: &#39;Drücken Sie ${bold}&#39;
+		},
+			{
+			name: &#39;Kursiv-Befehl&#39;,
+			legend: &#39;Drücken Sie ${italic}&#39;
+		},
+			{
+			name: &#39;Unterstreichen-Befehl&#39;,
+			legend: &#39;Drücken Sie ${underline}&#39;
+		},
+			{
+			name: &#39;Link-Befehl&#39;,
+			legend: &#39;Drücken Sie ${link}&#39;
+		},
+			{
+			name: &#39;Werkzeugleiste einklappen-Befehl&#39;,
+			legend: &#39;Drücken Sie ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;Zugang bisheriger Fokussierung Raumbefehl &#39;,
+			legend: &#39;Drücken Sie ${accessPreviousSpace}  auf den am nächsten nicht erreichbar Fokus-Abstand vor die Einfügemarke zugreifen: zwei benachbarte HR-Elemente. Wiederholen Sie die Tastenkombination um entfernte Fokusräume zu erreichen. &#39;
+		},
+			{
+			name: &#39;Zugang nächster Schwerpunkt Raumbefehl &#39;,
+			legend: &#39;Drücken Sie $ { accessNextSpace }, um den nächsten unerreichbar Fokus Leerzeichen nach dem Cursor zum Beispiel auf: zwei benachbarten HR Elemente. Wiederholen Sie die Tastenkombination zum fernen Fokus Bereiche zu erreichen. &#39;
+		},
+			{
+			name: &#39;Eingabehilfen&#39;,
+			legend: &#39;Drücken Sie ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Rücktaste&#39;,
+	tab: &#39;Tab&#39;,
+	enter: &#39;Eingabe&#39;,
+	shift: &#39;Umschalt&#39;,
+	ctrl: &#39;Strg&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Pause&#39;,
+	capslock: &#39;Feststell&#39;,
+	escape: &#39;Escape&#39;,
+	pageUp: &#39;Bild auf&#39;,
+	pageDown: &#39;Bild ab&#39;,
+	end: &#39;Ende&#39;,
+	home: &#39;Pos1&#39;,
+	leftArrow: &#39;Linke Pfeiltaste&#39;,
+	upArrow: &#39;Obere Pfeiltaste&#39;,
+	rightArrow: &#39;Rechte Pfeiltaste&#39;,
+	downArrow: &#39;Untere Pfeiltaste&#39;,
+	insert: &#39;Einfügen&#39;,
+	&#39;delete&#39;: &#39;Entfernen&#39;,
+	leftWindowKey: &#39;Linke Windowstaste&#39;,
+	rightWindowKey: &#39;Rechte Windowstaste&#39;,
+	selectKey: &#39;Taste auswählen&#39;,
+	numpad0: &#39;Ziffernblock 0&#39;,
+	numpad1: &#39;Ziffernblock 1&#39;,
+	numpad2: &#39;Ziffernblock 2&#39;,
+	numpad3: &#39;Ziffernblock 3&#39;,
+	numpad4: &#39;Ziffernblock 4&#39;,
+	numpad5: &#39;Ziffernblock 5&#39;,
+	numpad6: &#39;Ziffernblock 6&#39;,
+	numpad7: &#39;Ziffernblock 7&#39;,
+	numpad8: &#39;Ziffernblock 8&#39;,
+	numpad9: &#39;Ziffernblock 9&#39;,
+	multiply: &#39;Multiplizieren&#39;,
+	add: &#39;Addieren&#39;,
+	subtract: &#39;Subtrahieren&#39;,
+	decimalPoint: &#39;Punkt&#39;,
+	divide: &#39;Dividieren&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Ziffernblock feststellen&#39;,
+	scrollLock: &#39;Rollen&#39;,
+	semiColon: &#39;Semikolon&#39;,
+	equalSign: &#39;Gleichheitszeichen&#39;,
+	comma: &#39;Komma&#39;,
+	dash: &#39;Bindestrich&#39;,
+	period: &#39;Punkt&#39;,
+	forwardSlash: &#39;Schrägstrich&#39;,
+	graveAccent: &#39;Gravis&#39;,
+	openBracket: &#39;Öffnende eckige Klammer&#39;,
+	backSlash: &#39;Rückwärtsgewandter Schrägstrich&#39;,
+	closeBracket: &#39;Schließende eckige Klammer&#39;,
+	singleQuote: &#39;Einfaches Anführungszeichen&#39;
+} );
+</pre>
+</body>
+</html>

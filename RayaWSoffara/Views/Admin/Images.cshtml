@@ -1,0 +1,100 @@
+﻿@model List<RWSDataLayer.Context.Image>
+@{
+    ViewBag.Title = "Images";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+@*<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />*@
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="/Admin/AddImages">Add Images</a>
+        </div>
+        <h4 class="panel-title">Images List</h4>
+    </div>
+    <div class="panel-body">
+        <div class="grid">
+            @Html.Partial("_ImagesPartial", Model)
+        </div>
+    </div>
+</div>
+
+<input id="AllImagesCount" type="hidden" value="@ViewBag.AllImagesCount" />
+
+<div class="viewMoreButton">
+    <div class="loading hidden">
+        <div>
+            <div class="sk-fading-circle">
+                <div class="sk-circle1 sk-circle"></div>
+                <div class="sk-circle2 sk-circle"></div>
+                <div class="sk-circle3 sk-circle"></div>
+                <div class="sk-circle4 sk-circle"></div>
+                <div class="sk-circle5 sk-circle"></div>
+                <div class="sk-circle6 sk-circle"></div>
+                <div class="sk-circle7 sk-circle"></div>
+                <div class="sk-circle8 sk-circle"></div>
+                <div class="sk-circle9 sk-circle"></div>
+                <div class="sk-circle10 sk-circle"></div>
+                <div class="sk-circle11 sk-circle"></div>
+                <div class="sk-circle12 sk-circle"></div>
+            </div>
+        </div>
+    </div>
+    <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
+</div>
+<script src="~/Content/Scripts/masonry.pkgd.min.js"></script>
+<script src="~/Content/Scripts/imagesloaded.pkgd.min.js"></script>
+
+<script type="text/javascript">
+
+    var page = 1;
+    var displayed_images_count = parseInt($(".grid-item").length);
+    var all_images_count = parseInt($("#AllImagesCount").val());
+    if (displayed_images_count >= all_images_count) {
+        $("#viewMore").addClass("hidden");
+    }
+
+    $.getScript("/Content/Scripts/imagesloaded.pkgd.min.js")
+      .done(function (script, textStatus) {
+          $.getScript("/Content/Scripts/masonry.pkgd.min.js")
+          .done(function (script, textStatus) {
+              $('.grid').imagesLoaded(function () {
+                  $('.grid').masonry({
+                      itemSelector: '.grid-item',
+                      isFitWidth: true,
+                      isOriginLeft: false
+                  });
+              });
+          });
+      });
+
+    //start of view button click function //
+    function viewMore(e) {
+        $.ajax({
+            type: "POST",
+            data: { page: page },
+            url: "/Admin/GetImages",
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (images) {
+                page++;
+                images = $(images);
+                $(".loading").addClass("hidden");
+                $('.grid').append($images).masonry('appended', $images);
+                var displayed_images_count = parseInt($(".grid-item").length);
+                var all_images_count = parseInt($("#AllImagesCount").val());
+                if (displayed_images_count >= all_images_count) {
+                    $("#viewMore").addClass("hidden");
+                }
+            }
+        });
+
+        return false;
+    }
+    //end of view button click function //
+</script>

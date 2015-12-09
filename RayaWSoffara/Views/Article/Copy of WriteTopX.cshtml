@@ -1,0 +1,382 @@
+﻿@model RayaWSoffara.Models.UserArticleVM
+
+@{
+    ViewBag.Title = "إكتب مقالك";
+}
+
+<form enctype="multipart/form-data" method="post" id="article_form">
+    <div class="container full_width" id="createArticle_container">
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <div class="input-group full_width input_margin"> 
+                    @Html.TextBoxFor(m => m.newArticle.Title, new{@class = "form-control dark_border", placeholder = "أضف عنوان"})
+                    <input type="hidden" name="article_picture_path" id="article_picture_path" />
+                    <input type="hidden" name="video_url" id="video_url" />
+                </div>
+                <div class="input-group full_width input_margin">
+                    <div id="media" class="dark_border">
+                        <img id="media_img" src="" />
+                        <section class="image-upload-drop-target" id="media_dropbox">
+                            <span>أضف صورة أو فيديو</span>
+                            <button type="button" class="upload" id="video_embed_btn">Embed Video</button>
+                            <button type="button" class="upload" id="picture_upload_btn">Upload Image</button>
+                            <input type="file" name="article_picture" id="article_picture_btn" class="hide" onchange="readURL(this)" />
+                        </section>
+                        <div id="controls">
+                            <section>
+                                <button type="button" class="upload" id="delete_btn"><span class="glyphicon glyphicon-trash"></span></button>
+                                <button type="button" class="upload" id="edit_btn"><span class="glyphicon glyphicon-pencil"></span></button>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group full_width input_margin">
+                    @Html.TextAreaFor(m => m.newArticle.Content, new{ id="article_content"})
+                </div>
+
+
+
+                <!--Start of TopX Tags-->
+
+                <button id="add_topX_item">إضافة</button>
+                <div class="vertical_space"></div>
+
+                <div id="topX_container">
+                @for(var i=3; i>0; i--){
+                    <div class="topX_item">
+                        <div class="input-group full_width input_margin col-sm-10"> 
+                            <input type="text" name="newArticle.ArticleTopXes[@(i-1)].TopXTitle" class="col-sm-11 pull-right topX-title dark_border" id="topX_title_@i" placeholder = "أضف عنوان" />
+                            <input type="text" class="col-sm-1 topX-order pull-right" id="topX_order_@i" disabled />
+                            <input type="hidden" name="newArticle.ArticleTopXes[@(i-1)].TopXOrder" value="@i" />
+                            <div class="arrows-div">
+                                <button class="up-button" id="up_button_@i"></button>
+                                <button class="down-button" id="down_button_@i"></button>
+                            </div>                
+                        </div>
+                        <div class="input-group full_width input_margin">
+                            <div id="media" class="dark_border">
+                                <img id="media_img_@i" src="" />
+                                <section class="image-upload-drop-target" id="media_dropbox">
+                                    <span>أضف صورة أو فيديو</span>
+                                    <button type="button" class="upload" id="video_embed_btn">Embed Video</button>
+                                    <button type="button" class="upload" id="picture_upload_btn">Upload Image</button>
+                                    <input type="file" name="article_picture" id="article_picture_btn" class="hide" onchange="readURL(this)" />
+                                </section>
+                                <div id="controls">
+                                    <section>
+                                        <button type="button" class="upload" id="delete_btn"><span class="glyphicon glyphicon-trash"></span></button>
+                                        <button type="button" class="upload" id="edit_btn"><span class="glyphicon glyphicon-pencil"></span></button>
+                                    </section>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group full_width input_margin">
+                            <textarea name="newArticle.ArticleTopXes[@(i-1)].TopXContent" id="topX_Content_@i"></textarea>
+                        </div>
+                    </div>
+                }
+                </div>
+
+                <!--End of TopX Tags-->
+
+                <div class="input-group full_width input_margin">
+                    @*<input type="hidden" name="newArticle.tags[0].tag_id" value="1" />*@
+                    <select multiple="multiple" id="my-select" name="mySelect">
+                        @foreach (var item in (List<RWSDataLayer.Context.Tag>)ViewBag.tags)
+                        {
+                            <option value="@item.TagId">@item.TagName</option>
+                        }
+                    </select>
+                </div>
+                <div id="btn_reg_div">
+                    <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 image_choices">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#img_container" data-toggle="tab">
+                        <img class="tab_imgs" src="~/Content/Images/icon_camera.png" />صورة</a></li>
+                    <li><a href="#video_container" data-toggle="tab">
+                        <img class="tab_imgs" src="~/Content/Images/icon_video.png" />فيديو</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="img_container">
+                        <div class="container full_width">
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="video_container">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <textarea id="video_embed_txt" rows="3" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                                    <button type="button" id="embed_btn" class="btn btn-default">أدخل</button>
+                                    <div id="video_viewport">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
+            Launch demo modal
+        </button>
+
+        <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed">
+            Launch demo modal
+        </button>
+
+        <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
+                    </div>
+                    <div class="modal-body" id="video_modal_body">
+                        <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                        <div id="modal_video_viewport">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
+                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
+                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
+                        <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
+                    </div>
+                    <div class="modal-body" id="edit_modal_body">
+                        <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
+                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
+                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
+                        <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input name="article_img" id="article_img" value="" type="hidden" />
+    </div>
+</form>
+
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
+<script>
+    $(document).ready(function () {
+
+        for (var i = 3; i > 0; i--) {
+            if ($("#topX_Content_" + i).length) {
+                CKEDITOR.replace('topX_Content_' + i);
+                $("#topX_order_" + i).val(i);
+            }
+            $("#up_button_3").prop('disabled', true);
+            $("#down_button_1").prop('disabled', true);
+        }
+
+        $(".up-button").click(function (e) {
+            e.preventDefault();
+            var id = $(this).attr("id");
+            id = id.split("_");
+            order1 = id[2];
+            order2 = parseInt(order1) + 1;
+
+            title1 = $("#topX_title_" + order1).val();
+            title2 = $("#topX_title_" + order2).val();
+            $("#topX_title_" + order2).val(title1);
+            $("#topX_title_" + order1).val(title2);
+
+            content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+            content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+            CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+            CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+        });
+
+        $(".down-button").click(function (e) {
+            e.preventDefault();
+            var id = $(this).attr("id");
+            id = id.split("_");
+            order1 = id[2];
+            order2 = parseInt(order1) - 1;
+
+            title1 = $("#topX_title_" + order1).val();
+            title2 = $("#topX_title_" + order2).val()
+            $("#topX_title_" + order2).val(title1);
+            $("#topX_title_" + order1).val(title2);
+
+            content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+            content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+            CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+            CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+        });
+
+        $("#add_topX_item").click(function (e) {
+            e.preventDefault();
+            var count = $("#topX_container > div").length;
+
+            var html = '<div class="topX_item">';
+            html += '<div class="input-group full_width input_margin col-sm-10">';
+            html += '<input type="text" name="newArticle.ArticleTopXes[' + count + '].TopXTitle" class="col-sm-11 pull-right topX-title dark_border" id="topX_title_' + (count+1) + '" placeholder = "أضف عنوان" />';
+            html += '<input type="text" class="col-sm-1 topX-order pull-right" id="topX_order_' + (count+1) + '" disabled/>';
+            html += '<input type="hidden" name="newArticle.ArticleTopXes[' + count + '].TopXOrder" value="' + (count+1) + '" />';
+            html += '<div class="arrows-div">';
+            html += '<button class="up-button-2" id="up_button_' + (count+1) + '"></button>';
+            html += '<button class="down-button-2" id="down_button_' + (count+1) +'"></button>';
+            html += '</div></div>';
+            html += '<div class="input-group full_width input_margin">';
+            html += '<div id="media" class="dark_border">';
+            html += '<img id="media_img" src="" />';
+            html += '<section class="image-upload-drop-target" id="media_dropbox">';
+            html += '<span>أضف صورة أو فيديو</span>';
+            html += '<button type="button" class="upload" id="video_embed_btn">Embed Video</button>';
+            html += '<button type="button" class="upload" id="picture_upload_btn">Upload Image</button>';
+            html += '<input type="file" name="article_picture" id="article_picture_btn" class="hide" onchange="readURL(this)" />';
+            html += '</section>';
+            html += '<div id="controls">';
+            html += '<section>';
+            html += '<button type="button" class="upload" id="delete_btn"><span class="glyphicon glyphicon-trash"></span></button>';
+            html += '<button type="button" class="upload" id="edit_btn"><span class="glyphicon glyphicon-pencil"></span></button>';
+            html += '</section></div></div></div>';
+            html += '<div class="input-group full_width input_margin">';
+            html += '<textarea name="newArticle.ArticleTopXes[' + count +'].TopXContent" id="topX_Content_' + (count+1) + '"></textarea></div></div>';
+  
+            $("#topX_container").prepend(html);
+            $("#topX_order_" + (count + 1)).val(count + 1);
+            $("#up_button_" + count).prop('disabled', false);
+            $("#up_button_" + (count + 1)).prop('disabled', true);
+
+            $(".up-button-2").click(function (e) {
+                e.preventDefault();
+                var id = $(this).attr("id");
+                id = id.split("_");
+                order1 = id[2];
+                order2 = parseInt(order1) + 1;
+
+                title1 = $("#topX_title_" + order1).val();
+                title2 = $("#topX_title_" + order2).val();
+                $("#topX_title_" + order2).val(title1);
+                $("#topX_title_" + order1).val(title2);
+
+                content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+                content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+                CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+                CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+            });
+            $(".down-button-2").click(function (e) {
+                e.preventDefault();
+                var id = $(this).attr("id");
+                id = id.split("_");
+                order1 = id[2];
+                order2 = parseInt(order1) - 1;
+
+                title1 = $("#topX_title_" + order1).val();
+                title2 = $("#topX_title_" + order2).val()
+                $("#topX_title_" + order2).val(title1);
+                $("#topX_title_" + order1).val(title2);
+
+                content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+                content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+                CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+                CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+            });
+
+            if ($("#topX_Content_" + (count + 1)).length) {
+                CKEDITOR.replace('topX_Content_' + (count+1));
+            }
+        });
+
+        $('#image_edit').on('hidden.bs.modal', function () {
+            //$.getScript("script.js", function () {
+
+            //    alert("Script loaded but not necessarily executed.");
+
+            //});
+            $("#edit_modal_body").html('<button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>');
+        });
+
+        $.ajax({
+            type: 'GET',
+            url: '/Article/GetImages',
+            beforeSend: function () {
+                $('#myModal').modal({
+                    show: true,
+                    backdrop: 'static',
+                    keyboard: false
+                })
+            },
+            success: function (data) {
+                for (i = 0; i < data.Images.length ; i+=2) {
+                    var html = '<div class="row">';
+                    html += '<div class="col-lg-6"><img src="' + data.Images[i] + '" /></div>';
+                    if (data.Images.length == (i+1)) {
+                        html += '</div>';
+                    } else {
+                        html += '<div class="col-lg-6"><img src="' + data.Images[i + 1] + '" /></div>';
+                        html += '</div>';
+                        html += '<div class="vertical_space"></div>';
+                    }
+                    $('#img_container > div').append(html);
+                }
+                                
+            },
+            error: function () {
+                $('#myModal').modal('hide');
+            }
+        });
+    });
+
+    $("#btn_add_article").click(function () {
+        src = $("#media_img").attr("src");
+        $("#article_img").attr("value", src);
+        $('#article_content').each(function () {
+            for (instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        });
+    });
+
+    $.validator.addMethod("needsSelection", function (value, element) {
+        return $(element).multiselect("getChecked").length > 0;
+    });
+
+    $("#article_form").validate({
+        ignore: [],
+        rules: {
+            "newArticle.Title": "required",
+            "newArticle.Content": "required",
+            article_img: "required",
+            mySelect: "required"
+        },
+        messages: {
+            "newArticle.Title": "يجب إدخال عنوان المقالة.",
+            "newArticle.Content": "يجب إدخال مضمون المقالة.",
+            article_img: "يجب إدخال صورة للمقالة.",
+            mySelect: "You gotta pick something."
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "article_img") {
+                error.insertAfter("#media");
+            } else if (element.attr("name") == "newArticle.Content") {
+                error.insertAfter("#cke_article_content");
+            } else if (element.attr("name") == "mySelect") {
+                error.insertAfter("#ms-my-select");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+</script>

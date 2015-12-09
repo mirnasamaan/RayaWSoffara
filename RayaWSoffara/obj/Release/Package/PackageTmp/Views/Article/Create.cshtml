@@ -1,0 +1,162 @@
+﻿@model RayaWSoffara.Models.UserArticleVM
+
+@{
+    ViewBag.Title = "إكتب مقالك";
+}
+
+<form enctype="multipart/form-data" method="post">
+    <div class="container full_width" id="createArticle_container">
+        <div class="row">
+            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+                <div class="input-group full_width input_margin"> 
+                    @Html.TextBoxFor(m => m.newArticle.title, new{@class = "form-control dark_border", placeholder = "أضف عنوان"})
+                    @*<input type="text" name="newArticle.title" value="@Model.newArticle.title" class="form-control dark_border" placeholder = "أضف عنوان" />*@
+                    <input type="hidden" name="article_picture_path" id="article_picture_path" />
+                    <input type="hidden" name="video_url" id="video_url" />
+                </div>
+                <div class="input-group full_width input_margin">
+                    <div id="media" class="dark_border">
+                        <img id="media_img" src="" />
+                        <section class="image-upload-drop-target" id="media_dropbox">
+                            <span>أضف صورة أو فيديو</span>
+                            <button type="button" class="upload" id="video_embed_btn">Embed Video</button>
+                            <button type="button" class="upload" id="picture_upload_btn">Upload Image</button>
+                            <input type="file" name="article_picture" id="article_picture_btn" class="hide" onchange="readURL(this)" />
+                        </section>
+                        <div id="controls">
+                            <section>
+                                <button type="button" class="upload" id="delete_btn"><span class="glyphicon glyphicon-trash"></span></button>
+                                <button type="button" class="upload" id="edit_btn"><span class="glyphicon glyphicon-pencil"></span></button>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+                <div class="input-group full_width input_margin">
+                    @Html.TextAreaFor(m => m.newArticle.article_content, new{ id="article_content"})
+                    @*<textarea name="article_content" id="article_content">@Model.newArticle.article_content</textarea>*@
+                </div>
+                <div class="input-group full_width input_margin">
+                    @*<input type="hidden" name="newArticle.tags[0].tag_id" value="1" />*@
+                    <select multiple="multiple" id="my-select">
+                        @foreach (var item in (List<RWSDataLayer.Models.tag>)ViewBag.tags)
+                        {
+                            <option value="@item.id">@item.name</option>
+                        }
+                    </select>
+                </div>
+                <div id="btn_reg_div">
+                    <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#one" data-toggle="tab">
+                        <img class="tab_imgs" src="~/Content/Images/icon_camera.png" />صورة</a></li>
+                    <li><a href="#two" data-toggle="tab">
+                        <img class="tab_imgs" src="~/Content/Images/icon_video.png" />فيديو</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane active" id="one">
+                        <div class="container full_width">
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/sample_image1.png" />
+                                </div>
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/img_article2.png" />
+                                </div>
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/img_article3.png" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/sample_image1.png" />
+                                </div>
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/img_article2.png" />
+                                </div>
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/img_article3.png" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/sample_image1.png" />
+                                </div>
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/img_article2.png" />
+                                </div>
+                                <div class="col-lg-4">
+                                    <img src="~/Content/Images/img_article3.png" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="tab-pane" id="two">
+                        <div class="container">
+                            <div class="row">
+                                <div class="col-lg-12">
+                                    <textarea id="video_embed_txt" rows="3" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                                    <button type="button" id="embed_btn" class="btn btn-default">أدخل</button>
+                                    <div id="video_viewport">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
+            Launch demo modal
+        </button>
+
+        <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed">
+            Launch demo modal
+        </button>
+
+        <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
+                    </div>
+                    <div class="modal-body" id="video_modal_body">
+                        <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                        <div id="modal_video_viewport">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
+                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
+                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
+                        <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                        <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
+                    </div>
+                    <div class="modal-body" id="edit_modal_body">
+                        <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
+                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
+                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
+                        <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

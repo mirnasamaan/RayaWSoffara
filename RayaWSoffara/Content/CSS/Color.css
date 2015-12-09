@@ -1,0 +1,34 @@
+﻿#yellow_line, #footer_btn, #article_anchor{
+    background-color: #348db9;
+}
+
+#txt_search {
+    border-bottom: 2px solid #fbd804;
+}
+
+.nav > li:hover {
+    border-bottom: 3px solid #fff;
+}
+
+.nav > li:active {
+    border-bottom: 3px inset #fff;
+}
+
+.menu_title, .sub-menu li:hover a, .home_articles .overlay a.expand:hover, .username_div, .writer_name, #home_main_article2 > li > div > div > a:hover, .title a:hover {
+    color: #fff;
+}
+
+/*.div_title > span:nth-child(1), hgroup.title h3:after, #registration_container hgroup.title h3:after {
+    border-bottom: 5px solid #fbd804;
+}*/
+
+.writer_img img, .writer_img2 img, .article_writer_img div img, #writers_img img, .profile-title img {
+    /*border: 3px solid #348DB9;*/
+}
+
+.bx-wrapper .bx-pager.bx-default-pager a.active, .bx-wrapper .bx-pager.bx-default-pager a:hover, .buttons {
+    /*background-color: #fbd804!important;*/
+}
+#login {
+    background-color: #3a9ac2;
+}

@@ -1,0 +1,26 @@
+﻿@using RayaWSoffara.Helpers
+@model RayaWSoffara.Models.UserArticleVM
+
+@if (Model != null)
+{
+    foreach (var item in Model.Comments)
+    {
+    <div class="comment-container">
+        <div class="pull-left user-img">
+            <a href="/Profile?Username=@item.RWSUser.UserName"><img src="@item.RWSUser.ProfileImagePath?w=50&h=50&mode=crop" /></a></div>
+        <div class="post-data">
+            <div class="pull-left username"><a href="/Profile?Username=@item.RWSUser.UserName">@item.RWSUser.UserName</a></div>
+            @{ dynamic calc_time = CalculateTimeHelper.CalculteTime(Convert.ToDateTime(item.CommentCreationDate)); }
+            <div class="pull-left timestamp">منذ @calc_time.diff <span>@calc_time.unit</span></div>
+        </div>
+        <div class="col-xs-10 comment-content">@item.CommentContent</div>
+        <div class="clear-fix"></div>
+    </div>
+    }
+}
+
+<script>
+    function article_display(article_id) {
+        window.location.href = "/Article/ArticleDisplay/" + article_id;
+    }
+</script>

@@ -1,0 +1,432 @@
+﻿@model RayaWSoffara.Models.IndexVM
+@{
+    ViewBag.Title = "الرئيسية";
+    //var model = ViewBag.Posts;
+}
+
+<div class="row header_divs header_div_4">
+    <div class="container-fluid checkbox-wrapper visible-xs">
+        <div class="pull-left checkbox-item-wrapper black col-xs-6">
+            <span class="black pull-left"></span>
+            <input class="الكل" type="checkbox" name="PostType" value="0">
+            <label>الكل</label>
+        </div>
+    </div>
+    <div class="container-fluid checkbox-wrapper hidden-xs">
+        <div>
+            <div class="pull-left checkbox-item-wrapper black">
+                <span class="black pull-left"></span>
+                <input class="الكل" type="checkbox" name="PostType" value="0">
+                <label>الكل</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input id="AllActivePostsCount" type="hidden" value="@Model.PostsCount" />
+
+<div class="container">
+    <div class="row negative-row">
+        <div class="col-lg-9 col-xs-12 no-padding">
+            <div class="grid">
+                @if (Model.PostsCount < 1)
+                {
+                    <div class="no-results">لا توجد نتائج لهذا البحث</div>
+                }
+                @Html.Partial("_PostPartial", Model)
+            </div>
+        </div>
+        <div class="col-lg-3 col-xs-12 custom-row sidebar">
+            <div class="reward-promo"></div>
+            <div class="statistics">
+                <div class="profile-sub-title no-margin">احصائيات</div>
+                <div class="stats">
+                    <div class="col-xs-6">
+                        <div class="fa fa-newspaper-o"></div>@Model.PostsCount مقالة</div>
+                    <div class="col-xs-6">
+                        <div class="fa fa-user"></div>@ViewBag.AllActiveUsers كاتب</div>
+                    <div class="clear-fix"></div>
+                </div>
+            </div>
+            <div class="clear-fix"></div>
+            <div class="leaderboard">
+                <div class="profile-sub-title no-margin">أشهر الكتاب</div>
+                <ul class="nav leader-nav-tabs">
+                    <li class="col-xs-4"><a href="#weekly" data-toggle="tab">هذا الاسبوع</a></li>
+                    <li class="col-xs-4 active"><a href="#monthly" data-toggle="tab">هذا الشهر</a></li>
+                    <li class="col-xs-4"><a href="#all_time" data-toggle="tab">كل النقاط</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane" id="weekly">
+                        @foreach (var item in @ViewBag.WeeklyLeadersPoints)
+                        {
+                            <div>
+                                <div class="stat-item col-xs-10">
+                                    <div class="pull-left user-image">
+                                        <img src="@item.UserProfilePicture?w=30&h=30&mode=crop" />
+                                    </div>
+                                    <div class="data">
+                                        <div>@item.UserName</div>
+                                        <div class="pull-right">@item.PointsValue</div>
+                                    </div>
+                                </div>
+                                <div class="arrow col-xs-2"></div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="tab-pane active" id="monthly">
+                        @foreach (var item in @ViewBag.MonthlyLeadersPoints)
+                        {
+                            <div>
+                                <div class="stat-item col-xs-10">
+                                    <div class="pull-left user-image">
+                                        <img src="@item.UserProfilePicture?w=30&h=30&mode=crop" />
+                                    </div>
+                                    <div class="data">
+                                        <div>@item.UserName</div>
+                                        <div class="pull-right">@item.PointsValue</div>
+                                    </div>
+                                </div>
+                                <div class="arrow col-xs-2"></div>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="tab-pane" id="all_time">
+                        @foreach (var item in @ViewBag.AllTimeLeadersPoints)
+                        {
+                            <div>
+                                <div class="stat-item col-xs-10">
+                                    <div class="pull-left user-image">
+                                        <img src="@item.UserProfilePicture?w=30&h=30&mode=crop" />
+                                    </div>
+                                    <div class="data">
+                                        <div>@item.UserName</div>
+                                        <div class="pull-right">@item.PointsValue</div>
+                                    </div>
+                                </div>
+                                <div class="arrow col-xs-2"></div>
+                            </div>
+                        }
+                    </div>
+                </div>
+
+            </div>
+            <div class="statistics">
+                <div class="profile-sub-title no-margin">المباريات القادمة</div>
+                <ul class="nav leader-nav-tabs">
+                    <li class="col-xs-4"><a href="#yesterday" data-toggle="tab">أمس</a></li>
+                    <li class="col-xs-4 active"><a href="#today" data-toggle="tab">اليوم</a></li>
+                    <li class="col-xs-4"><a href="#tomorrow" data-toggle="tab">غداً</a></li>
+                </ul>
+                <div class="tab-content">
+                    <div class="tab-pane" id="yesterday">
+                        <div class="matches">
+                            <div>
+                                <div class="col-xs-4">
+                                    <div>يوفنتوس</div>
+                                    <img src="~/Content/Images/Juventus.png?w=50&h=50&mode=pad" />
+                                </div>
+                                <div class="col-xs-4 score">
+                                    <div>1 - 3</div>
+                                    <div>20/11/2015</div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div>برشلونة</div>
+                                    <img src="~/Content/Images/barcelona.png?w=50&h=50&mode=pad" />
+                                </div>
+                                <div class="clear-fix"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane active" id="today">
+                        <div class="matches">
+                            <div>
+                                <div class="col-xs-4">
+                                    <div>يوفنتوس</div>
+                                    <img src="~/Content/Images/Juventus.png?w=50&h=50&mode=pad" />
+                                </div>
+                                <div class="col-xs-4 score">
+                                    <div>1 - 3</div>
+                                    <div>20/11/2015</div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div>برشلونة</div>
+                                    <img src="~/Content/Images/barcelona.png?w=50&h=50&mode=pad" />
+                                </div>
+                                <div class="clear-fix"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="tab-pane" id="tomorrow">
+                        <div class="matches">
+                            <div>
+                                <div class="col-xs-4">
+                                    <div>يوفنتوس</div>
+                                    <img src="~/Content/Images/Juventus.png?w=50&h=50&mode=pad" />
+                                </div>
+                                <div class="col-xs-4 score">
+                                    <div>1 - 3</div>
+                                    <div>20/11/2015</div>
+                                </div>
+                                <div class="col-xs-4">
+                                    <div>برشلونة</div>
+                                    <img src="~/Content/Images/barcelona.png?w=50&h=50&mode=pad" />
+                                </div>
+                                <div class="clear-fix"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clear-fix"></div>
+
+<div class="viewMoreButton">
+    <div class="loading hidden">
+        <div>
+            <div class="sk-fading-circle">
+                <div class="sk-circle1 sk-circle"></div>
+                <div class="sk-circle2 sk-circle"></div>
+                <div class="sk-circle3 sk-circle"></div>
+                <div class="sk-circle4 sk-circle"></div>
+                <div class="sk-circle5 sk-circle"></div>
+                <div class="sk-circle6 sk-circle"></div>
+                <div class="sk-circle7 sk-circle"></div>
+                <div class="sk-circle8 sk-circle"></div>
+                <div class="sk-circle9 sk-circle"></div>
+                <div class="sk-circle10 sk-circle"></div>
+                <div class="sk-circle11 sk-circle"></div>
+                <div class="sk-circle12 sk-circle"></div>
+            </div>
+        </div>
+    </div>
+    <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
+</div>
+
+<script src="~/Content/Scripts/masonry.pkgd.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/imagesloaded.pkgd.min.js"></script>
+<script>
+    $('.grid').imagesLoaded(function () {
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            isFitWidth: true,
+            isOriginLeft: false
+        });
+    });
+
+    //start of show/hide view button //
+    var page = 1;
+    var displayed_posts_count = parseInt($(".visible-lg .grid-item").length);
+    var all_posts_count = parseInt($("#AllActivePostsCount").val());
+    if (displayed_posts_count >= all_posts_count) {
+        $("#viewMore").addClass("hidden");
+    }
+    //end of show/hide view button //
+
+
+    //start of reading query string //
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+
+    var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
+    var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
+
+    var displayed_posts_count = parseInt($(".grid-item").length);
+    var all_posts_count = parseInt($("#AllActivePostsCount").val());
+    if (displayed_posts_count >= all_posts_count) {
+        $("#viewMore").addClass("hidden");
+    }
+    //end of reading query string //
+
+    //start of view button click function //
+    function viewMore(e) {
+        var vars = [], hash;
+        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+        for (var i = 0; i < hashes.length; i++) {
+            hash = hashes[i].split('=');
+            vars.push(hash[0]);
+            vars[hash[0]] = hash[1];
+        }
+
+        var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
+        var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
+
+        var controller = window.location.href.slice(window.location.href.indexOf('?') + 1).split('/');
+        controller = controller[3];
+
+        if (controller == "Popular") {
+            $.ajax({
+                type: "POST",
+                data: { count: page },
+                url: "/Home/Popular",
+                beforeSend: function () {
+                    $(".loading").removeClass("hidden");
+                },
+                success: function (posts) {
+                    page++;
+                    $posts = $(posts);
+                    $(".loading").addClass("hidden");
+                    $('.grid').append($posts).masonry('appended', $posts);
+                    var displayed_posts_count = parseInt($(".grid-item").length);
+                    var all_posts_count = parseInt($("#AllActivePostsCount").val());
+                    if (displayed_posts_count >= all_posts_count) {
+                        $("#viewMore").addClass("hidden");
+                    }
+                }
+            });
+        } else {
+            $.ajax({
+                type: "POST",
+                data: { posts: posts_qs, tags: tags_qs, count: page },
+                url: "/Home/Index",
+                beforeSend: function () {
+                    $(".loading").removeClass("hidden");
+                },
+                success: function (posts) {
+                    page++;
+                    $posts = $(posts);
+                    $(".loading").addClass("hidden");
+                    $('.grid').append($posts).masonry('appended', $posts);
+                    var displayed_posts_count = parseInt($(".grid-item").length);
+                    var all_posts_count = parseInt($("#AllActivePostsCount").val());
+                    if (displayed_posts_count >= all_posts_count) {
+                        $("#viewMore").addClass("hidden");
+                    }
+                }
+            });
+        }
+
+        return false;
+    }
+    //end of view button click function //
+
+    //start of sidebar animation //
+    function isScrolledIntoView(elem) {
+        var $elem = $(elem);
+        var $window = $(window);
+
+        var docViewTop = $window.scrollTop();
+        var docViewBottom = docViewTop + $window.height();
+
+        var elemTop = $elem.offset().top;
+        var elemBottom = elemTop + $elem.height();
+
+        return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+    }
+
+    function isBottomPartInView(elem) {
+        var $elem = $(elem);
+        var $window = $(window);
+
+        var docViewTop = $window.scrollTop();
+        var docViewBottom = docViewTop + $window.height();
+        var elemTop = $elem.offset().top;
+        var elemBottom = elemTop + $elem.height();
+
+        //alert(elemBottom);
+        //alert(docViewBottom);
+        return ((elemBottom <= docViewBottom));
+    }
+
+    function isTopPartInView(elem) {
+        var $elem = $(elem);
+        var $window = $(window);
+
+        var docViewTop = $window.scrollTop();
+        var docViewBottom = docViewTop + $window.height();
+        var elemTop = $elem.offset().top;
+        var elemBottom = elemTop + $elem.height();
+
+        //alert(elemBottom);
+        //alert(docViewBottom);
+        return ((elemTop >= docViewTop));
+    }
+
+    function heightInViewport($el) {
+        var elH = $el.outerHeight(),
+            H = $(window).height(),
+            r = $el[0].getBoundingClientRect(), t = r.top, b = r.bottom;
+        return Math.max(0, t > 0 ? Math.min(elH, H - t) : (b < H ? b : H));
+    }
+
+    //var timer;
+    //$(window).bind('scroll', function () {
+    //    clearTimeout(timer);
+    //    timer = setTimeout(refresh, 500);
+    //});
+    //var refresh = function () {
+    $(window).scroll(function () {
+        var header_top = $(".content-wrapper.duplicate ").css("top");
+        if (parseInt(header_top) < 0) {
+            var boundries_topscroll = $(window).scrollTop();
+            $(".sidebar").css({
+                top: 0
+            }, 1);
+        }
+        else if (isBottomPartInView($(".sidebar div:last-child"))) {
+            if ($(".original.header_div_2").css("display") == "block") {
+                var difference = $(".sidebar").height() - $(window).height() + $(".original.header_div_2").height();
+            }else{
+                var difference = $(".sidebar").height() - $(window).height();
+            }
+            if (isTopPartInView($("footer"))) {
+                var footer_height = heightInViewport($("footer"));
+                var sidebar_topscroll = parseInt($(window).scrollTop() - $(".duplicate.header_div_1").height() - $(".duplicate .sub-headers").height() - difference - 80 - footer_height);
+            } else{
+                var sidebar_topscroll = parseInt($(window).scrollTop() - $(".duplicate.header_div_1").height() - $(".duplicate .sub-headers").height() - difference - 80);
+            }
+            (sidebar_topscroll < 0) ? sidebar_topscroll = 0 : sidebar_topscroll = sidebar_topscroll;
+            $(".sidebar").css({
+                top: sidebar_topscroll
+            });
+            //alert("in");
+            //$(".sidebar").css('position', 'absolute').css('top', 'auto').animate({
+            //    bottom: 0
+            //}, 1000);
+        }
+        //else if (!isScrolledIntoView($(".sidebar div:first-child"))) {
+        //    alert("in2");
+        //    var boundries_topscroll = parseInt($(window).scrollTop() - 60);
+        //    (boundries_topscroll < 0) ? boundries_topscroll = 0 : boundries_topscroll = boundries_topscroll;
+        //    $(".sidebar").animate({
+        //        top: 0
+        //    }, 1000);
+        //}
+    });
+
+    //end of sidebar animation //
+
+    $(document).ready(function () {
+        $(".leaderboard .tab-pane > div:nth-child(1)").animate({
+            width: "100%"
+        }, 5000, function () {
+            // Animation complete.
+        });
+
+        $(".leaderboard .tab-pane > div:nth-child(2)").animate({
+            width: "85%"
+        }, 5000, function () {
+            // Animation complete.
+        });
+
+        $(".leaderboard .tab-pane > div:nth-child(3)").animate({
+            width: "70%"
+        }, 5000, function () {
+            // Animation complete.
+        });
+    });
+</script>

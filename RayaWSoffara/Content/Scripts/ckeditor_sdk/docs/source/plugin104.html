@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js">// Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+// For licensing, see LICENSE.md or http://ckeditor.com/license
+
+CKEDITOR.plugins.add( &#39;wsc&#39;, {
+	requires: &#39;dialog&#39;,
+	lang: &#39;af,ar,bg,bn,bs,ca,cs,cy,da,de,el,en-au,en-ca,en-gb,en,eo,es,et,eu,fa,fi,fo,fr-ca,fr,gl,gu,he,hi,hr,hu,is,it,ja,ka,km,ko,lt,lv,mk,mn,ms,nb,nl,no,pl,pt-br,pt,ro,ru,sk,sl,sr-latn,sr,sv,th,tr,ug,uk,vi,zh-cn,zh&#39;, // %REMOVE_LINE_CORE%
+	icons: &#39;spellchecker&#39;, // %REMOVE_LINE_CORE%
+	hidpi: true, // %REMOVE_LINE_CORE%
+	parseApi: function(editor) {
+		editor.config.wsc_onFinish = (typeof editor.config.wsc_onFinish === &#39;function&#39;) ? editor.config.wsc_onFinish : function() {};
+		editor.config.wsc_onClose = (typeof editor.config.wsc_onClose === &#39;function&#39;) ? editor.config.wsc_onClose : function() {};
+	},
+	parseConfig: function(editor) {
+		editor.config.wsc_customerId = editor.config.wsc_customerId || CKEDITOR.config.wsc_customerId || &#39;1:ua3xw1-2XyGJ3-GWruD3-6OFNT1-oXcuB1-nR6Bp4-hgQHc-EcYng3-sdRXG3-NOfFk&#39;;
+		editor.config.wsc_customDictionaryIds = editor.config.wsc_customDictionaryIds || CKEDITOR.config.wsc_customDictionaryIds || &#39;&#39;;
+		editor.config.wsc_userDictionaryName = editor.config.wsc_userDictionaryName || CKEDITOR.config.wsc_userDictionaryName || &#39;&#39;;
+		editor.config.wsc_customLoaderScript = editor.config.wsc_customLoaderScript || CKEDITOR.config.wsc_customLoaderScript;
+
+		CKEDITOR.config.wsc_cmd = editor.config.wsc_cmd || CKEDITOR.config.wsc_cmd || &#39;spell&#39;; // spell, thes or grammar. default tab
+		CKEDITOR.config.wsc_version=&quot;v4.3.0-master-aa00a1e&quot;;
+		CKEDITOR.config.wsc_removeGlobalVariable = true;
+	},
+	init: function( editor ) {
+		var commandName = &#39;checkspell&#39;;
+
+		var strNormalDialog = &#39;dialogs/wsc.js&#39;,
+			strIeDialog = &#39;dialogs/wsc_ie.js&#39;,
+			strDialog,
+			self = this,
+			env = CKEDITOR.env;
+
+		self.parseConfig(editor);
+		self.parseApi(editor);
+		var command = editor.addCommand( commandName, new CKEDITOR.dialogCommand( commandName ) );
+
+		// SpellChecker doesn&#39;t work in Opera, with custom domain, IE Compatibility Mode and IE (8 &amp; 9) Quirks Mode
+		command.modes = { wysiwyg: ( !CKEDITOR.env.opera &amp;&amp; !CKEDITOR.env.air &amp;&amp; document.domain == window.location.hostname &amp;&amp;
+			!( env.ie &amp;&amp; ( env.version &lt; 8 || env.quirks ) ) ) };
+
+		if(typeof editor.plugins.scayt == &#39;undefined&#39;){
+			editor.ui.addButton &amp;&amp; editor.ui.addButton( &#39;SpellChecker&#39;, {
+				label: editor.lang.wsc.toolbar,
+				click: function(editor) {
+					var inlineMode = (editor.elementMode == CKEDITOR.ELEMENT_MODE_INLINE),
+						text = inlineMode ? editor.container.getText() : editor.document.getBody().getText();
+
+					text = text.replace(/\s/g, &#39;&#39;);
+
+					if(text) {
+						editor.execCommand(&#39;checkspell&#39;);
+					} else {
+						alert(&#39;Nothing to check!&#39;);
+					}
+				},
+				toolbar: &#39;spellchecker,10&#39;
+			});
+		}
+
+
+		if ( CKEDITOR.env.ie &amp;&amp; CKEDITOR.env.version &lt;= 7 ){
+			strDialog = strIeDialog;
+		} else {
+			if (!window.postMessage) {
+				strDialog = strIeDialog;
+			} else {
+				strDialog = strNormalDialog;
+			}
+		}
+		CKEDITOR.dialog.add( commandName, this.path + strDialog );
+	}
+
+});
+
+<span id='CKEDITOR-config-cfg-wsc_customerId'>/**
+</span> * The parameter sets the customer ID for WSC. It is used for hosted users only. It is required for migration from free
+ * to trial or paid versions.
+ *
+ *		config.wsc_customerId  = &#39;encrypted-customer-id&#39;;
+ *
+ * @cfg {String} [wsc_customerId=&#39;1:ua3xw1-2XyGJ3-GWruD3-6OFNT1-oXcuB1-nR6Bp4-hgQHc-EcYng3-sdRXG3-NOfFk&#39;]
+ * @member CKEDITOR.config
+ */
+
+<span id='CKEDITOR-config-cfg-wsc_customDictionaryIds'>/**
+</span> * It links WSC to custom dictionaries. It should be a string with dictionary IDs
+ * separated by commas (`&#39;,&#39;`). Available only for the licensed version.
+ *
+ * Further details at [http://wiki.webspellchecker.net/doku.php?id=installationandconfiguration:customdictionaries:licensed](http://wiki.webspellchecker.net/doku.php?id=installationandconfiguration:customdictionaries:licensed)
+ *
+ *		config.wsc_customDictionaryIds = &#39;1,3001&#39;;
+ *
+ * @cfg {String} [wsc_customDictionaryIds=&#39;&#39;]
+ * @member CKEDITOR.config
+ */
+
+<span id='CKEDITOR-config-cfg-wsc_userDictionaryName'>/**
+</span> * It activates a user dictionary for WSC. The user dictionary name should be used. Available only for the licensed version.
+ *
+ *		config.wsc_userDictionaryName = &#39;MyUserDictionaryName&#39;;
+ *
+ * @cfg {String} [wsc_userDictionaryName=&#39;&#39;]
+ * @member CKEDITOR.config
+ */
+
+<span id='CKEDITOR-config-cfg-wsc_customLoaderScript'>/**
+</span> * The parameter sets the URL to WSC file. It is required to the licensed version of WSC application.
+ *
+ * Further details available at [http://wiki.webspellchecker.net/doku.php?id=migration:hosredfreetolicensedck](http://wiki.webspellchecker.net/doku.php?id=migration:hosredfreetolicensedck)
+ *
+ *		config.wsc_customLoaderScript = &quot;http://my-host/spellcheck/lf/22/js/wsc_fck2plugin.js&quot;;
+ *
+ * @cfg {String} [wsc_customLoaderScript=&#39;&#39;]
+ * @member CKEDITOR.config
+ */
+
+<span id='CKEDITOR-config-cfg-wsc_lang'>/**
+</span> * The parameter sets the default spellchecking language for WSC.
+ * Possible values are:
+ * `&#39;en_US&#39;`, `&#39;en_GB&#39;`, `&#39;pt_BR&#39;`, `&#39;da_DK&#39;`,
+ * `&#39;nl_NL&#39;`, `&#39;en_CA&#39;`, `&#39;fi_FI&#39;`, `&#39;fr_FR&#39;`,
+ * `&#39;fr_CA&#39;`, `&#39;de_DE&#39;`, `&#39;el_GR&#39;`, `&#39;it_IT&#39;`,
+ * `&#39;nb_NO&#39;`, `&#39;pt_PT&#39;`, `&#39;es_ES&#39;`, `&#39;sv_SE&#39;`.
+ *
+ * Further details available at [http://wiki.webspellchecker.net/doku.php?id=installationandconfiguration:supportedlanguages](http://wiki.webspellchecker.net/doku.php?id=installationandconfiguration:supportedlanguages)
+ *
+ *		config.wsc_lang = &#39;de_DE&#39;;
+ *
+ * @cfg {String} [wsc_lang=&#39;en_US&#39;]
+ * @member CKEDITOR.config
+ */
+
+<span id='CKEDITOR-config-cfg-wsc_cmd'>/**
+</span> * The parameter sets the active tab, when the WSC dialog is opened.
+ * Possible values are:
+ * `&#39;spell&#39;`, `&#39;thes&#39;`, `&#39;grammar&#39;`.
+ *
+ *		// Sets active tab thesaurus.
+ *		config.wsc_cmd  = &#39;thes&#39;;
+ *
+ * @cfg {String} [wsc_cmd=&#39;spell&#39;]
+ * @member CKEDITOR.config
+ */
+</pre>
+</body>
+</html>

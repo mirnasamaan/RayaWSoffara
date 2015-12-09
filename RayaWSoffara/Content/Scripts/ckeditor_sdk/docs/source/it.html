@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;it&#39;, {
+	title: &#39;Istruzioni di Accessibilità&#39;,
+	contents: &#39;Contenuti di Aiuto. Per chiudere questa finestra premi ESC.&#39;,
+	legend: [
+		{
+		name: &#39;Generale&#39;,
+		items: [
+			{
+			name: &#39;Barra degli strumenti Editor&#39;,
+			legend: &#39;Premere ${toolbarFocus} per passare alla barra degli strumenti. Usare TAB per spostarsi al gruppo successivo, MAIUSC+TAB per spostarsi a quello precedente. Usare FRECCIA DESTRA per spostarsi al pulsante successivo, FRECCIA SINISTRA per spostarsi a quello precedente. Premere SPAZIO o INVIO per attivare il pulsante della barra degli strumenti.&#39;
+		},
+
+			{
+			name: &#39;Finestra Editor&#39;,
+			legend:
+				&#39;All\&#39;interno di una finestra di dialogo è possibile premere TAB per passare all\&#39;elemento successivo della finestra, MAIUSC+TAB per passare a quello precedente; premere INVIO per inviare i dati della finestra, oppure ESC per annullare l\&#39;operazione. Quando una finestra di dialogo ha più schede, è possibile passare all\&#39;elenco delle schede sia con ALT+F10 che con TAB, in base all\&#39;ordine delle tabulazioni della finestra. Quando l\&#39;elenco delle schede è attivo, premere la FRECCIA DESTRA o la FRECCIA SINISTRA per passare rispettivamente alla scheda successiva o a quella precedente.&#39; 
+		},
+
+			{
+			name: &#39;Menù contestuale Editor&#39;,
+			legend: &#39;Premi ${contextMenu} o TASTO APPLICAZIONE per aprire il menu contestuale. Dunque muoviti all\&#39;opzione successiva del menu con il tasto TAB o con la Freccia Sotto. Muoviti all\&#39;opzione precedente con  MAIUSC+TAB o con Freccia Sopra. Premi SPAZIO o INVIO per scegliere l\&#39;opzione di menu. Apri il sottomenu dell\&#39;opzione corrente con SPAZIO o INVIO oppure con la Freccia Destra. Torna indietro al menu superiore con ESC oppure Freccia Sinistra. Chiudi il menu contestuale con ESC.&#39;
+		},
+
+			{
+			name: &#39;Box Lista Editor&#39;,
+			legend: &#39;All\&#39;interno di un elenco di opzioni, per spostarsi all\&#39;elemento successivo premere TAB oppure FRECCIA GIÙ. Per spostarsi all\&#39;elemento precedente usare SHIFT+TAB oppure FRECCIA SU. Premere SPAZIO o INVIO per selezionare l\&#39;elemento della lista. Premere ESC per chiudere l\&#39;elenco di opzioni.&#39;
+		},
+
+			{
+			name: &#39;Barra percorso elementi editor&#39;,
+			legend: &#39;Premere ${elementsPathFocus} per passare agli elementi della barra del percorso. Usare TAB o FRECCIA DESTRA per passare al pulsante successivo. Per passare al pulsante precedente premere MAIUSC+TAB o FRECCIA SINISTRA. Premere SPAZIO o INVIO per selezionare l\&#39;elemento nell\&#39;editor.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Comandi&#39;,
+		items: [
+			{
+			name: &#39; Annulla comando&#39;,
+			legend: &#39;Premi ${undo}&#39;
+		},
+			{
+			name: &#39; Ripeti comando&#39;,
+			legend: &#39;Premi ${redo}&#39;
+		},
+			{
+			name: &#39; Comando Grassetto&#39;,
+			legend: &#39;Premi ${bold}&#39;
+		},
+			{
+			name: &#39; Comando Corsivo&#39;,
+			legend: &#39;Premi ${italic}&#39;
+		},
+			{
+			name: &#39; Comando Sottolineato&#39;,
+			legend: &#39;Premi ${underline}&#39;
+		},
+			{
+			name: &#39; Comando Link&#39;,
+			legend: &#39;Premi ${link}&#39;
+		},
+			{
+			name: &#39; Comando riduci barra degli strumenti&#39;,
+			legend: &#39;Premi ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;Comando di accesso al precedente spazio di focus&#39;,
+			legend: &#39;Premi ${accessPreviousSpace} per accedere il più vicino spazio di focus non raggiungibile prima del simbolo caret, per esempio due elementi HR adiacenti. Ripeti la combinazione di tasti per raggiungere spazi di focus distanti.&#39;
+		},
+			{
+			name: &#39;Comando di accesso al prossimo spazio di focus&#39;,
+			legend: &#39;Premi ${accessNextSpace} per accedere il più vicino spazio di focus non raggiungibile dopo il simbolo caret, per esempio due elementi HR adiacenti. Ripeti la combinazione di tasti per raggiungere spazi di focus distanti.&#39;
+		},
+			{
+			name: &#39; Aiuto Accessibilità&#39;,
+			legend: &#39;Premi ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Backspace&#39;,
+	tab: &#39;Tab&#39;,
+	enter: &#39;Invio&#39;,
+	shift: &#39;Maiusc&#39;,
+	ctrl: &#39;Ctrl&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Pausa&#39;,
+	capslock: &#39;Bloc Maiusc&#39;,
+	escape: &#39;Esc&#39;,
+	pageUp: &#39;Pagina sù&#39;,
+	pageDown: &#39;Pagina giù&#39;,
+	end: &#39;Fine&#39;,
+	home: &#39;Inizio&#39;,
+	leftArrow: &#39;Freccia sinistra&#39;,
+	upArrow: &#39;Freccia su&#39;,
+	rightArrow: &#39;Freccia destra&#39;,
+	downArrow: &#39;Freccia giù&#39;,
+	insert: &#39;Ins&#39;,
+	&#39;delete&#39;: &#39;Canc&#39;,
+	leftWindowKey: &#39;Tasto di Windows sinistro&#39;,
+	rightWindowKey: &#39;Tasto di Windows destro&#39;,
+	selectKey: &#39;Tasto di selezione&#39;,
+	numpad0: &#39;0 sul tastierino numerico&#39;,
+	numpad1: &#39;1 sul tastierino numerico&#39;,
+	numpad2: &#39;2 sul tastierino numerico&#39;,
+	numpad3: &#39;3 sul tastierino numerico&#39;,
+	numpad4: &#39;4 sul tastierino numerico&#39;,
+	numpad5: &#39;5 sul tastierino numerico&#39;,
+	numpad6: &#39;6 sul tastierino numerico&#39;,
+	numpad7: &#39;7 sul tastierino numerico&#39;,
+	numpad8: &#39;8 sul tastierino numerico&#39;,
+	numpad9: &#39;9 sul tastierino numerico&#39;,
+	multiply: &#39;Moltiplicazione&#39;,
+	add: &#39;Più&#39;,
+	subtract: &#39;Sottrazione&#39;,
+	decimalPoint: &#39;Punto decimale&#39;,
+	divide: &#39;Divisione&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Bloc Num&#39;,
+	scrollLock: &#39;Bloc Scorr&#39;,
+	semiColon: &#39;Punto-e-virgola&#39;,
+	equalSign: &#39;Segno di uguale&#39;,
+	comma: &#39;Virgola&#39;,
+	dash: &#39;Trattino&#39;,
+	period: &#39;Punto&#39;,
+	forwardSlash: &#39;Barra&#39;,
+	graveAccent: &#39;Accento grave&#39;,
+	openBracket: &#39;Parentesi quadra aperta&#39;,
+	backSlash: &#39;Barra rovesciata&#39;,
+	closeBracket: &#39;Parentesi quadra chiusa&#39;,
+	singleQuote: &#39;Apostrofo&#39;
+} );
+</pre>
+</body>
+</html>

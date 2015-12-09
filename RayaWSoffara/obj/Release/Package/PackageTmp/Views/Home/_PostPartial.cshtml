@@ -1,0 +1,90 @@
+﻿@using RayaWSoffara.Helpers
+@model RayaWSoffara.Models.IndexVM
+
+    @if (Model != null)
+    {
+        foreach (var item in Model.Posts)
+        {
+                <div class="grid-item" onclick="article_display(@item.PostID)">
+                    <div class="article-lg">
+                        <div>
+                            @if (item.PostVideo != null)
+                            {
+                                <iframe width="266" height="156" src="https://www.youtube.com/embed/@item.PostVideo" frameborder="0" allowfullscreen></iframe>
+                            }
+                            else if (item.PostImage != null)
+                            {
+                                <img src="~/Content/Article_Images/@item.PostImage?w=732&h=340&mode=crop" />
+                            }
+                        </div>
+                        <div class="content-details">
+                            <div>
+                                <span class="post-title pull-left">@Html.Raw(@item.PostTitle)</span>
+                                @{ int id = @item.PostTypeID;
+                                   string color = "";
+                                   string icon = "";
+                                   string type = ""; }
+                                @{
+                                   switch (id)
+                                   {
+                                       case 1: color = "orange";
+                                           icon = "<i class='fa fa-newspaper-o' title='مقالة'></i>";
+                                           type = "مقالة";
+                                           break;
+                                       case 2: color = "red";
+                                           icon = "<i class='fa fa-trophy' title='مقالة توب X'></i>";
+                                           type = "مقالة توب X";
+                                           break;
+                                       case 3: color = "green";
+                                           icon = "<i class='fa fa-exclamation' title='رأي'></i>";
+                                           type = "رأي";
+                                           break;
+                                       case 4: color = "blue";
+                                           icon = "<i class='fa fa-picture-o' title='صورة'></i>";
+                                           type = "صورة";
+                                           break;
+                                       case 5: color = "brown";
+                                           icon = "<i class='fa fa-video-camera' title='فيديو'></i>";
+                                           type = "فيديو";
+                                           break;
+                                       default: color = "black"; break;
+                                   }
+                                }
+                            </div>
+                            <div class="clear-fix"></div>
+                            <a href="/Profile?Username=@item.PostAuthorUsername" class="author-name">@item.PostAuthorUsername</a>
+                            <div class="post-content">
+                                @{ string text2 = @Html.Raw(item.PostContent).ToString(); }
+                                @TrimTextHelper.TrimText(@text2, 100)
+                            </div>
+                        </div>
+                        <div class="footer-details">
+                            <div class="post-type post-type-indicator @color" title="@type">
+                                @Html.Raw(@icon)
+                            </div>
+                            <div class="lower-footer">
+                                <div class="pull-left views">
+                                    <span>@item.PostViewsCount</span>
+                                    <i class="fa fa-eye"></i>
+                                </div>
+                                <div class="pull-left comments">
+                                    <span>@item.PostCommentsCount</span>
+                                    <i class="fa fa-comment"></i>
+                                </div>
+                                <div class="pull-left shares">
+                                    <span>@item.PostSharesCount</span>
+                                    <i class="fa fa-share"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*}*@
+        }
+    }
+
+<script>
+    function article_display(article_id) {
+        window.location.href = "/Post/" + article_id;
+    }
+</script>

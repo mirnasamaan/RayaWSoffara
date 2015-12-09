@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-use strict'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+&#39;use strict&#39;;
+
+( function() {
+	var validLinkRegExp = /^&lt;a[^&gt;]+href=&quot;([^&quot;]+)&quot;[^&gt;]*&gt;([^&lt;]+)&lt;\/a&gt;$/i;
+
+	CKEDITOR.plugins.add( &#39;autoembed&#39;, {
+		requires: &#39;autolink,undo&#39;,
+		lang: &#39;cs,de,en,it,ku,nb,pl,pt-br,tr,zh&#39;, // %REMOVE_LINE_CORE%
+		init: function( editor ) {
+			var currentId = 1,
+				embedCandidatePasted;
+
+			editor.on( &#39;paste&#39;, function( evt ) {
+				if ( evt.data.dataTransfer.getTransferType( editor ) == CKEDITOR.DATA_TRANSFER_INTERNAL ) {
+					embedCandidatePasted = 0;
+					return;
+				}
+
+				var match = evt.data.dataValue.match( validLinkRegExp );
+
+				embedCandidatePasted = match != null &amp;&amp; decodeURI( match[ 1 ] ) == decodeURI( match[ 2 ] );
+
+				// Expecting exactly one &lt;a&gt; tag spanning the whole pasted content.
+				// The tag has to have same href as content.
+				if ( embedCandidatePasted ) {
+					evt.data.dataValue = &#39;&lt;a data-cke-autoembed=&quot;&#39; + ( ++currentId ) + &#39;&quot;&#39; + evt.data.dataValue.substr( 2 );
+				}
+			}, null, null, 20 ); // Execute after autolink.
+
+			editor.on( &#39;afterPaste&#39;, function() {
+				// If one pasted an embeddable link and then undone the action, the link in the content holds the
+				// data-cke-autoembed attribute and may be embedded on *any* successive paste.
+				// This check ensures that autoEmbedLink is called only if afterPaste is fired *right after*
+				// embeddable link got into the content. (#13532)
+				if ( embedCandidatePasted ) {
+					autoEmbedLink( editor, currentId );
+				}
+			} );
+		}
+	} );
+
+	function autoEmbedLink( editor, id ) {
+		var anchor = editor.editable().findOne( &#39;a[data-cke-autoembed=&quot;&#39; + id + &#39;&quot;]&#39; ),
+			lang = editor.lang.autoembed,
+			notification;
+
+		if ( !anchor || !anchor.data( &#39;cke-saved-href&#39; ) ) {
+			return;
+		}
+
+		var href = anchor.data( &#39;cke-saved-href&#39; ),
+			widgetDef = CKEDITOR.plugins.autoEmbed.getWidgetDefinition( editor, href );
+
+		if ( !widgetDef ) {
+			window.console &amp;&amp; window.console.log(
+				&#39;[CKEDITOR.plugins.autoEmbed] Incorrect config.autoEmbed_widget value. &#39; +
+				&#39;No widget definition found.&#39;
+			);
+			return;
+		}
+
+			// TODO Move this to a method in the widget plugin. #13408
+		var defaults = typeof widgetDef.defaults == &#39;function&#39; ? widgetDef.defaults() : widgetDef.defaults,
+			element = CKEDITOR.dom.element.createFromHtml( widgetDef.template.output( defaults ) ),
+			instance,
+			wrapper = editor.widgets.wrapElement( element, widgetDef.name ),
+			temp = new CKEDITOR.dom.documentFragment( wrapper.getDocument() );
+
+		temp.append( wrapper );
+		instance = editor.widgets.initOn( element, widgetDef );
+
+		if ( !instance ) {
+			finalizeCreation();
+			return;
+		}
+
+		notification = editor.showNotification( lang.embeddingInProgress, &#39;info&#39; );
+		instance.loadContent( href, {
+			noNotifications: true,
+			callback: function() {
+					// DOM might be invalidated in the meantime, so find the anchor again.
+				var anchor = editor.editable().findOne( &#39;a[data-cke-autoembed=&quot;&#39; + id + &#39;&quot;]&#39; );
+
+				// Anchor might be removed in the meantime.
+				if ( anchor ) {
+					var selection = editor.getSelection(),
+						insertRange = editor.createRange(),
+						editable = editor.editable();
+
+					// Save the changes in editor contents that happened *after* the link was pasted
+					// but before it gets embedded (i.e. user pasted and typed).
+					editor.fire( &#39;saveSnapshot&#39; );
+
+					// Lock snapshot so we don&#39;t make unnecessary undo steps in
+					// editable.insertElement() below, which would include bookmarks. (#13429)
+					editor.fire( &#39;lockSnapshot&#39;, { dontUpdate: true } );
+
+					// Bookmark current selection. (#13429)
+					var bookmark = selection.createBookmarks( false )[ 0 ],
+						startNode = bookmark.startNode,
+						endNode = bookmark.endNode || startNode;
+
+					// When url is pasted, IE8 sets the caret after &lt;a&gt; element instead of inside it.
+					// So, if user hasn&#39;t changed selection, bookmark is inserted right after &lt;a&gt;.
+					// Then, after pasting embedded content, bookmark is still in DOM but it is
+					// inside the original element. After selection recreation it would end up before widget:
+					// &lt;p&gt;A &lt;a /&gt;&lt;bm /&gt;&lt;/p&gt;&lt;p&gt;B&lt;/p&gt;  --&gt;  &lt;p&gt;A &lt;bm /&gt;&lt;/p&gt;&lt;widget /&gt;&lt;p&gt;B&lt;/p&gt;  --&gt;  &lt;p&gt;A ^&lt;/p&gt;&lt;widget /&gt;&lt;p&gt;B&lt;/p&gt;
+					// We have to fix this IE8 behavior so it is the same as on other browsers.
+					if ( CKEDITOR.env.ie &amp;&amp; CKEDITOR.env.version &lt; 9 &amp;&amp; !bookmark.endNode &amp;&amp; startNode.equals( anchor.getNext() ) ) {
+						anchor.append( startNode );
+					}
+
+					insertRange.setStartBefore( anchor );
+					insertRange.setEndAfter( anchor );
+
+					editable.insertElement( wrapper, insertRange );
+
+					// If both bookmarks are still in DOM, it means that selection was not inside
+					// an anchor that got substituted. We can safely recreate that selection. (#13429)
+					if ( editable.contains( startNode ) &amp;&amp; editable.contains( endNode ) ) {
+						selection.selectBookmarks( [ bookmark ] );
+					} else {
+						// If one of bookmarks is not in DOM, clean up leftovers.
+						startNode.remove();
+						endNode.remove();
+					}
+
+					editor.fire( &#39;unlockSnapshot&#39; );
+				}
+
+				notification.hide();
+				finalizeCreation();
+			},
+
+			errorCallback: function() {
+				notification.hide();
+				editor.widgets.destroy( instance, true );
+				editor.showNotification( lang.embeddingFailed, &#39;info&#39; );
+			}
+		} );
+
+		function finalizeCreation() {
+			editor.widgets.finalizeCreation( temp );
+		}
+	}
+
+	CKEDITOR.plugins.autoEmbed = {
+<span id='CKEDITOR-plugins-autoEmbed-method-getWidgetDefinition'>		/**
+</span>		 * Gets the definition of the widget that should be used to automatically embed the specified link.
+		 *
+		 * This method uses the value of the {@link CKEDITOR.config#autoEmbed_widget} option.
+		 *
+		 * @since 4.5
+		 * @member CKEDITOR.plugins.autoEmbed
+		 * @param {CKEDITOR.editor} editor
+		 * @param {String} url The URL to be embedded.
+		 * @returns {CKEDITOR.plugins.widget.definition/null} The definition of the widget to be used to embed the link.
+		 */
+		getWidgetDefinition: function( editor, url ) {
+			var opt = editor.config.autoEmbed_widget || &#39;embed,embedSemantic&#39;,
+				name,
+				widgets = editor.widgets.registered;
+
+			if ( typeof opt == &#39;string&#39; ) {
+				opt = opt.split( &#39;,&#39; );
+
+				while ( ( name = opt.shift() ) ) {
+					if ( widgets[ name ] ) {
+						return widgets[ name ];
+					}
+				}
+			} else if ( typeof opt == &#39;function&#39; ) {
+				return widgets[ opt( url ) ];
+			}
+
+			return null;
+		}
+	};
+
+<span id='CKEDITOR-config-cfg-autoEmbed_widget'>	/**
+</span>	 * Specifies the widget to use to automatically embed a link. The default value
+	 * of this option defines that either the [Embed](ckeditor.com/addon/embed) or
+	 * [Semantic Embed](ckeditor.com/addon/embedsemantic) widgets will be used, depending on which is enabled.
+	 *
+	 * The general behavior:
+	 *
+	 * * If a string (widget names separated by commas) is provided, then the first of the listed widgets which is registered
+	 * will be used. For example, if `&#39;foo,bar,bom&#39;` is set and widgets `&#39;bar&#39;` and `&#39;bom&#39;` are registered, then `&#39;bar&#39;`
+	 * will be used.
+	 * * If a callback is specified, then it will be executed with the URL to be embedded and it should return the
+	 * name of the widget to be used. It allows to use different embed widgets for different URLs.
+	 *
+	 * Example:
+	 *
+	 *		// Defines that embedSemantic should be used (regardless of whether embed is defined).
+	 *		config.autoEmbed_widget = &#39;embedSemantic&#39;;
+	 *
+	 * Using with custom embed widgets:
+	 *
+	 *		config.autoEmbed_widget = &#39;customEmbed&#39;;
+	 *
+	 * **Note:** Plugin names are always lower case, while widget names are not, so widget names do not have to equal plugin names.
+	 * For example, there is the `embedsemantic` plugin and the `embedSemantic` widget.
+	 *
+	 * @since 4.5
+	 * @cfg {String/Function} [autoEmbed_widget=&#39;embed,embedSemantic&#39;]
+	 * @member CKEDITOR.config
+	 */
+} )();
+</pre>
+</body>
+</html>

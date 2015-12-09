@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+<span id='global-property-'>/**
+</span> * @fileOverview Special Character plugin
+ */
+
+CKEDITOR.plugins.add( &#39;specialchar&#39;, {
+	// List of available localizations.
+	// jscs:disable
+	availableLangs: { af:1,ar:1,bg:1,ca:1,cs:1,cy:1,da:1,de:1,el:1,en:1,&#39;en-gb&#39;:1,eo:1,es:1,et:1,fa:1,fi:1,fr:1,&#39;fr-ca&#39;:1,gl:1,he:1,hr:1,hu:1,id:1,it:1,ja:1,km:1,ko:1,ku:1,lt:1,lv:1,nb:1,nl:1,no:1,pl:1,pt:1,&#39;pt-br&#39;:1,ru:1,si:1,sk:1,sl:1,sq:1,sv:1,th:1,tr:1,tt:1,ug:1,uk:1,vi:1,zh:1,&#39;zh-cn&#39;:1 },
+	lang: &#39;af,ar,bg,bn,bs,ca,cs,cy,da,de,el,en,en-au,en-ca,en-gb,eo,es,et,eu,fa,fi,fo,fr,fr-ca,gl,gu,he,hi,hr,hu,id,is,it,ja,ka,km,ko,ku,lt,lv,mk,mn,ms,nb,nl,no,pl,pt,pt-br,ro,ru,si,sk,sl,sq,sr,sr-latn,sv,th,tr,tt,ug,uk,vi,zh,zh-cn&#39;, // %REMOVE_LINE_CORE%
+	// jscs:enable
+	requires: &#39;dialog&#39;,
+	icons: &#39;specialchar&#39;, // %REMOVE_LINE_CORE%
+	hidpi: true, // %REMOVE_LINE_CORE%
+	init: function( editor ) {
+		var pluginName = &#39;specialchar&#39;,
+			plugin = this;
+
+		// Register the dialog.
+		CKEDITOR.dialog.add( pluginName, this.path + &#39;dialogs/specialchar.js&#39; );
+
+		editor.addCommand( pluginName, {
+			exec: function() {
+				var langCode = editor.langCode;
+				langCode =
+					plugin.availableLangs[ langCode ] ? langCode :
+					plugin.availableLangs[ langCode.replace( /-.*/, &#39;&#39; ) ] ? langCode.replace( /-.*/, &#39;&#39; ) :
+					&#39;en&#39;;
+
+				CKEDITOR.scriptLoader.load( CKEDITOR.getUrl( plugin.path + &#39;dialogs/lang/&#39; + langCode + &#39;.js&#39; ), function() {
+					CKEDITOR.tools.extend( editor.lang.specialchar, plugin.langEntries[ langCode ] );
+					editor.openDialog( pluginName );
+				} );
+			},
+			modes: { wysiwyg: 1 },
+			canUndo: false
+		} );
+
+		// Register the toolbar button.
+		editor.ui.addButton &amp;&amp; editor.ui.addButton( &#39;SpecialChar&#39;, {
+			label: editor.lang.specialchar.toolbar,
+			command: pluginName,
+			toolbar: &#39;insert,50&#39;
+		} );
+	}
+} );
+
+<span id='CKEDITOR-config-cfg-specialChars'>/**
+</span> * The list of special characters visible in the &quot;Special Character&quot; dialog window.
+ *
+ *		config.specialChars = [ &#39;&amp;quot;&#39;, &#39;&amp;rsquo;&#39;, [ &#39;&amp;custom;&#39;, &#39;Custom label&#39; ] ];
+ *		config.specialChars = config.specialChars.concat( [ &#39;&amp;quot;&#39;, [ &#39;&amp;rsquo;&#39;, &#39;Custom label&#39; ] ] );
+ *
+ * @cfg
+ * @member CKEDITOR.config
+ */
+CKEDITOR.config.specialChars = [
+	&#39;!&#39;, &#39;&amp;quot;&#39;, &#39;#&#39;, &#39;$&#39;, &#39;%&#39;, &#39;&amp;amp;&#39;, &quot;&#39;&quot;, &#39;(&#39;, &#39;)&#39;, &#39;*&#39;, &#39;+&#39;, &#39;-&#39;, &#39;.&#39;, &#39;/&#39;,
+	&#39;0&#39;, &#39;1&#39;, &#39;2&#39;, &#39;3&#39;, &#39;4&#39;, &#39;5&#39;, &#39;6&#39;, &#39;7&#39;, &#39;8&#39;, &#39;9&#39;, &#39;:&#39;, &#39;;&#39;,
+	&#39;&amp;lt;&#39;, &#39;=&#39;, &#39;&amp;gt;&#39;, &#39;?&#39;, &#39;@&#39;,
+	&#39;A&#39;, &#39;B&#39;, &#39;C&#39;, &#39;D&#39;, &#39;E&#39;, &#39;F&#39;, &#39;G&#39;, &#39;H&#39;, &#39;I&#39;, &#39;J&#39;, &#39;K&#39;, &#39;L&#39;, &#39;M&#39;, &#39;N&#39;, &#39;O&#39;,
+	&#39;P&#39;, &#39;Q&#39;, &#39;R&#39;, &#39;S&#39;, &#39;T&#39;, &#39;U&#39;, &#39;V&#39;, &#39;W&#39;, &#39;X&#39;, &#39;Y&#39;, &#39;Z&#39;,
+	&#39;[&#39;, &#39;]&#39;, &#39;^&#39;, &#39;_&#39;, &#39;`&#39;,
+	&#39;a&#39;, &#39;b&#39;, &#39;c&#39;, &#39;d&#39;, &#39;e&#39;, &#39;f&#39;, &#39;g&#39;, &#39;h&#39;, &#39;i&#39;, &#39;j&#39;, &#39;k&#39;, &#39;l&#39;, &#39;m&#39;, &#39;n&#39;, &#39;o&#39;, &#39;p&#39;,
+	&#39;q&#39;, &#39;r&#39;, &#39;s&#39;, &#39;t&#39;, &#39;u&#39;, &#39;v&#39;, &#39;w&#39;, &#39;x&#39;, &#39;y&#39;, &#39;z&#39;,
+	&#39;{&#39;, &#39;|&#39;, &#39;}&#39;, &#39;~&#39;,
+	&#39;&amp;euro;&#39;, &#39;&amp;lsquo;&#39;, &#39;&amp;rsquo;&#39;, &#39;&amp;ldquo;&#39;, &#39;&amp;rdquo;&#39;, &#39;&amp;ndash;&#39;, &#39;&amp;mdash;&#39;, &#39;&amp;iexcl;&#39;, &#39;&amp;cent;&#39;, &#39;&amp;pound;&#39;,
+	&#39;&amp;curren;&#39;, &#39;&amp;yen;&#39;, &#39;&amp;brvbar;&#39;, &#39;&amp;sect;&#39;, &#39;&amp;uml;&#39;, &#39;&amp;copy;&#39;, &#39;&amp;ordf;&#39;, &#39;&amp;laquo;&#39;, &#39;&amp;not;&#39;, &#39;&amp;reg;&#39;, &#39;&amp;macr;&#39;,
+	&#39;&amp;deg;&#39;, &#39;&amp;sup2;&#39;, &#39;&amp;sup3;&#39;, &#39;&amp;acute;&#39;, &#39;&amp;micro;&#39;, &#39;&amp;para;&#39;, &#39;&amp;middot;&#39;, &#39;&amp;cedil;&#39;, &#39;&amp;sup1;&#39;, &#39;&amp;ordm;&#39;, &#39;&amp;raquo;&#39;,
+	&#39;&amp;frac14;&#39;, &#39;&amp;frac12;&#39;, &#39;&amp;frac34;&#39;, &#39;&amp;iquest;&#39;, &#39;&amp;Agrave;&#39;, &#39;&amp;Aacute;&#39;, &#39;&amp;Acirc;&#39;, &#39;&amp;Atilde;&#39;, &#39;&amp;Auml;&#39;, &#39;&amp;Aring;&#39;,
+	&#39;&amp;AElig;&#39;, &#39;&amp;Ccedil;&#39;, &#39;&amp;Egrave;&#39;, &#39;&amp;Eacute;&#39;, &#39;&amp;Ecirc;&#39;, &#39;&amp;Euml;&#39;, &#39;&amp;Igrave;&#39;, &#39;&amp;Iacute;&#39;, &#39;&amp;Icirc;&#39;, &#39;&amp;Iuml;&#39;,
+	&#39;&amp;ETH;&#39;, &#39;&amp;Ntilde;&#39;, &#39;&amp;Ograve;&#39;, &#39;&amp;Oacute;&#39;, &#39;&amp;Ocirc;&#39;, &#39;&amp;Otilde;&#39;, &#39;&amp;Ouml;&#39;, &#39;&amp;times;&#39;, &#39;&amp;Oslash;&#39;, &#39;&amp;Ugrave;&#39;,
+	&#39;&amp;Uacute;&#39;, &#39;&amp;Ucirc;&#39;, &#39;&amp;Uuml;&#39;, &#39;&amp;Yacute;&#39;, &#39;&amp;THORN;&#39;, &#39;&amp;szlig;&#39;, &#39;&amp;agrave;&#39;, &#39;&amp;aacute;&#39;, &#39;&amp;acirc;&#39;, &#39;&amp;atilde;&#39;,
+	&#39;&amp;auml;&#39;, &#39;&amp;aring;&#39;, &#39;&amp;aelig;&#39;, &#39;&amp;ccedil;&#39;, &#39;&amp;egrave;&#39;, &#39;&amp;eacute;&#39;, &#39;&amp;ecirc;&#39;, &#39;&amp;euml;&#39;, &#39;&amp;igrave;&#39;, &#39;&amp;iacute;&#39;,
+	&#39;&amp;icirc;&#39;, &#39;&amp;iuml;&#39;, &#39;&amp;eth;&#39;, &#39;&amp;ntilde;&#39;, &#39;&amp;ograve;&#39;, &#39;&amp;oacute;&#39;, &#39;&amp;ocirc;&#39;, &#39;&amp;otilde;&#39;, &#39;&amp;ouml;&#39;, &#39;&amp;divide;&#39;,
+	&#39;&amp;oslash;&#39;, &#39;&amp;ugrave;&#39;, &#39;&amp;uacute;&#39;, &#39;&amp;ucirc;&#39;, &#39;&amp;uuml;&#39;, &#39;&amp;yacute;&#39;, &#39;&amp;thorn;&#39;, &#39;&amp;yuml;&#39;, &#39;&amp;OElig;&#39;, &#39;&amp;oelig;&#39;,
+	&#39;&amp;#372;&#39;, &#39;&amp;#374&#39;, &#39;&amp;#373&#39;, &#39;&amp;#375;&#39;, &#39;&amp;sbquo;&#39;, &#39;&amp;#8219;&#39;, &#39;&amp;bdquo;&#39;, &#39;&amp;hellip;&#39;, &#39;&amp;trade;&#39;, &#39;&amp;#9658;&#39;, &#39;&amp;bull;&#39;,
+	&#39;&amp;rarr;&#39;, &#39;&amp;rArr;&#39;, &#39;&amp;hArr;&#39;, &#39;&amp;diams;&#39;, &#39;&amp;asymp;&#39;
+];
+</pre>
+</body>
+</html>

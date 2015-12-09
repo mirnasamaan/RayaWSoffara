@@ -1,0 +1,42 @@
+﻿@if (Request.IsAuthenticated)
+{
+    
+    <div class="dropdown">
+        <button class="login dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+            <i class="fa fa-cog"></i>
+        </button>
+        <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+            <li class="pull-left">@Ajax.ActionLink("حسابي", "Profile", "Account", new { Username = User.Identity.Name }, new AjaxOptions { HttpMethod = "POST" })</li>
+            <li class="pull-left">@Ajax.ActionLink("البيانلت الشخصية", "Settings", "Account", new { Username = User.Identity.Name }, new AjaxOptions { HttpMethod = "POST" })</li>
+            @using (Html.BeginForm("Logoff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <li class="pull-left"><a href="javascript:document.getElementById('logoutForm').submit()">تسجيل خروج</a></li>
+            }
+        </ul>
+    </div>
+   
+}
+else
+{
+    
+    <ul class="hidden-xs hidden-sm">
+        <li class="register-container pull-left">
+            <a href="/Login"><button class="registerLink"><span class="hidden-sm hidden-xs">تسجيل الدخول</span><i class="fa fa-sign-in article-write pull-right"></i></button></a>
+            @*@Html.ActionLink("تسجيل الدخول", "Login", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })*@@*<i class="fa fa-sign-in article-write pull-right"></i>*@
+        </li>
+        <li class="fblogin-container pull-left">
+            @Html.Action("ExternalLoginsList", "Home", new { ReturnUrl = ViewBag.ReturnUrl })
+        </li>
+    </ul>
+    <ul class="hidden-lg hidden-md visible-sm visible-xs">
+        <li class="register-container pull-left">
+            @*<a href="/Account/Login" id="registerLink"><i class="fa fa-sign-in article-write pull-right"></i></a>*@
+            <a href="/Login"><button class="registerLink"><span class="hidden-sm hidden-xs">تسجيل الدخول</span><i class="fa fa-sign-in article-write pull-right"></i></button></a>
+        </li>
+        <li class="fblogin-container pull-left">
+            @Html.Action("ExternalLoginsList", "Home", new { ReturnUrl = ViewBag.ReturnUrl })
+        </li>
+    </ul>
+}

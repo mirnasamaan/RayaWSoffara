@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;specialchar&#39;, &#39;ko&#39;, {
+	euro: &#39;유로화 기호&#39;,
+	lsquo: &#39;왼쪽 외 따옴표&#39;,
+	rsquo: &#39;오른쪽 외 따옴표&#39;,
+	ldquo: &#39;왼쪽 쌍 따옴표&#39;,
+	rdquo: &#39;오른쪽 쌍 따옴표&#39;,
+	ndash: &#39;반각 대시&#39;,
+	mdash: &#39;전각 대시&#39;,
+	iexcl: &#39;반전된 느낌표&#39;,
+	cent: &#39;센트 기호&#39;,
+	pound: &#39;파운드화 기호&#39;,
+	curren: &#39;커런시 기호&#39;,
+	yen: &#39;위안화 기호&#39;,
+	brvbar: &#39;Broken bar&#39;, // MISSING
+	sect: &#39;섹션 기호&#39;,
+	uml: &#39;분음 부호&#39;,
+	copy: &#39;저작권 기호&#39;,
+	ordf: &#39;Feminine ordinal indicator&#39;, // MISSING
+	laquo: &#39;왼쪽 쌍꺽쇠 인용 부호&#39;,
+	not: &#39;금지 기호&#39;,
+	reg: &#39;등록 기호&#39;,
+	macr: &#39;장음 기호&#39;,
+	deg: &#39;도 기호&#39;,
+	sup2: &#39;위첨자 2&#39;,
+	sup3: &#39;위첨자 3&#39;,
+	acute: &#39;양음 악센트 부호&#39;,
+	micro: &#39;마이크로 기호&#39;,
+	para: &#39;단락 기호&#39;,
+	middot: &#39;가운데 점&#39;,
+	cedil: &#39;세디유&#39;,
+	sup1: &#39;위첨자 1&#39;,
+	ordm: &#39;Masculine ordinal indicator&#39;, // MISSING
+	raquo: &#39;오른쪽 쌍꺽쇠 인용 부호&#39;,
+	frac14: &#39;분수 사분의 일&#39;,
+	frac12: &#39;분수 이분의 일&#39;,
+	frac34: &#39;분수 사분의 삼&#39;,
+	iquest: &#39;뒤집힌 물음표&#39;,
+	Agrave: &#39;억음 부호가 있는 라틴 대문자 A&#39;,
+	Aacute: &#39;양음 악센트 부호가 있는 라틴 대문자 A&#39;,
+	Acirc: &#39;곡절 악센트 부호가 있는 라틴 대문자 A&#39;,
+	Atilde: &#39;틸데가 있는 라틴 대문자 A&#39;,
+	Auml: &#39;분음 기호가 있는 라틴 대문자 A&#39;,
+	Aring: &#39;윗고리가 있는 라틴 대문자 A&#39;,
+	AElig: &#39;라틴 대문자 Æ&#39;,
+	Ccedil: &#39;세디유가 있는 라틴 대문자 C&#39;,
+	Egrave: &#39;억음 부호가 있는 라틴 대문자 E&#39;,
+	Eacute: &#39;양음 악센트 부호가 있는 라틴 대문자 E&#39;,
+	Ecirc: &#39;곡절 악센트 부호가 있는 라틴 대문자 E&#39;,
+	Euml: &#39;분음 기호가 있는 라틴 대문자 E&#39;,
+	Igrave: &#39;억음 부호가 있는 라틴 대문자 I&#39;,
+	Iacute: &#39;양음 악센트 부호가 있는 라틴 대문자 I&#39;,
+	Icirc: &#39;곡절 악센트 부호가 있는 라틴 대문자 I&#39;,
+	Iuml: &#39;분음 기호가 있는 라틴 대문자 I&#39;,
+	ETH: &#39;라틴 대문자 Eth&#39;,
+	Ntilde: &#39;틸데가 있는 라틴 대문자 N&#39;,
+	Ograve: &#39;억음 부호가 있는 라틴 대문자 O&#39;,
+	Oacute: &#39;양음 부호가 있는 라틴 대문자 O&#39;,
+	Ocirc: &#39;곡절 악센트 부호가 있는 라틴 대문자 O&#39;,
+	Otilde: &#39;틸데가 있는 라틴 대문자 O&#39;,
+	Ouml: &#39;분음 기호가 있는 라틴 대문자 O&#39;,
+	times: &#39;곱하기 기호&#39;,
+	Oslash: &#39;사선이 있는 라틴 대문자 O&#39;,
+	Ugrave: &#39;억음 부호가 있는 라틴 대문자 U&#39;,
+	Uacute: &#39;양음 부호가 있는 라틴 대문자 U&#39;,
+	Ucirc: &#39;곡절 악센트 부호가 있는 라틴 대문자 U&#39;,
+	Uuml: &#39;분음 기호가 있는 라틴 대문자 U&#39;,
+	Yacute: &#39;양음 부호가 있는 라틴 대문자 Y&#39;,
+	THORN: &#39;라틴 대문자 Thorn&#39;,
+	szlig: &#39;라틴 소문자 sharp s&#39;,
+	agrave: &#39;억음 부호가 있는 라틴 소문자 a&#39;,
+	aacute: &#39;양음 부호가 있는 라틴 소문자 a&#39;,
+	acirc: &#39;곡절 악센트 부호가 있는 라틴 소문자 a&#39;,
+	atilde: &#39;틸데가 있는 라틴 소문자 a&#39;,
+	auml: &#39;분음 기호가 있는 라틴 소문자 a&#39;,
+	aring: &#39;윗고리가 있는 라틴 소문자 a&#39;,
+	aelig: &#39;라틴 소문자 æ&#39;,
+	ccedil: &#39;세디유가 있는 라틴 소문자 c&#39;,
+	egrave: &#39;억음 부호가 있는 라틴 소문자 e&#39;,
+	eacute: &#39;양음 부호가 있는 라틴 소문자 e&#39;,
+	ecirc: &#39;곡절 악센트 부호가 있는 라틴 소문자 e&#39;,
+	euml: &#39;분음 기호가 있는 라틴 소문자 e&#39;,
+	igrave: &#39;억음 부호가 있는 라틴 소문자 i&#39;,
+	iacute: &#39;양음 부호가 있는 라틴 소문자 i&#39;,
+	icirc: &#39;곡절 악센트 부호가 있는 라틴 소문자 i&#39;,
+	iuml: &#39;분음 기호가 있는 라틴 소문자 i&#39;,
+	eth: &#39;라틴 소문자 eth&#39;,
+	ntilde: &#39;틸데가 있는 라틴 소문자 n&#39;,
+	ograve: &#39;억음 부호가 있는 라틴 소문자 o&#39;,
+	oacute: &#39;양음 부호가 있는 라틴 소문자 o&#39;,
+	ocirc: &#39;곡절 악센트 부호가 있는 라틴 소문자 o&#39;,
+	otilde: &#39;틸데가 있는 라틴 소문자 o&#39;,
+	ouml: &#39;분음 기호가 있는 라틴 소문자 o&#39;,
+	divide: &#39;나누기 기호&#39;,
+	oslash: &#39;사선이 있는 라틴 소문자 o&#39;,
+	ugrave: &#39;억음 부호가 있는 라틴 소문자 u&#39;,
+	uacute: &#39;양음 부호가 있는 라틴 소문자 u&#39;,
+	ucirc: &#39;곡절 악센트 부호가 있는 라틴 소문자 u&#39;,
+	uuml: &#39;분음 기호가 있는 라틴 소문자 u&#39;,
+	yacute: &#39;양음 부호가 있는 라틴 소문자 y&#39;,
+	thorn: &#39;라틴 소문자 thorn&#39;,
+	yuml: &#39;분음 기호가 있는 라틴 소문자 y&#39;,
+	OElig: &#39;라틴 대문합자 OE&#39;,
+	oelig: &#39;라틴 소문합자 oe&#39;,
+	&#39;372&#39;: &#39;곡절 악센트 부호가 있는 라틴 대문자 W&#39;,
+	&#39;374&#39;: &#39;곡절 악센트 부호가 있는 라틴 대문자 Y&#39;,
+	&#39;373&#39;: &#39;곡절 악센트 부호가 있는 라틴 소문자 w&#39;,
+	&#39;375&#39;: &#39;곡절 악센트 부호가 있는 라틴 소문자 y&#39;,
+	sbquo: &#39;외 아래-9 인용 부호&#39;,
+	&#39;8219&#39;: &#39;외 위쪽-뒤집힌-9 인용 부호&#39;,
+	bdquo: &#39;쌍 아래-9 인용 부호&#39;,
+	hellip: &#39;수평 생략 부호&#39;,
+	trade: &#39;상표 기호&#39;,
+	&#39;9658&#39;: &#39;검정 오른쪽 포인터&#39;,
+	bull: &#39;큰 점&#39;,
+	rarr: &#39;오른쪽 화살표&#39;,
+	rArr: &#39;오른쪽 두 줄 화살표&#39;,
+	hArr: &#39;양쪽 두 줄 화살표&#39;,
+	diams: &#39;검정 다이아몬드&#39;,
+	asymp: &#39;근사&#39;
+} );
+</pre>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-use strict'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+&#39;use strict&#39;;
+
+( function() {
+	CKEDITOR.plugins.add( &#39;uploadimage&#39;, {
+		requires: &#39;uploadwidget&#39;,
+
+		onLoad: function() {
+			CKEDITOR.addCss(
+				&#39;.cke_upload_uploading img{&#39; +
+					&#39;opacity: 0.3&#39; +
+				&#39;}&#39;
+			);
+		},
+
+		init: function( editor ) {
+			// Do not execute this paste listener if it will not be possible to upload file.
+			if ( !CKEDITOR.plugins.clipboard.isFileApiSupported ) {
+				return;
+			}
+
+			var fileTools = CKEDITOR.fileTools,
+				uploadUrl = fileTools.getUploadUrl( editor.config, &#39;image&#39; );
+
+			if ( !uploadUrl ) {
+				window.console &amp;&amp; window.console.log(
+					&#39;Error: Upload URL for the Upload Image feature was not defined. &#39; +
+					&#39;For more information see: http://docs.ckeditor.com/#!/guide/dev_file_upload&#39;
+				);
+				return;
+			}
+
+			// Handle images which are available in the dataTransfer.
+			fileTools.addUploadWidget( editor, &#39;uploadimage&#39;, {
+				supportedTypes: /image\/(jpeg|png|gif|bmp)/,
+
+				uploadUrl: uploadUrl,
+
+				fileToElement: function() {
+					var img = new CKEDITOR.dom.element( &#39;img&#39; );
+					img.setAttribute( &#39;src&#39;, loadingImage );
+					return img;
+				},
+
+				parts: {
+					img: &#39;img&#39;
+				},
+
+				onUploading: function( upload ) {
+					// Show the image during the upload.
+					this.parts.img.setAttribute( &#39;src&#39;, upload.data );
+				},
+
+				onUploaded: function( upload ) {
+					// Set width and height to prevent blinking.
+					this.replaceWith( &#39;&lt;img src=&quot;&#39; + upload.url + &#39;&quot; &#39; +
+						&#39;width=&quot;&#39; + this.parts.img.$.naturalWidth + &#39;&quot; &#39; +
+						&#39;height=&quot;&#39; + this.parts.img.$.naturalHeight + &#39;&quot;&gt;&#39; );
+				}
+			} );
+
+			// Handle images which are not available in the dataTransfer.
+			// This means that we need to read them from the &lt;img src=&quot;data:...&quot;&gt; elements.
+			editor.on( &#39;paste&#39;, function( evt ) {
+				// For performance reason do not parse data if it does not contain img tag and data attribute.
+				if ( !evt.data.dataValue.match( /&lt;img[\s\S]+data:/i ) ) {
+					return;
+				}
+
+				var data = evt.data,
+					// Prevent XSS attacks.
+					tempDoc = document.implementation.createHTMLDocument( &#39;&#39; ),
+					temp = new CKEDITOR.dom.element( tempDoc.body ),
+					imgs, img, i;
+
+				// Without this isReadOnly will not works properly.
+				temp.data( &#39;cke-editable&#39;, 1 );
+
+				temp.appendHtml( data.dataValue );
+
+				imgs = temp.find( &#39;img&#39; );
+
+				for ( i = 0; i &lt; imgs.count(); i++ ) {
+					img = imgs.getItem( i );
+
+					// Image have to contain src=data:...
+					var isDataInSrc = img.getAttribute( &#39;src&#39; ) &amp;&amp; img.getAttribute( &#39;src&#39; ).substring( 0, 5 ) == &#39;data:&#39;,
+						isRealObject = img.data( &#39;cke-realelement&#39; ) === null;
+
+					// We are not uploading images in non-editable blocs and fake objects (#13003).
+					if ( isDataInSrc &amp;&amp; isRealObject &amp;&amp; !img.data( &#39;cke-upload-id&#39; ) &amp;&amp; !img.isReadOnly( 1 ) ) {
+						var loader = editor.uploadRepository.create( img.getAttribute( &#39;src&#39; ) );
+						loader.upload( uploadUrl );
+
+						fileTools.markElement( img, &#39;uploadimage&#39;, loader.id );
+
+						fileTools.bindNotifications( editor, loader );
+					}
+				}
+
+				data.dataValue = temp.getHtml();
+			} );
+		}
+	} );
+
+	// jscs:disable maximumLineLength
+	// Black rectangle which is shown before image is loaded.
+	var loadingImage = &#39;data:image/gif;base64,R0lGODlhDgAOAIAAAAAAAP///yH5BAAAAAAALAAAAAAOAA4AAAIMhI+py+0Po5y02qsKADs=&#39;;
+	// jscs:enable maximumLineLength
+
+<span id='CKEDITOR-config-cfg-imageUploadUrl'>	/**
+</span>	 * The URL where images should be uploaded.
+	 *
+	 * @since 4.5
+	 * @cfg {String} [imageUploadUrl=&#39;&#39; (empty string = disabled)]
+	 * @member CKEDITOR.config
+	 */
+} )();
+</pre>
+</body>
+</html>

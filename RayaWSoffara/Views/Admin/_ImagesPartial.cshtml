@@ -1,0 +1,116 @@
+﻿@model List<RWSDataLayer.Context.Image>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+    <div class="grid-item" onclick="imageSettings(@item.ImageId)">
+        <img id="@item.ImageId" src="@item.ImageURL?w=732&h=340&mode=crop" />
+    </div>
+    }
+}
+
+<div id="imageModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+    <form id="imageForm" class="form-horizontal" action="/Admin/AddTagsToImage" method="post" enctype = "multipart/form-data">
+        <input type="hidden" name="ImageId" id="imageId" />
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Image Settings</h4>
+            </div>
+            <div class="modal-body">
+                <img src="" />
+            </div>
+            <div class="form-group">
+                <label class="col-sm-1 control-label">Tags</label>
+                <div class="col-sm-10">
+                    <ul class="tags form-control"></ul>
+                </div>
+            </div>
+            
+            <input id="tagsItems" name="tagItems" type="hidden" />
+
+            <div class="modal-footer">
+                <button type="submit" class="btn btn-default">Save Changes</button>
+            </div>
+        </div>
+    </form>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script>
+    var availableTags = [];
+    var availableTagsID = [];
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: { Term: "" },
+        url: "/Home/GetTags",
+        success: function (tags) {
+            for (i = 0; i < tags.length; i++) {
+                availableTags.push(tags[i].TagName);
+                availableTagsID.push(tags[i].TagID);
+            }
+        }
+    });
+
+    function imageSettings(image_id) {
+        $("#imageId").val(image_id);
+        $("#imageModal img").attr("src", $("#" + image_id).attr("src"));
+        var tagItems = [];
+        $.ajax({
+            type: "POST",
+            data: { ImageId: $("#imageId").val() },
+            url: "/Admin/GetTagsByImageId",
+            success: function (tags) {
+                tagItems = tags;
+            }
+        }).done(function () {
+            $.getScript("/Content/Scripts/tag-it.js").done(function () {
+                $('.tags').tagit({
+                    tagSource: availableTags,
+                    select: true,
+                    sortable: true,
+                    allowNewTags: false,
+                    triggerKeys: ['enter', 'tab'],
+                    beforeTagAdded: function (event, ui) {
+                        if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                            return false;
+                        }
+                    },
+                    afterTagAdded: function (event, ui) {
+                        var index = availableTags.indexOf(ui.tagLabel);
+                        var id = availableTagsID[index];
+                        $(".tags li").eq(-2).attr("data-id", id);
+                    }
+                });
+            }).done(function () {
+                for (i = 0; i < tagItems.length; i++) {
+                    $('.tags').tagit("createTag", tagItems[i].ItemName);
+                }
+            });
+        });
+        $('#imageModal').modal('show');
+    }
+
+    $("#imageForm").submit(function (e) {
+        var tags = "";
+        var noOfTags = parseInt($(".tags li").length - 1);
+
+        $('.tags').children('li').each(function (e) {
+            if (parseInt(e) == parseInt(noOfTags)) {
+                return false;
+            }
+            var tagId = $(this).attr('data-id');
+            tags = tags + tagId + ",";
+        });
+        tags = tags.substring(0, tags.length - 1);
+        $("#tagsItems").val(tags);
+        return true;
+    });
+    
+</script>

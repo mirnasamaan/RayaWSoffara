@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;tr&#39;, {
+	title: &#39;Erişilebilirlik Talimatları&#39;,
+	contents: &#39;Yardım içeriği. Bu pencereyi kapatmak için ESC tuşuna basın.&#39;,
+	legend: [
+		{
+		name: &#39;Genel&#39;,
+		items: [
+			{
+			name: &#39;Düzenleyici Araç Çubuğu&#39;,
+			legend: &#39;Araç çubuğunda gezinmek için ${toolbarFocus} basın. TAB ve SHIFT+TAB ile önceki ve sonraki araç çubuğu grubuna taşıyın. SAĞ OK veya SOL OK ile önceki ve sonraki bir araç çubuğu düğmesini hareket ettirin. SPACE tuşuna basın veya araç çubuğu düğmesini etkinleştirmek için ENTER tuşna basın.&#39;
+		},
+
+			{
+			name: &#39;Diyalog Düzenleyici&#39;,
+			legend:
+				&#39;Dialog penceresi içinde, sonraki iletişim alanına gitmek için SEKME tuşuna basın, önceki alana geçmek için SHIFT + TAB tuşuna basın, pencereyi göndermek için ENTER tuşuna basın, dialog penceresini iptal etmek için ESC tuşuna basın. Birden çok sekme sayfaları olan diyalogların, sekme listesine gitmek için ALT + F10 tuşlarına basın. Sonra TAB veya SAĞ OK sonraki sekmeye taşıyın. SHIFT + TAB veya SOL OK ile önceki sekmeye geçin. Sekme sayfayı seçmek için SPACE veya ENTER tuşuna basın.&#39; 
+		},
+
+			{
+			name: &#39;İçerik Menü Editörü&#39;,
+			legend: &#39;İçerik menüsünü açmak için ${contextMenu} veya UYGULAMA TUŞU\&#39;na basın. Daha sonra SEKME veya AŞAĞI OK ile bir sonraki menü seçeneği taşıyın. SHIFT + TAB veya YUKARI OK ile önceki seçeneğe gider. Menü seçeneğini seçmek için SPACE veya ENTER tuşuna basın. Seçili seçeneğin alt menüsünü SPACE ya da ENTER veya SAĞ OK açın. Üst menü öğesini geçmek için ESC veya SOL OK ile geri dönün. ESC ile bağlam menüsünü kapatın.&#39;
+		},
+
+			{
+			name: &#39;Liste Kutusu Editörü&#39;,
+			legend: &#39;Liste kutusu içinde, bir sonraki liste öğesine SEKME VEYA AŞAĞI OK ile taşıyın. SHIFT+TAB veya YUKARI önceki liste öğesi taşıyın. Liste seçeneği seçmek için SPACE veya ENTER tuşuna basın. Liste kutusunu kapatmak için ESC tuşuna basın.&#39;
+		},
+
+			{
+			name: &#39;Element Yol Çubuğu Editörü&#39;,
+			legend: &#39;Elementlerin yol çubuğunda gezinmek için ${ElementsPathFocus} basın. SEKME veya SAĞ OK ile sonraki element düğmesine taşıyın. SHIFT+TAB veya SOL OK önceki düğmeye hareket ettirin. Editör içindeki elementi seçmek için ENTER veya SPACE tuşuna basın.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Komutlar&#39;,
+		items: [
+			{
+			name: &#39;Komutu geri al&#39;,
+			legend: &#39;$(undo)\&#39;ya basın&#39;
+		},
+			{
+			name: &#39;Komutu geri al&#39;,
+			legend: &#39;${redo} basın&#39;
+		},
+			{
+			name: &#39; Kalın komut&#39;,
+			legend: &#39;${bold} basın&#39;
+		},
+			{
+			name: &#39; İtalik komutu&#39;,
+			legend: &#39;${italic} basın&#39;
+		},
+			{
+			name: &#39; Alttan çizgi komutu&#39;,
+			legend: &#39;${underline} basın&#39;
+		},
+			{
+			name: &#39; Bağlantı komutu&#39;,
+			legend: &#39;${link} basın&#39;
+		},
+			{
+			name: &#39; Araç çubuğu Toplama komutu&#39;,
+			legend: &#39;${toolbarCollapse} basın&#39;
+		},
+			{
+			name: &#39;Önceki komut alanına odaklan&#39;,
+			legend: &#39;Düzeltme imleçinden önce, en yakın uzaktaki alana erişmek için ${accessPreviousSpace} basın, örneğin: iki birleşik HR elementleri. Aynı tuş kombinasyonu tekrarıyla diğer alanlarada ulaşın.&#39;
+		},
+			{
+			name: &#39;Sonraki komut alanına odaklan&#39;,
+			legend: &#39;Düzeltme imleçinden sonra, en yakın uzaktaki alana erişmek için ${accessNextSpace} basın, örneğin: iki birleşik HR elementleri. Aynı tuş kombinasyonu tekrarıyla diğer alanlarada ulaşın.&#39;
+		},
+			{
+			name: &#39;Erişilebilirlik Yardımı&#39;,
+			legend: &#39;${a11yHelp}\&#39;e basın&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Silme&#39;,
+	tab: &#39;Sekme tuşu&#39;,
+	enter: &#39;Gir tuşu&#39;,
+	shift: &#39;&quot;Shift&quot; Kaydırma tuşu&#39;,
+	ctrl: &#39;&quot;Ctrl&quot; Kontrol tuşu&#39;,
+	alt: &#39;&quot;Alt&quot; Anahtar tuşu&#39;,
+	pause: &#39;Durdurma tuşu&#39;,
+	capslock: &#39;Büyük harf tuşu&#39;,
+	escape: &#39;Vazgeç tuşu&#39;,
+	pageUp: &#39;Sayfa Yukarı&#39;,
+	pageDown: &#39;Sayfa Aşağı&#39;,
+	end: &#39;Sona&#39;,
+	home: &#39;En başa&#39;,
+	leftArrow: &#39;Sol ok&#39;,
+	upArrow: &#39;Yukarı ok&#39;,
+	rightArrow: &#39;Sağ ok&#39;,
+	downArrow: &#39;Aşağı ok&#39;,
+	insert: &#39;Araya gir&#39;,
+	&#39;delete&#39;: &#39;Silme&#39;,
+	leftWindowKey: &#39;Sol windows tuşu&#39;,
+	rightWindowKey: &#39;Sağ windows tuşu&#39;,
+	selectKey: &#39;Seçme tuşu&#39;,
+	numpad0: &#39;Nümerik 0&#39;,
+	numpad1: &#39;Nümerik 1&#39;,
+	numpad2: &#39;Nümerik 2&#39;,
+	numpad3: &#39;Nümerik 3&#39;,
+	numpad4: &#39;Nümerik 4&#39;,
+	numpad5: &#39;Nümerik 5&#39;,
+	numpad6: &#39;Nümerik 6&#39;,
+	numpad7: &#39;Nümerik 7&#39;,
+	numpad8: &#39;Nümerik 8&#39;,
+	numpad9: &#39;Nümerik 9&#39;,
+	multiply: &#39;Çarpma&#39;,
+	add: &#39;Toplama&#39;,
+	subtract: &#39;Çıkarma&#39;,
+	decimalPoint: &#39;Ondalık işareti&#39;,
+	divide: &#39;Bölme&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lk&#39;,
+	scrollLock: &#39;Scr Lk&#39;,
+	semiColon: &#39;Noktalı virgül&#39;,
+	equalSign: &#39;Eşittir&#39;,
+	comma: &#39;Virgül&#39;,
+	dash: &#39;Eksi&#39;,
+	period: &#39;Nokta&#39;,
+	forwardSlash: &#39;İleri eğik çizgi&#39;,
+	graveAccent: &#39;Üst tırnak&#39;,
+	openBracket: &#39;Parantez aç&#39;,
+	backSlash: &#39;Ters eğik çizgi&#39;,
+	closeBracket: &#39;Parantez kapa&#39;,
+	singleQuote: &#39;Tek tırnak&#39;
+} );
+</pre>
+</body>
+</html>

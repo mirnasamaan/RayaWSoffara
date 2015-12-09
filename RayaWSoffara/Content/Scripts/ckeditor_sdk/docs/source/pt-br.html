@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;pt-br&#39;, {
+	title: &#39;Instruções de Acessibilidade&#39;,
+	contents: &#39;Conteúdo da Ajuda. Para fechar este diálogo pressione ESC.&#39;,
+	legend: [
+		{
+		name: &#39;Geral&#39;,
+		items: [
+			{
+			name: &#39;Barra de Ferramentas do Editor&#39;,
+			legend: &#39;Pressione ${toolbarFocus} para navegar para a barra de ferramentas. Mova para o anterior ou próximo grupo de ferramentas com TAB e SHIFT+TAB. Mova para o anterior ou próximo botão com SETA PARA DIREITA or SETA PARA ESQUERDA. Pressione ESPAÇO ou ENTER para ativar o botão da barra de ferramentas.&#39;
+		},
+
+			{
+			name: &#39;Diálogo do Editor&#39;,
+			legend:
+				&#39;Dentro de um diálogo, pressione TAB para navegar para o próximo elemento. Pressione SHIFT+TAB para mover para o elemento anterior. Pressione ENTER ara enviar o diálogo. pressione ESC para cancelar o diálogo. Quando um diálogo tem múltiplas abas, a lista de abas pode ser acessada com ALT+F10 ou TAB, como parte da ordem de tabulação do diálogo. Com a lista de abas em foco, mova para a próxima aba e para a aba anterior com a SETA DIREITA ou SETA ESQUERDA, respectivamente.&#39; 
+		},
+
+			{
+			name: &#39;Menu de Contexto do Editor&#39;,
+			legend: &#39;Pressione ${contextMenu} ou TECLA DE MENU para abrir o menu de contexto, então mova para a próxima opção com TAB ou SETA PARA BAIXO. Mova para a anterior com SHIFT+TAB ou SETA PARA CIMA. Pressione ESPAÇO ou ENTER para selecionar a opção do menu. Abra o submenu da opção atual com ESPAÇO ou ENTER ou SETA PARA DIREITA. Volte para o menu pai com ESC ou SETA PARA ESQUERDA. Feche o menu de contexto com ESC.&#39;
+		},
+
+			{
+			name: &#39;Caixa de Lista do Editor&#39;,
+			legend: &#39;Dentro de uma caixa de lista, mova para o próximo item com TAB ou SETA PARA BAIXO. Mova para o item anterior com SHIFT+TAB ou SETA PARA CIMA. Pressione ESPAÇO ou ENTER para selecionar uma opção na lista. Pressione ESC para fechar a caixa de lista.&#39;
+		},
+
+			{
+			name: &#39;Barra de Caminho do Elementos do Editor&#39;,
+			legend: &#39;Pressione ${elementsPathFocus} para a barra de caminho dos elementos. Mova para o próximo botão de elemento com TAB ou SETA PARA DIREITA. Mova para o botão anterior com SHIFT+TAB ou SETA PARA ESQUERDA. Pressione ESPAÇO ou ENTER para selecionar o elemento no editor.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Comandos&#39;,
+		items: [
+			{
+			name: &#39; Comando Desfazer&#39;,
+			legend: &#39;Pressione ${undo}&#39;
+		},
+			{
+			name: &#39; Comando Refazer&#39;,
+			legend: &#39;Pressione ${redo}&#39;
+		},
+			{
+			name: &#39; Comando Negrito&#39;,
+			legend: &#39;Pressione ${bold}&#39;
+		},
+			{
+			name: &#39; Comando Itálico&#39;,
+			legend: &#39;Pressione ${italic}&#39;
+		},
+			{
+			name: &#39; Comando Sublinhado&#39;,
+			legend: &#39;Pressione ${underline}&#39;
+		},
+			{
+			name: &#39; Comando Link&#39;,
+			legend: &#39;Pressione ${link}&#39;
+		},
+			{
+			name: &#39; Comando Fechar Barra de Ferramentas&#39;,
+			legend: &#39;Pressione ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;Acessar o comando anterior de spaço de foco&#39;,
+			legend: &#39;Pressione ${accessNextSpace} para acessar o espaço de foco não alcançável mais próximo antes do cursor, por exemplo: dois elementos HR adjacentes. Repita a combinação de teclas para alcançar espaços de foco distantes.&#39;
+		},
+			{
+			name: &#39;Acessar próximo fomando de spaço de foco&#39;,
+			legend: &#39;Pressione ${accessNextSpace} para acessar o espaço de foco não alcançável mais próximo após o cursor, por exemplo: dois elementos HR adjacentes. Repita a combinação de teclas para alcançar espaços de foco distantes.&#39;
+		},
+			{
+			name: &#39; Ajuda de Acessibilidade&#39;,
+			legend: &#39;Pressione ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Tecla Backspace&#39;,
+	tab: &#39;Tecla Tab&#39;,
+	enter: &#39;Enter&#39;,
+	shift: &#39;Shift&#39;,
+	ctrl: &#39;Ctrl&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Pause&#39;,
+	capslock: &#39;Caps Lock&#39;,
+	escape: &#39;Escape&#39;,
+	pageUp: &#39;Page Up&#39;,
+	pageDown: &#39;Page Down&#39;,
+	end: &#39;End&#39;,
+	home: &#39;Home&#39;,
+	leftArrow: &#39;Seta à Esquerda&#39;,
+	upArrow: &#39;Seta à Cima&#39;,
+	rightArrow: &#39;Seta à Direita&#39;,
+	downArrow: &#39;Seta à Baixo&#39;,
+	insert: &#39;Insert&#39;,
+	&#39;delete&#39;: &#39;Delete&#39;,
+	leftWindowKey: &#39;Tecla do Windows Esquerda&#39;,
+	rightWindowKey: &#39;Tecla do Windows Direita&#39;,
+	selectKey: &#39;Tecla Selecionar&#39;,
+	numpad0: &#39;0 do Teclado Numérico&#39;,
+	numpad1: &#39;1 do Teclado Numérico&#39;,
+	numpad2: &#39;2 do Teclado Numérico&#39;,
+	numpad3: &#39;3 do Teclado Numérico&#39;,
+	numpad4: &#39;4 do Teclado Numérico&#39;,
+	numpad5: &#39;5 do Teclado Numérico&#39;,
+	numpad6: &#39;6 do Teclado Numérico&#39;,
+	numpad7: &#39;7 do Teclado Numérico&#39;,
+	numpad8: &#39;8 do Teclado Numérico&#39;,
+	numpad9: &#39;9 do Teclado Numérico&#39;,
+	multiply: &#39;Multiplicar&#39;,
+	add: &#39;Mais&#39;,
+	subtract: &#39;Subtrair&#39;,
+	decimalPoint: &#39;Ponto&#39;,
+	divide: &#39;Dividir&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lock&#39;,
+	scrollLock: &#39;Scroll Lock&#39;,
+	semiColon: &#39;Ponto-e-vírgula&#39;,
+	equalSign: &#39;Igual&#39;,
+	comma: &#39;Vírgula&#39;,
+	dash: &#39;Hífen&#39;,
+	period: &#39;Ponto&#39;,
+	forwardSlash: &#39;Barra&#39;,
+	graveAccent: &#39;Acento Grave&#39;,
+	openBracket: &#39;Abrir Conchetes&#39;,
+	backSlash: &#39;Contra-barra&#39;,
+	closeBracket: &#39;Fechar Colchetes&#39;,
+	singleQuote: &#39;Aspas Simples&#39;
+} );
+</pre>
+</body>
+</html>

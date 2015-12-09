@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+( function() {
+	&#39;use strict&#39;;
+
+	CKEDITOR.plugins.add( &#39;embed&#39;, {
+		icons: &#39;embed&#39;, // %REMOVE_LINE_CORE%
+		hidpi: true, // %REMOVE_LINE_CORE%
+		requires: &#39;embedbase&#39;,
+
+		init: function( editor ) {
+			var widgetDefinition = CKEDITOR.plugins.embedBase.createWidgetBaseDefinition( editor );
+
+			// Extend the base definition with additional properties.
+			CKEDITOR.tools.extend( widgetDefinition, {
+				// Use a dialog exposed by the embedbase plugin.
+				dialog: &#39;embedBase&#39;,
+				button: editor.lang.embedbase.button,
+				allowedContent: &#39;div[!data-oembed-url]&#39;,
+				requiredContent: &#39;div[data-oembed-url]&#39;,
+				providerUrl: new CKEDITOR.template(
+					editor.config.embed_provider ||
+					&#39;//ckeditor.iframe.ly/api/oembed?url={url}&amp;callback={callback}&#39;
+				),
+
+				// The filter element callback actually allows all divs with data-oembed-url,
+				// so registering styles to the filter is virtually unnecessary because
+				// classes won&#39;t be filtered out. However, registering them will make filter.check() work
+				// which may be important in some cases.
+				styleToAllowedContentRules: function( style ) {
+					// Retrieve classes defined in the style.
+					var classes = style.getClassesArray();
+
+					return {
+						div: {
+							propertiesOnly: true,
+							classes: classes,
+							attributes: &#39;!data-oembed-url&#39;
+						}
+					};
+				},
+
+				upcast: function( el, data ) {
+					if ( el.name == &#39;div&#39; &amp;&amp; el.attributes[ &#39;data-oembed-url&#39; ] ) {
+						data.url = el.attributes[ &#39;data-oembed-url&#39; ];
+
+						return true;
+					}
+				},
+
+				downcast: function( el ) {
+					el.attributes[ &#39;data-oembed-url&#39; ] = this.data.url;
+				}
+			}, true );
+
+			// Register the definition as &#39;embed&#39; widget.
+			editor.widgets.add( &#39;embed&#39;, widgetDefinition );
+
+			// Do not filter contents of the div[data-oembed-url] at all.
+			editor.filter.addElementCallback( function( el ) {
+				if ( &#39;data-oembed-url&#39; in el.attributes ) {
+					return CKEDITOR.FILTER_SKIP_TREE;
+				}
+			} );
+		}
+	} );
+
+} )();
+
+<span id='CKEDITOR-config-cfg-embed_provider'>/**
+</span> * A template for the URL of the provider endpoint. This URL will be queried for each resource to be embedded.
+ * By default CKEditor uses the [Iframely](https://iframely.com/) service.
+ *
+ * The template might use the following parameters:
+ *
+ *	* `url` &amp;ndash; The URL of the requested media, e.g. `https://twitter.com/ckeditor/status/401373919157821441`.
+ *	* `callback` &amp;ndash; The name of the globally available callback used for JSONP requests.
+ *
+ * For example:
+ *
+ *		config.embed_provider = &#39;//example.com/api/oembed-proxy?resource-url={url}&amp;callback={callback}&#39;;
+ *
+ * You can read more about content providers in {@link CKEDITOR.plugins.embedBase.baseDefinition#providerUrl}.
+ *
+ * @since 4.5
+ * @cfg {String} [embed_provider=//ckeditor.iframe.ly/api/oembed?url={url}&amp;callback={callback}]
+ * @member CKEDITOR.config
+ */
+</pre>
+</body>
+</html>

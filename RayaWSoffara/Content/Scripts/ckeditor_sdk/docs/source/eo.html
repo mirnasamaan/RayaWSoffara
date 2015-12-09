@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;eo&#39;, {
+	title: &#39;Uzindikoj pri atingeblo&#39;,
+	contents: &#39;Helpilenhavo. Por fermi tiun dialogon, premu la ESKAPAN klavon.&#39;,
+	legend: [
+		{
+		name: &#39;Ĝeneralaĵoj&#39;,
+		items: [
+			{
+			name: &#39;Ilbreto de la redaktilo&#39;,
+			legend: &#39;Premu ${toolbarFocus} por atingi la ilbreton. Moviĝu al la sekva aŭ antaŭa grupoj de la ilbreto per la klavoj TABA kaj MAJUSKLIGA+TABA. Moviĝu al la sekva aŭ antaŭa butonoj de la ilbreto per la klavoj SAGO DEKSTREN kaj SAGO MALDEKSTREN. Premu la SPACETklavon aŭ la ENENklavon por aktivigi la ilbretbutonon.&#39;
+		},
+
+			{
+			name: &#39;Redaktildialogo&#39;,
+			legend:
+				&#39;Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.&#39;  // MISSING
+		},
+
+			{
+			name: &#39;Kunteksta menuo de la redaktilo&#39;,
+			legend: &#39;Premu ${contextMenu} aŭ entajpu la KLAVKOMBINAĴON por malfermi la kuntekstan menuon. Poste moviĝu al la sekva opcio de la menuo per la klavoj TABA aŭ SAGO SUBEN. Moviĝu al la antaŭa opcio per la klavoj MAJUSKLGA + TABA aŭ SAGO SUPREN. Premu la SPACETklavon aŭ ENENklavon por selekti la menuopcion. Malfermu la submenuon de la kuranta opcio per la SPACETklavo aŭ la ENENklavo aŭ la SAGO DEKSTREN. Revenu al la elemento de la patra menuo per la klavoj ESKAPA aŭ SAGO MALDEKSTREN. Fermu la kuntekstan menuon per la ESKAPA klavo.&#39;
+		},
+
+			{
+			name: &#39;Fallisto de la redaktilo&#39;,
+			legend: &#39;En fallisto, moviĝu al la sekva listelemento per la klavoj TABA aŭ SAGO SUBEN. Moviĝu al la antaŭa listelemento per la klavoj MAJUSKLIGA+TABA aŭ SAGO SUPREN. Premu la SPACETklavon aŭ ENENklavon por selekti la opcion en la listo. Premu la ESKAPAN klavon por fermi la falmenuon.&#39;
+		},
+
+			{
+			name: &#39;Breto indikanta la vojon al la redaktilelementoj&#39;,
+			legend: &#39;Premu ${elementsPathFocus} por navigi al la breto indikanta la vojon al la redaktilelementoj. Moviĝu al la butono de la sekva elemento per la klavoj TABA aŭ SAGO DEKSTREN. Moviĝu al la butono de la antaŭa elemento per la klavoj MAJUSKLIGA+TABA aŭ SAGO MALDEKSTREN. Premu la SPACETklavon aŭ ENENklavon por selekti la elementon en la redaktilo.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Komandoj&#39;,
+		items: [
+			{
+			name: &#39;Komando malfari&#39;,
+			legend: &#39;Premu ${undo}&#39;
+		},
+			{
+			name: &#39;Komando refari&#39;,
+			legend: &#39;Premu ${redo}&#39;
+		},
+			{
+			name: &#39;Komando grasa&#39;,
+			legend: &#39;Premu ${bold}&#39;
+		},
+			{
+			name: &#39;Komando kursiva&#39;,
+			legend: &#39;Premu ${italic}&#39;
+		},
+			{
+			name: &#39;Komando substreki&#39;,
+			legend: &#39;Premu ${underline}&#39;
+		},
+			{
+			name: &#39;Komando ligilo&#39;,
+			legend: &#39;Premu ${link}&#39;
+		},
+			{
+			name: &#39;Komando faldi la ilbreton&#39;,
+			legend: &#39;Premu ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;Komando por atingi la antaŭan fokusan spacon&#39;,
+			legend: &#39;Press ${accessPreviousSpace} por atingi la plej proksiman neatingeblan fokusan spacon antaŭ la kursoro, ekzemple : du kuntuŝiĝajn HR elementojn. Ripetu la klavkombinaĵon por atingi malproksimajn fokusajn spacojn.&#39;
+		},
+			{
+			name: &#39;Komando por atingi la sekvan fokusan spacon&#39;,
+			legend: &#39;Press ${accessNextSpace} por atingi la plej proksiman neatingeblan fokusan spacon post la kursoro, ekzemple : du kuntuŝiĝajn HR elementojn. Ripetu la klavkombinajôn por atingi malproksimajn fokusajn spacojn&#39;
+		},
+			{
+			name: &#39;Helpilo pri atingeblo&#39;,
+			legend: &#39;Premu ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Retropaŝo&#39;,
+	tab: &#39;Tabo&#39;,
+	enter: &#39;Enigi&#39;,
+	shift: &#39;Registrumo&#39;,
+	ctrl: &#39;Stirklavo&#39;,
+	alt: &#39;Alt-klavo&#39;,
+	pause: &#39;Paŭzo&#39;,
+	capslock: &#39;Majuskla baskulo&#39;,
+	escape: &#39;Eskapa klavo&#39;,
+	pageUp: &#39;Antaŭa Paĝo&#39;,
+	pageDown: &#39;Sekva Paĝo&#39;,
+	end: &#39;Fino&#39;,
+	home: &#39;Hejmo&#39;,
+	leftArrow: &#39;Sago Maldekstren&#39;,
+	upArrow: &#39;Sago Supren&#39;,
+	rightArrow: &#39;Sago Dekstren&#39;,
+	downArrow: &#39;Sago Suben&#39;,
+	insert: &#39;Enmeti&#39;,
+	&#39;delete&#39;: &#39;Forigi&#39;,
+	leftWindowKey: &#39;Maldekstra Windows-klavo&#39;,
+	rightWindowKey: &#39;Dekstra Windows-klavo&#39;,
+	selectKey: &#39;Selektklavo&#39;,
+	numpad0: &#39;Nombra Klavaro 0&#39;,
+	numpad1: &#39;Nombra Klavaro 1&#39;,
+	numpad2: &#39;Nombra Klavaro 2&#39;,
+	numpad3: &#39;Nombra Klavaro 3&#39;,
+	numpad4: &#39;Nombra Klavaro 4&#39;,
+	numpad5: &#39;Nombra Klavaro 5&#39;,
+	numpad6: &#39;Nombra Klavaro 6&#39;,
+	numpad7: &#39;Nombra Klavaro 7&#39;,
+	numpad8: &#39;Nombra Klavaro 8&#39;,
+	numpad9: &#39;Nombra Klavaro 9&#39;,
+	multiply: &#39;Obligi&#39;,
+	add: &#39;Almeti&#39;,
+	subtract: &#39;Subtrahi&#39;,
+	decimalPoint: &#39;Dekuma Punkto&#39;,
+	divide: &#39;Dividi&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Nombra Baskulo&#39;,
+	scrollLock: &#39;Ruluma Baskulo&#39;,
+	semiColon: &#39;Punktokomo&#39;,
+	equalSign: &#39;Egalsigno&#39;,
+	comma: &#39;Komo&#39;,
+	dash: &#39;Haltostreko&#39;,
+	period: &#39;Punkto&#39;,
+	forwardSlash: &#39;Oblikvo&#39;,
+	graveAccent: &#39;Malakuto&#39;,
+	openBracket: &#39;Malferma Krampo&#39;,
+	backSlash: &#39;Retroklino&#39;,
+	closeBracket: &#39;Ferma Krampo&#39;,
+	singleQuote: &#39;Citilo&#39;
+} );
+</pre>
+</body>
+</html>

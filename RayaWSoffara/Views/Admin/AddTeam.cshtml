@@ -1,0 +1,174 @@
+﻿@{
+    ViewBag.Title = "Add Team";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<form id="addForm" class="form-horizontal" action="/Admin/AddTeam" method="post" enctype="multipart/form-data">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-btns">
+                <a href="" class="panel-close">&times;</a>
+                <a href="" class="minimize">&minus;</a>
+            </div>
+            <h4 class="panel-title">Add Team</h4>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Team Name:</label>
+                <div class="col-sm-8">
+                    <input type="text" name="TeamName" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Team Icon:</label>
+                <div class="col-sm-8">
+                    <input name="path" class="form-control" type="file" accept="image/*" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Competitions</label>
+                <div class="col-sm-8">
+                    <ul id="compsTags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Players</label>
+                <div class="col-sm-8">
+                    <ul id="playersTags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <input id="competitions" name="competitions" type="hidden" />
+            <input id="players" name="players" type="hidden" />
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-primary">Add Team</button>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel-default -->
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+    var compsAvailableTags;
+    var compsAvailableTagsID;
+    var playersAvailableTags;
+    var playersAvailableTagsID;
+   
+    $('#compsTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "/Admin/GetCompetitions",
+                    success: function (comps) {
+                        compsAvailableTags = [];
+                        compsAvailableTagsID = [];
+                        for (i = 0; i < comps.length; i++) {
+                            compsAvailableTags.push(comps[i].ItemName);
+                            compsAvailableTagsID.push(comps[i].ItemId);
+                        }
+                        showChoices(compsAvailableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, compsAvailableTags) == -1) {
+                return false;
+            }
+        },
+        afterTagAdded: function (event, ui) {
+            var index = compsAvailableTags.indexOf(ui.tagLabel);
+            var id = compsAvailableTagsID[index];
+            $("#compsTags li").eq(-2).attr("data-id", id);
+        }
+    });
+
+    $('#playersTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "GET",
+                    url: "/Admin/GetPlayers",
+                    success: function (players) {
+                        playersAvailableTags = [];
+                        playersAvailableTagsID = [];
+                        for (i = 0; i < players.length; i++) {
+                            playersAvailableTags.push(players[i].ItemName);
+                            playersAvailableTagsID.push(players[i].ItemId);
+                        }
+                        showChoices(playersAvailableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, playersAvailableTags) == -1) {
+                return false;
+            }
+        },
+        afterTagAdded: function (event, ui) {
+            var index = playersAvailableTags.indexOf(ui.tagLabel);
+            var id = playersAvailableTagsID[index];
+            $("#playersTags li").eq(-2).attr("data-id", id);
+        }
+    });
+
+    $("#addForm").submit(function (e) {
+        var comps = "";
+        var noOfComps = parseInt($("#compsTags li").length - 1);
+        
+        $('#compsTags').children('li').each(function (e) {
+            if (parseInt(e) == parseInt(noOfComps)) {
+                return false;
+            }
+            var compId = $(this).attr('data-id');
+            comps = comps + compId + ",";
+        });
+        comps = comps.substring(0, comps.length - 1);
+        $("#competitions").val(comps);
+
+        var players = "";
+        var noOfPlayers = parseInt($("#playersTags li").length - 1);
+
+        $('#playersTags').children('li').each(function (e) {
+            if (parseInt(e) == parseInt(noOfPlayers)) {
+                return false;
+            }
+            var playerId = $(this).attr('data-id');
+            players = players + playerId + ",";
+        });
+        players = players.substring(0, players.length - 1);
+        $("#players").val(players);
+
+        return true;
+    });
+
+    $("#addForm").validate({
+        rules: {
+            CompetitionName: "required"
+        }
+    });
+</script>

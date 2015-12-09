@@ -1,0 +1,136 @@
+﻿@model RayaWSoffara.Models.UserProfileVM
+@using RayaWSoffara.Helpers
+@{
+    ViewBag.Title = "حسابي";
+}
+
+<div class="clear-fix"></div>
+<div class="container" id="profile_container">
+    <div class="profile-title profile-title2 col-md-4 col-xs-12">
+        <div class="user-data-title">
+            @*<span>Mirna Samaan</span>*@
+            <span>@ViewBag.userProfile.FirstName @ViewBag.userProfile.LastName</span>
+            <div class="clear-fix"></div>
+            <div>@ViewBag.userProfile.UserName</div>
+        </div>
+        <div class="clear-fix"></div>
+        <div class="user-image">
+            @if (@ViewBag.userProfile.profileImgUrl != null)
+            {
+                <img class="pull-left" src="@ViewBag.userProfile.profileImgUrl?w=100&h=100&mode=crop" />
+            }
+            else
+            {
+                <img class="pull-left" src="~/Content/Images/img_writer.jpg?w=100&h=100&mode=crop" />
+            }
+        </div>
+        <div class="clear-fix"></div>
+        <div class="user-data">
+            <div class="numerics">
+                <div class="pull-left col-md-6">
+                    <div>@ViewBag.userProfile.articlesCount</div>
+                    <label>مقالة</label>
+                </div>
+                <div class="pull-left col-md-6">
+                    <div>@ViewBag.userProfile.viewsCount</div>
+                    <label>مشاهدة</label>
+                </div>
+            </div>
+            <div class="clear-fix"></div>
+        </div>
+        <div class="clear-fix"></div>
+        <div id="profile-user-data">
+            <div class="profile-sub-title">معلومات شخصية</div>
+            <div class="form-group">
+                <label class="pull-left">البطولة المفضلة</label>
+                <input class="form-control" value="@ViewBag.userProfile.FavCompName" disabled />
+            </div>
+            <div class="form-group">
+                <label class="pull-left">الفريق المفضل</label>
+                <input class="form-control" value="@ViewBag.userProfile.FavTeamName" disabled />
+            </div>
+            <div class="form-group">
+                <label class="pull-left">أسم المستخدم</label>
+                <input type="text" class="form-control" name="DisplayName" value="@ViewBag.userProfile.DisplayName" disabled />
+            </div>
+            <div class="form-group">
+                <label class="pull-left">نبذة عن @ViewBag.userProfile.FirstName</label>
+                <textarea class="form-control" name="AboutYou" disabled>@ViewBag.userProfile.AboutYou</textarea>
+            </div>
+            <div class="form-group">
+                <label class="pull-left">حساب تويتر</label>
+                <input type="text" class="form-control" name="Twitter" value="@ViewBag.userProfile.Twitter" disabled />
+            </div>
+            <div class="form-group">
+                <label class="pull-left">حساب جوجل بلس</label>
+                <input type="text" class="form-control" name="Google" value="@ViewBag.userProfile.Google" disabled />
+            </div>
+        </div>
+
+    </div>
+
+    <div class="profile col-md-8">
+        <div class="achievement-container">
+            <div class="clear-fix"></div>
+            <div class="profile-sub-title">نقاط الكاتب</div>
+            <div class="achievements">
+            @foreach (var item in ViewBag.TotalPoints)
+            {
+                <a href="/Points?Username=@ViewBag.userProfile.UserName&MonthId=@item.MonthId&YearId=@item.YearId">
+                    <div class="achievement-item pull-left col-lg-2">
+                        <div class="month-value">@item.MonthName @item.YearId</div>
+                        <div class="icon"><img src="/Content/Images/medal.png" /></div>
+                        <div class="points-value">
+                            <div>@item.PointsValue</div>
+                            <div>نقطة</div>
+                        </div>
+                    </div>
+                </a>
+            }
+            </div>
+        </div>
+        <div class="clear-fix"></div>
+        <div class="recents">
+            @*<div class="title pull-left">مقالات الكاتب</div>*@
+            <div class="profile-sub-title">مقالات الكاتب</div>
+            <div class="clear-fix"></div>
+            @if (@ViewBag.userProfile.articlesCount == 0)
+            {
+                <div class="no-results pull-left">لا توجد مقالات لهذا الكاتب.</div>
+            }
+            @foreach (var article in @ViewBag.userProfile.recentArticles)
+            {
+                <div class="recent-articles">
+                    <div class="col-md-4 col-xs-12">
+                        <a href="/Post/@article.PostId">
+                            @if (@article.FeaturedImage != null)
+                            {
+                                <img class="" id="article_img" src="~/Content/Article_Images/@article.FeaturedImage?w=210&h=140&mode=crop" /> 
+                            }
+                            else
+                            {
+                                <iframe width="210" height="140" src="https://www.youtube.com/embed/@article.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
+                            }
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="article_title pull-left">@article.Title</div>
+                        <div class="clear-fix"></div>
+                        <div class="">
+                            <div class="content">
+                                @{ string text = @Html.Raw(article.Content).ToString(); }
+                                @TrimTextHelper.TrimText(@text, 300);
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="clear-fix"></div>
+                
+            }
+
+        </div>
+    </div>
+
+
+</div>

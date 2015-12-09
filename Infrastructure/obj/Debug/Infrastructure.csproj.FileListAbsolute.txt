@@ -1,0 +1,9 @@
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\obj\Debug\Infrastructure.csprojResolveAssemblyReference.cache
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\bin\Debug\Infrastructure.dll
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\bin\Debug\Infrastructure.pdb
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\bin\Debug\RWSDataLayer.dll
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\bin\Debug\EntityFramework.dll
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\bin\Debug\RWSDataLayer.pdb
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\bin\Debug\EntityFramework.xml
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\obj\Debug\Infrastructure.dll
+C:\Everything\Projects\Enlight\RayaWSoffara 3-22-2015\RayaWSofara\Infrastructure\obj\Debug\Infrastructure.pdb

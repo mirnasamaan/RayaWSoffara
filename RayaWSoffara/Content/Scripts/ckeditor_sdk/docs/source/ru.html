@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;ru&#39;, {
+	title: &#39;Горячие клавиши&#39;,
+	contents: &#39;Помощь. Для закрытия этого окна нажмите ESC.&#39;,
+	legend: [
+		{
+		name: &#39;Основное&#39;,
+		items: [
+			{
+			name: &#39;Панель инструментов&#39;,
+			legend: &#39;Нажмите ${toolbarFocus} для перехода к панели инструментов. Для перемещения между группами панели инструментов используйте TAB и SHIFT+TAB. Для перемещения между кнопками панели иструментов используйте кнопки ВПРАВО или ВЛЕВО. Нажмите ПРОБЕЛ или ENTER для запуска кнопки панели инструментов.&#39;
+		},
+
+			{
+			name: &#39;Диалоги&#39;,
+			legend:
+				&#39;Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.&#39;  // MISSING
+		},
+
+			{
+			name: &#39;Контекстное меню&#39;,
+			legend: &#39;Нажмите ${contextMenu} или клавишу APPLICATION, чтобы открыть контекстное меню. Затем перейдите к следующему пункту меню с помощью TAB или стрелкой &quot;ВНИЗ&quot;. Переход к предыдущей опции - SHIFT+TAB или стрелкой &quot;ВВЕРХ&quot;. Нажмите SPACE, или ENTER, чтобы задействовать опцию меню. Открыть подменю текущей опции - SPACE или ENTER или стрелкой &quot;ВПРАВО&quot;. Возврат к родительскому пункту меню - ESC или стрелкой &quot;ВЛЕВО&quot;. Закрытие контекстного меню - ESC.&#39;
+		},
+
+			{
+			name: &#39;Редактор списка&#39;,
+			legend: &#39;Внутри окна списка, переход к следующему пункту списка - TAB или стрелкой &quot;ВНИЗ&quot;. Переход к предыдущему пункту списка - SHIFT+TAB или стрелкой &quot;ВВЕРХ&quot;. Нажмите SPACE, или ENTER, чтобы задействовать опцию списка. Нажмите ESC, чтобы закрыть окно списка.&#39;
+		},
+
+			{
+			name: &#39;Путь к элементу&#39;,
+			legend: &#39;Нажмите ${elementsPathFocus}, чтобы перейти к панели пути элементов. Переход к следующей кнопке элемента - TAB или стрелкой &quot;ВПРАВО&quot;. Переход к предыдущей кнопку - SHIFT+TAB или стрелкой &quot;ВЛЕВО&quot;. Нажмите SPACE, или ENTER, чтобы выбрать элемент в редакторе.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Команды&#39;,
+		items: [
+			{
+			name: &#39;Отменить&#39;,
+			legend: &#39;Нажмите ${undo}&#39;
+		},
+			{
+			name: &#39;Повторить&#39;,
+			legend: &#39;Нажмите ${redo}&#39;
+		},
+			{
+			name: &#39;Полужирный&#39;,
+			legend: &#39;Нажмите ${bold}&#39;
+		},
+			{
+			name: &#39;Курсив&#39;,
+			legend: &#39;Нажмите ${italic}&#39;
+		},
+			{
+			name: &#39;Подчеркнутый&#39;,
+			legend: &#39;Нажмите ${underline}&#39;
+		},
+			{
+			name: &#39;Гиперссылка&#39;,
+			legend: &#39;Нажмите ${link}&#39;
+		},
+			{
+			name: &#39;Свернуть панель инструментов&#39;,
+			legend: &#39;Нажмите ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;Команды доступа к предыдущему фокусному пространству&#39;,
+			legend: &#39;Нажмите ${accessPreviousSpace}, чтобы обратиться к ближайшему недостижимому фокусному пространству перед символом &quot;^&quot;, например: два смежных HR элемента. Повторите комбинацию клавиш, чтобы достичь отдаленных фокусных пространств.&#39;
+		},
+			{
+			name: &#39;Команды доступа к следующему фокусному пространству&#39;,
+			legend: &#39;Press ${accessNextSpace} to access the closest unreachable focus space after the caret, for example: two adjacent HR elements. Repeat the key combination to reach distant focus spaces.&#39;
+		},
+			{
+			name: &#39;Справка по горячим клавишам&#39;,
+			legend: &#39;Нажмите ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Backspace&#39;,
+	tab: &#39;Tab&#39;,
+	enter: &#39;Enter&#39;,
+	shift: &#39;Shift&#39;,
+	ctrl: &#39;Ctrl&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Pause&#39;,
+	capslock: &#39;Caps Lock&#39;,
+	escape: &#39;Esc&#39;,
+	pageUp: &#39;Page Up&#39;,
+	pageDown: &#39;Page Down&#39;,
+	end: &#39;End&#39;,
+	home: &#39;Home&#39;,
+	leftArrow: &#39;Стрелка влево&#39;,
+	upArrow: &#39;Стрелка вверх&#39;,
+	rightArrow: &#39;Стрелка вправо&#39;,
+	downArrow: &#39;Стрелка вниз&#39;,
+	insert: &#39;Insert&#39;,
+	&#39;delete&#39;: &#39;Delete&#39;,
+	leftWindowKey: &#39;Левая клавиша Windows&#39;,
+	rightWindowKey: &#39;Правая клавиша Windows&#39;,
+	selectKey: &#39;Выбрать&#39;,
+	numpad0: &#39;Цифра 0&#39;,
+	numpad1: &#39;Цифра 1&#39;,
+	numpad2: &#39;Цифра 2&#39;,
+	numpad3: &#39;Цифра 3&#39;,
+	numpad4: &#39;Цифра 4&#39;,
+	numpad5: &#39;Цифра 5&#39;,
+	numpad6: &#39;Цифра 6&#39;,
+	numpad7: &#39;Цифра 7&#39;,
+	numpad8: &#39;Цифра 8&#39;,
+	numpad9: &#39;Цифра 9&#39;,
+	multiply: &#39;Умножить&#39;,
+	add: &#39;Плюс&#39;,
+	subtract: &#39;Вычесть&#39;,
+	decimalPoint: &#39;Десятичная точка&#39;,
+	divide: &#39;Делить&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lock&#39;,
+	scrollLock: &#39;Scroll Lock&#39;,
+	semiColon: &#39;Точка с запятой&#39;,
+	equalSign: &#39;Равно&#39;,
+	comma: &#39;Запятая&#39;,
+	dash: &#39;Тире&#39;,
+	period: &#39;Точка&#39;,
+	forwardSlash: &#39;Наклонная черта&#39;,
+	graveAccent: &#39;Апостроф&#39;,
+	openBracket: &#39;Открыть скобку&#39;,
+	backSlash: &#39;Обратная наклонная черта&#39;,
+	closeBracket: &#39;Закрыть скобку&#39;,
+	singleQuote: &#39;Одинарная кавычка&#39;
+} );
+</pre>
+</body>
+</html>

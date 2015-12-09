@@ -1,0 +1,439 @@
+﻿@model RayaWSoffara.Models.UserArticleVM
+@using RayaWSoffara.Helpers
+
+@{
+    ViewBag.Title = Model.newArticle.Title;
+}
+
+<div class="clear-fix"></div>
+@if (@Model.newArticle.IsActive != true && User.Identity.Name != @Model.newArticle.RWSUser.UserName)
+{
+    <div class="Page404">
+        <img src="~/Content/Images/404.png" />
+    </div>
+} else {
+<div class="container full_width" id="display_post_container">
+    <div class="display_article_header"></div>
+    <input type="hidden" id="PostId" value="@Model.newArticle.PostId" />
+    <input type="hidden" id="current_user" value="@User.Identity.Name" />
+    <div class="col-md-8">
+        <div class="post-container">
+            <div class="row">
+                <div class="article_display_row">
+                    <div class="article_title pull-left">
+                        @if (@Model.newArticle.Title != null)
+                        {
+                            <div class="pull-left">@Model.newArticle.Title</div>
+                        }
+                    </div>
+                    <div class="clear-fix"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="article_display_row">
+                    <div class="pull-left user-data">
+                        <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName">@Model.newArticle.RWSUser.UserName</a></span></div>
+                        <div class="border pull-left"></div>
+                        <div class="pull-left"><span class="date">@ArabicTimeStampHelper.ArabicTimeStamp(Convert.ToDateTime(Model.newArticle.ActivationDate))</span></div>
+                    </div>
+                    <div class="clear-fix"></div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="article_display_row">
+                    <div class="pull-left social-media-icons">
+                        <div class="pull-left">
+                            <a href="javascript:void(0)" class="so-facebook" onclick="facebookshare()"><i class="fa fa-facebook"></i></a>
+                        </div>
+                        <div class="pull-left">
+                            <a href="javascript:void(0)" class="so-twitter" onclick="twittershare()"><i class="fa fa-twitter"></i></a>
+                        </div>
+                        <div class="pull-left">
+                            <a href="javascript:void(0)" class="so-google" onclick="googleplusshare()"><i class="fa fa-google-plus"></i></a>
+                        </div>
+                    </div>
+                    <div class="pull-left article_stats">
+                        <div class="pull-left shares">
+                            <div class="count">@Model.newArticle.SharesCount</div>
+                            <div>مشاركة</div>
+                        </div>
+                        <div class="border pull-left"></div>
+                        <div class="pull-left comments">
+                            <div class="count">@Model.newArticle.RWSUser.Comments.Where(i=>i.CommentPostId==Model.newArticle.PostId).Count()</div>
+                            <div>تعليق</div>
+                        </div>
+                        <div class="border pull-left"></div>
+                        <div class="pull-left views">
+                            <div class="count">@Model.newArticle.ViewsCount</div>
+                            <div>مشاهدة</div>
+                        </div>
+                    </div>
+                    <div class="pull-right">
+                        @{ int id = Model.newArticle.PostTypeId.Value;
+                                   string color = "";
+                                   string icon = "";
+                                   string type = ""; }
+                        @{
+                           switch (id)
+                           {
+                               case 1: color = "orange";
+                                   icon = "<i class='fa fa-newspaper-o' title='مقالة'></i>";
+                                   type = "مقالة";
+                                   break;
+                               case 2: color = "red";
+                                   icon = "<i class='fa fa-trophy' title='مقالة توب X'></i>";
+                                   type = "مقالة توب X";
+                                   break;
+                               case 3: color = "green";
+                                   icon = "<i class='fa fa-exclamation' title='رأي'></i>";
+                                   type = "رأي";
+                                   break;
+                               case 4: color = "blue";
+                                   icon = "<i class='fa fa-picture-o' title='صورة'></i>";
+                                   type = "صورة";
+                                   break;
+                               case 5: color = "brown";
+                                   icon = "<i class='fa fa-video-camera' title='فيديو'></i>";
+                                   type = "فيديو";
+                                   break;
+                               default: color = "black"; break;
+                           }
+                        }
+                        <div class="post-type post-type-indicator pull-left @color" title="@type">
+                            @Html.Raw(@icon)
+                        </div>
+                        <div class="pull-right name">@Model.newArticle.PostType.PostTypeName</div>
+                    </div>
+                    <div class="clear-fix"></div>
+                </div>
+            </div>
+            @if ((@Model.newArticle.FeaturedImage != null) || (@Model.newArticle.FeaturedVideo != null))
+            {
+                <div class="row">
+                    <div class="article_display_row">
+                        @if (@Model.newArticle.FeaturedImage != null)
+                        {
+                            <img src="~/Content/Article_Images/@Model.newArticle.FeaturedImage?w=725&h=410&mode=crop" /> 
+                        }
+                        else if (@Model.newArticle.FeaturedVideo != null)
+                        {
+                            <iframe width="755" height="566" src="https://www.youtube.com/embed/@Model.newArticle.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
+                        }
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="article_display_content">
+                    @Html.Raw(@Model.newArticle.Content)
+                </div>
+            </div>
+            @if (Model.newArticle.PostTypeId == 2)
+            {
+                foreach (var item in Model.newArticle.ArticleTopXes)
+                {
+                   
+                <div class="topX-item">
+                    <div class="row">
+                        <div class="article_display_row">
+                            <div class="article_title_order pull-left"><span>@item.TopXOrder</span></div>
+                            <div class="article_title pull-left">
+                                @if (@item.TopXTitle != null)
+                                {
+                                    <div class="pull-left">@item.TopXTitle</div>
+                                }
+                            </div>
+                            <div class="clear-fix"></div>
+                        </div>
+                    </div>
+                    @if ((@item.TopXImage != null) || (@item.TopXVideo != null))
+                    {
+                        <div class="row">
+                            <div class="article_display_row">
+                                @if (@item.TopXImage != null)
+                                {
+                                    <img src="~/Content/Article_Images/@item.TopXImage?w=725&h=410&mode=crop" /> 
+                                }
+                                else if (@item.TopXVideo != null)
+                                {
+                                    <iframe width="755" height="566" src="https://www.youtube.com/embed/@item.TopXVideo" frameborder="0" allowfullscreen></iframe>
+                                }
+                            </div>
+                        </div>
+                    }
+                    <div class="row">
+                        <div class="article_display_content">
+                            @Html.Raw(@item.TopXContent)
+                        </div>
+                    </div>
+
+                </div> 
+                }
+            }
+        </div>
+        <div class="row">
+            <div class="article_display_row">
+                <div class="pull-left tags-title">كلمات مفتاحية :</div>
+                <div class="tags-container">
+                    @{ var allTagsCount = @Model.newArticle.Tags.Count;
+                       int count = 0; }
+                    @foreach (var tag in @Model.newArticle.Tags)
+                    {
+                        count = count + 1;
+                        <div class="pull-left">
+                            <a href="/?posts=&tags=@tag.TagName">
+                                <label class="pull-left tag-item" data-id="@tag.TagId">@tag.TagName</label>
+                            </a>
+                            @if (count != allTagsCount)
+                            {
+                                <div class="pull-right border"></div>
+                            }
+                        </div>
+                        
+                    }
+                    <div class="clear-fix"></div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="article_display_row comments-container">
+                <input type="hidden" id="AllCommentsCount" value="@ViewBag.AllCommentsCount" />
+                <div class="title">تعليقات</div>
+                <div class="clear-fix"></div>
+                <div class="content comments-box">@Html.Partial("_CommentPartial", Model)</div>
+
+                <div class="load-more-comments">
+                    <button onclick="loadMore()">أظهر المزيد</button>
+                    <input type="hidden" id="index" value="0" />
+                </div>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="new-comment">
+                        <div class="pull-left user-img">
+                            <img src="@ViewBag.CurrentUserPicture?w=50&h=50&mode=crop" />
+                        </div>
+                        <textarea id="add_comment" class="pull-left"></textarea>
+                        <button class="pull-right" onclick="addComment()">أضف تعليق</button>
+                        <div class="clear-fix"></div>
+                        <div class="comment-validation hidden">يجب إدخال محتوى التعليق.</div>
+                    </div>
+                }
+                <div class="clear-fix"></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div id="other_articles">
+            <div class="writer_title_div col-xs-12">
+                مقالات أخرى للكاتب
+            </div>
+            <div class="clear-fix"></div>
+            <div class="writers_data_div">
+                @foreach (var article in @Model.userArticles)
+                {
+                    <div class="single_article col-md-12 col-xs-6">
+                        <div class="col-xs-5">
+                            <div class="other_articles_img">
+                                <a href="../../Article/ArticleDisplay/@article.PostId">
+                                    @if (@article.HasImage == true)
+                                    {
+                                        <img class="img" id="" src="~/Content/Article_Images/@article.FeaturedImage?w=135&h=90&mode=crop" />
+                                    }
+                                    else
+                                    {
+                                        <img class="video_img" src="http://img.youtube.com/vi/@article.FeaturedVideo/0.jpg?w=135&h=90&mode=crop">
+                                    }
+
+                                </a>
+                            </div>
+                        </div>
+                        <div class="col-xs-7">
+                            <div class="title">
+                                @Html.ActionLink(@article.Title, "ArticleDisplay", new { id = @article.PostId })
+                            </div>
+                            <div class="abstract">
+                                @{ string text = @Html.Raw(@article.Content).ToString(); }
+                                @TrimTextHelper.TrimText(@text, 50)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="clear-fix hidden-xs hidden-sm"></div>
+                }
+            </div>
+            <div class="clear-fix"></div>
+            <div id="profile-user-data">
+                <div class="profile-sub-title">
+                    <div>معلومات شخصية</div>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" value="@ViewBag.FavTeamName" disabled />
+                </div>
+                <div class="form-group">
+                    <input class="form-control" value="@ViewBag.FavCompName" disabled />
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="DisplayName" value="@Model.newArticle.RWSUser.UserName" disabled />
+                </div>
+                <div class="form-group">
+                    <textarea class="form-control" name="AboutYou" disabled>@Model.newArticle.RWSUser.AboutYou</textarea>
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="Twitter" value="@Model.newArticle.RWSUser.Twitter" disabled />
+                </div>
+                <div class="form-group">
+                    <input type="text" class="form-control" name="Google" value="@Model.newArticle.RWSUser.Google" disabled />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="loading hidden">
+    <div>
+        <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+        </div>
+    </div>
+</div>
+}
+<script>
+
+    //start of view more button display //
+    $(document).ready(function () {
+        var allCommentsCount = parseInt($("#AllCommentsCount").val());
+        if (allCommentsCount <= 10) {
+            $(".load-more-comments").css("display", "none");
+        }
+    });
+    //end of view more button display //
+    
+    // start of adding a new comment //
+    function addComment() {
+        if ($("#add_comment").val() == "") {
+            $(".comment-validation").removeClass("hidden");
+        } else {
+            $(".new-comment button").attr('disabled', 'disabled');
+            $(".comment-validation").addClass("hidden");
+            var comment = $("#add_comment").val();
+            $("#add_comment").val("");
+            var post_id = $("#PostId").val();
+            var username = $("#current_user").val();
+            $.ajax({
+                type: "POST",
+                data: { PostId: post_id, CommentText: comment, Username: username },
+                url: "/Article/AddComment",
+                beforeSend: function () {
+                    $(".loading").removeClass("hidden");
+                },
+                success: function (data) {
+                    $.ajax({
+                        type: "POST",
+                        data: { id: post_id },
+                        url: "/Article/ArticleDisplay",
+                        success: function (data1) {
+                            $(".comments-box").html(data1);
+                            var comments_count = parseInt($(".article_stats .comments .count").html());
+                            $(".article_stats .comments .count").html(parseInt(comments_count + 1));
+                        }
+                    }).done(function () {
+                        $(".loading").addClass("hidden");
+                        $(".new-comment button").removeAttr('disabled');
+                    });
+                }
+            });
+        }
+    }
+    // end of adding a new comment //
+
+    //start of loading more comments //
+    function loadMore() {
+        var post_id = $("#PostId").val();
+        var index = parseInt($("#index").val());
+        $("#index").val(parseInt(index + 1));
+
+        $.ajax({
+            type: 'POST',
+            url: '/Article/GetComments',
+            data: { Index: parseInt(index + 1), PostId: post_id },
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (data) {
+                $comments = $(data);
+                $('.comments-box').prepend($comments);
+
+                $('html, body').animate({
+                    scrollTop: $(".comments-container").offset().top - 150
+                }, 1000);
+
+                var allCommentsCount = parseInt($("#AllCommentsCount").val());
+                var displayedCommentCount = parseInt($(".comment-container").length);
+                if (allCommentsCount <= displayedCommentCount) {
+                    $(".load-more-comments").css("display", "none");
+                }
+                $(".loading").addClass("hidden");
+            },
+            error: function () {
+                $(".loading").addClass("hidden");
+            }
+        });
+    }
+    // end of loading more comments //
+
+    // start of comment textarea auto-resize function //
+    $('#add_comment').bind('input propertychange', function () {
+        this.style.height = "50px";
+        this.style.height = (1 + this.scrollHeight) + "px";
+    });
+    // end of comment textarea auto-resize function //
+
+    // start of facebook share function //
+    function facebookshare() {
+        var post_id = $("#PostId").val();
+        $.ajax({
+            type: "POST",
+            data: { PostId: post_id },
+            url: "/Article/AddShareCount"
+        });
+        var summary = $('.article_display_content').text().substring(1, 500);
+        var title = "@Model.newArticle.Title";
+        var link = "/Post/" + post_id;
+        window.open("http://www.facebook.com/sharer.php?s=100&p[url]=@Request.Url&p[images][0]=/Content/Article_Images/@Model.newArticle.FeaturedImage&p[title]=title&p[summary]=summary", 'mywin', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;
+    }
+    // end of facebook share function //
+
+    // start of twitter share function //
+    function twittershare() {
+        var post_id = $("#PostId").val();
+        $.ajax({
+            type: "POST",
+            data: { PostId: post_id },
+            url: "/Article/AddShareCount"
+        });
+        window.open("https://twitter.com/intent/tweet?url=@(Request.Url.ToString())&text=@(Model.newArticle.Title)", 'mywin', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;
+    }
+    // end of twitter share function //
+
+    // start of google plus share function //
+    function googleplusshare() {
+        var post_id = $("#PostId").val();
+        $.ajax({
+            type: "POST",
+            data: { PostId: post_id },
+            url: "/Article/AddShareCount"
+        });
+        window.open("https://plus.google.com/share?url=@(Request.Url.ToString())", 'mywin', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;
+    }
+    // end of google plus share function //
+
+</script>

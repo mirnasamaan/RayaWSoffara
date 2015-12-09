@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;tt&#39;, {
+	title: &#39;Accessibility Instructions&#39;, // MISSING
+	contents: &#39;Help Contents. To close this dialog press ESC.&#39;, // MISSING
+	legend: [
+		{
+		name: &#39;Гомуми&#39;,
+		items: [
+			{
+			name: &#39;Editor Toolbar&#39;, // MISSING
+			legend: &#39;Press ${toolbarFocus} to navigate to the toolbar. Move to the next and previous toolbar group with TAB and SHIFT+TAB. Move to the next and previous toolbar button with RIGHT ARROW or LEFT ARROW. Press SPACE or ENTER to activate the toolbar button.&#39; // MISSING
+		},
+
+			{
+			name: &#39;Editor Dialog&#39;, // MISSING
+			legend:
+				&#39;Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.&#39;  // MISSING
+		},
+
+			{
+			name: &#39;Editor Context Menu&#39;, // MISSING
+			legend: &#39;Press ${contextMenu} or APPLICATION KEY to open context-menu. Then move to next menu option with TAB or DOWN ARROW. Move to previous option with SHIFT+TAB or UP ARROW. Press SPACE or ENTER to select the menu option. Open sub-menu of current option with SPACE or ENTER or RIGHT ARROW. Go back to parent menu item with ESC or LEFT ARROW. Close context menu with ESC.&#39; // MISSING
+		},
+
+			{
+			name: &#39;Editor List Box&#39;, // MISSING
+			legend: &#39;Inside a list-box, move to next list item with TAB OR DOWN ARROW. Move to previous list item with SHIFT+TAB or UP ARROW. Press SPACE or ENTER to select the list option. Press ESC to close the list-box.&#39; // MISSING
+		},
+
+			{
+			name: &#39;Editor Element Path Bar&#39;, // MISSING
+			legend: &#39;Press ${elementsPathFocus} to navigate to the elements path bar. Move to next element button with TAB or RIGHT ARROW. Move to previous button with SHIFT+TAB or LEFT ARROW. Press SPACE or ENTER to select the element in editor.&#39; // MISSING
+		}
+		]
+	},
+		{
+		name: &#39;Командалар&#39;,
+		items: [
+			{
+			name: &#39;Кайтару&#39;,
+			legend: &#39;${undo} басыгыз&#39;
+		},
+			{
+			name: &#39;Кабатлау&#39;,
+			legend: &#39;${redo} басыгыз&#39;
+		},
+			{
+			name: &#39;Калын&#39;,
+			legend: &#39;${bold} басыгыз&#39;
+		},
+			{
+			name: &#39;Курсив&#39;,
+			legend: &#39;${italic} басыгыз&#39;
+		},
+			{
+			name: &#39;Астына сызылган&#39;,
+			legend: &#39;${underline} басыгыз&#39;
+		},
+			{
+			name: &#39;Сылталама&#39;,
+			legend: &#39;${link} басыгыз&#39;
+		},
+			{
+			name: &#39; Toolbar Collapse command&#39;, // MISSING
+			legend: &#39;${toolbarCollapse} басыгыз&#39;
+		},
+			{
+			name: &#39; Access previous focus space command&#39;, // MISSING
+			legend: &#39;Press ${accessPreviousSpace} to access the closest unreachable focus space before the caret, for example: two adjacent HR elements. Repeat the key combination to reach distant focus spaces.&#39; // MISSING
+		},
+			{
+			name: &#39; Access next focus space command&#39;, // MISSING
+			legend: &#39;Press ${accessNextSpace} to access the closest unreachable focus space after the caret, for example: two adjacent HR elements. Repeat the key combination to reach distant focus spaces.&#39; // MISSING
+		},
+			{
+			name: &#39; Accessibility Help&#39;, // MISSING
+			legend: &#39;${a11yHelp} басыгыз&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Кайтару&#39;,
+	tab: &#39;Tab&#39;,
+	enter: &#39;Enter&#39;,
+	shift: &#39;Shift&#39;,
+	ctrl: &#39;Ctrl&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Тыныш&#39;,
+	capslock: &#39;Caps Lock&#39;,
+	escape: &#39;Escape&#39;,
+	pageUp: &#39;Page Up&#39;,
+	pageDown: &#39;Page Down&#39;,
+	end: &#39;End&#39;,
+	home: &#39;Home&#39;,
+	leftArrow: &#39;Сул якка ук&#39;,
+	upArrow: &#39;Өскә таба ук&#39;,
+	rightArrow: &#39;Уң якка ук&#39;,
+	downArrow: &#39;Аска таба ук&#39;,
+	insert: &#39;Өстәү&#39;,
+	&#39;delete&#39;: &#39;Бетерү&#39;,
+	leftWindowKey: &#39;Сул Windows төймəсе&#39;,
+	rightWindowKey: &#39;Уң Windows төймəсе&#39;,
+	selectKey: &#39;Select төймəсе&#39;,
+	numpad0: &#39;Numpad 0&#39;,
+	numpad1: &#39;Numpad 1&#39;,
+	numpad2: &#39;Numpad 2&#39;,
+	numpad3: &#39;Numpad 3&#39;,
+	numpad4: &#39;Numpad 4&#39;,
+	numpad5: &#39;Numpad 5&#39;,
+	numpad6: &#39;Numpad 6&#39;,
+	numpad7: &#39;Numpad 7&#39;,
+	numpad8: &#39;Numpad 8&#39;,
+	numpad9: &#39;Numpad 9&#39;,
+	multiply: &#39;Тапкырлау&#39;,
+	add: &#39;Кушу&#39;,
+	subtract: &#39;Алу&#39;,
+	decimalPoint: &#39;Унарлы нокта&#39;,
+	divide: &#39;Бүлү&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lock&#39;,
+	scrollLock: &#39;Scroll Lock&#39;,
+	semiColon: &#39;Нокталы өтер&#39;,
+	equalSign: &#39;Тигезлек билгесе&#39;,
+	comma: &#39;Өтер&#39;,
+	dash: &#39;Сызык&#39;,
+	period: &#39;Дәрәҗә&#39;,
+	forwardSlash: &#39;Кыек сызык&#39;,
+	graveAccent: &#39;Гравис&#39;,
+	openBracket: &#39;Җәя ачу&#39;,
+	backSlash: &#39;Кире кыек сызык&#39;,
+	closeBracket: &#39;Җәя ябу&#39;,
+	singleQuote: &#39;Бер иңле куштырнаклар&#39;
+} );
+</pre>
+</body>
+</html>

@@ -1,0 +1,179 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <meta name="description" content="">
+  <meta name="author" content="">
+  <link rel="shortcut icon" href="../images/favicon.png" type="image/png">
+    
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+  <title>Raya W Soffara Admin - @ViewBag.Title</title>
+    
+<link href="~/Content/CSS/bootstrap.css" rel="stylesheet" />
+  <link href="~/Content/CSS/style.default.css" rel="stylesheet" />
+    <link href="~/Content/CSS/Site-backoffice.css" rel="stylesheet" />
+    <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+
+  <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!--[if lt IE 9]>
+  <script src="../js/html5shiv.js"></script>
+  <script src="../js/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+<body>
+    
+<!-- Preloader -->
+@*<div id="preloader">
+    <div id="status"><i class="fa fa-spinner fa-spin"></i></div>
+</div>*@
+
+<section>
+  
+  <div class="leftpanel">
+    
+    <div class="logopanel">
+        <h1><span>راية وصفارة</span></h1>
+    </div><!-- logopanel -->
+        
+    <div class="leftpanelinner">    
+        
+        <!-- This is only visible to small devices -->
+        <div class="visible-xs hidden-sm hidden-md hidden-lg">   
+            <div class="media userlogged">
+                <img alt="" src="../images/photos/loggeduser.png" class="media-object">
+                <div class="media-body">
+                    <h4>John Doe</h4>
+                    <span>"Life is so..."</span>
+                </div>
+            </div>
+          
+            <h5 class="sidebartitle actitle">Account</h5>
+            <ul class="nav nav-pills nav-stacked nav-bracket mb30">
+              <li><a href="profile.html"><i class="fa fa-user"></i> <span>Profile</span></a></li>
+              <li><a href=""><i class="fa fa-cog"></i> <span>Account Settings</span></a></li>
+              <li><a href=""><i class="fa fa-question-circle"></i> <span>Help</span></a></li>
+              <li><a href="signout.html"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
+            </ul>
+        </div>
+      
+      <h5 class="sidebartitle">Navigation</h5>
+      <ul class="nav nav-pills nav-stacked nav-bracket">
+        <li class=""><a href="index.html"><i class="fa fa-home"></i> <span>Dashboard</span></a></li>
+        <li class="users-management @(ViewBag.SidebarItem == "users-management"?"active nav-active":"")">
+            <a href="/Admin/Users">
+                <span class="pull-right badge badge-success"></span>
+                <i class="fa fa-users"></i> <span>Users Management</span>
+            </a>
+        </li>
+        <li class="@(ViewBag.SidebarItem == "images-management"?"active nav-active":"")">
+            <a href="/Admin/Images">
+                <i class="fa fa-picture-o"></i><span>Images Management</span>
+            </a>
+        </li>
+        <li class="nav-parent @(ViewBag.SidebarItem == "tags-management"?"active nav-active":"")"><a href=""><i class="fa fa-tags"></i><span>Tags Management</span></a>
+          <ul class="children" style="@(ViewBag.SidebarItem == "tags-management"?"display:block;":"")">
+            <li class="@(ViewBag.SubSidebarItem == "regions"?"active":"")"><a href="/Admin/Regions"><i class="fa fa-caret-right"></i>Regions</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "competitions"?"active":"")"><a href="/Admin/Competitions"><i class="fa fa-caret-right"></i>Competitions</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "teams"?"active":"")"><a href="/Admin/Teams"><i class="fa fa-caret-right"></i>Teams</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "players"?"active":"")"><a href="/Admin/Players"><i class="fa fa-caret-right"></i>Players</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "tags"?"active":"")"><a href="/Admin/Tags"><i class="fa fa-caret-right"></i>All Tags</a></li>
+          </ul>
+        </li>
+        <li class="nav-parent @(ViewBag.SidebarItem == "posts-management"?"active nav-active":"")"><a href=""><i class="fa fa-newspaper-o"></i> <span>Posts Management</span></a>
+          <ul class="children" style="@(ViewBag.SidebarItem == "posts-management"?"display:block;":"")">
+            <li class="@(ViewBag.SubSidebarItem == "articles"?"active":"")"><a href="/Admin/Articles"><i class="fa fa-caret-right"></i> Articles</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "topX"?"active":"")"><a href="/Admin/TopX"><i class="fa fa-caret-right"></i>Articles Top X</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "opinions"?"active":"")"><a href="/Admin/Opinions"><i class="fa fa-caret-right"></i>Opinions</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "images-articles"?"active":"")"><a href="/Admin/ImagesArticles"><i class="fa fa-caret-right"></i>Images</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "videos"?"active":"")"><a href="/Admin/Videos"><i class="fa fa-caret-right"></i>Videos</a></li>
+          </ul>
+        </li>
+        <li class="@(ViewBag.SidebarItem == "points-management"?"active":"")""><a href=""><i class="fa fa-bug"></i> <span>Points Management</span></a></li>
+      </ul>
+    </div><!-- leftpanelinner -->
+  </div><!-- leftpanel -->
+  
+  <div class="mainpanel">
+    
+    <div class="headerbar">
+      
+      <a class="menutoggle"><i class="fa fa-bars"></i></a>
+      
+      
+      <div class="header-right">
+        <ul class="headermenu">
+          <li>
+            <div class="btn-group">
+              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
+                <img src="../images/photos/loggeduser.png" alt="" />
+                John Doe
+                <span class="caret"></span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-usermenu">
+                <li><a href="profile.html"><i class="glyphicon glyphicon-user"></i> My Profile</a></li>
+                <li><a href="/Admin/Signout"><i class="glyphicon glyphicon-log-out"></i> Sign Out</a></li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div><!-- header-right -->
+      
+    </div><!-- headerbar -->
+    
+    <div class="pageheader">
+        @{ string icon = "";
+           string sidebaritem = ViewBag.SidebarItem;
+           switch (sidebaritem)
+           {
+               case "users-management": icon = "fa fa-users"; break;
+               case "tags-management": icon = "fa fa-tags"; break;
+               default: icon = ""; break;
+           }
+        }
+      <h2><i class="@icon"></i>@ViewBag.PageHeader<span>@ViewBag.SubSidebarItem</span></h2>
+      <div class="breadcrumb-wrapper">
+        <span class="label">You are here:</span>
+        <ol class="breadcrumb">
+          <li><a href="index.html">Bracket</a></li>
+          <li class="active">Dashboard</li>
+        </ol>
+      </div>
+    </div>
+    
+    <div class="contentpanel">
+      @RenderBody()
+    </div><!-- contentpanel -->
+    
+  </div><!-- mainpanel -->
+  
+</section>
+
+
+<script src="~/Content/Scripts/jquery-1.11.1.min.js"></script>
+<script src="~/Content/Scripts/jquery-migrate-1.2.1.min.js"></script>
+<script src="~/Content/Scripts/jquery-ui-1.10.3.min.js"></script>
+<script src="~/Content/Scripts/bootstrap.min.js"></script>
+<script src="~/Content/Scripts/modernizr.min.js"></script>
+
+<script src="~/Content/Scripts/jquery.sparkline.min.js"></script>
+@*<script src="~/Content/Scripts/toggles.min.js"></script>*@
+<script src="~/Content/Scripts/retina.min.js"></script>
+<script src="~/Content/Scripts/jquery.cookies.js"></script>
+<script src="~/Content/Scripts/jquery.gritter.min.js"></script>
+
+<script src="~/Content/Scripts/flot/jquery.flot.min.js"></script>
+<script src="~/Content/Scripts/flot/jquery.flot.resize.min.js"></script>
+<script src="~/Content/Scripts/flot/jquery.flot.spline.min.js"></script>
+<script src="~/Content/Scripts/morris.min.js"></script>
+<script src="~/Content/Scripts/raphael-2.1.0.min.js"></script>
+
+<script src="~/Content/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.min.js"></script>
+<script src="~/Content/Scripts/script-backoffice.js"></script>
+@*<script src="~/Content/Scripts/dashboard.js"></script>*@
+
+</body>
+</html>

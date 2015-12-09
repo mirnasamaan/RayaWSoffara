@@ -1,0 +1,374 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Schema Namespace="RWS_DevelopmentModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+  <EntityContainer Name="RWS_DevelopmentEntities" annotation:LazyLoadingEnabled="true">
+    <EntitySet Name="Competitions" EntityType="RWS_DevelopmentModel.Competition" />
+    <EntitySet Name="Images" EntityType="RWS_DevelopmentModel.Image" />
+    <EntitySet Name="Players" EntityType="RWS_DevelopmentModel.Player" />
+    <EntitySet Name="Regions" EntityType="RWS_DevelopmentModel.Region" />
+    <EntitySet Name="RWSProviderUsers" EntityType="RWS_DevelopmentModel.RWSProviderUser" />
+    <EntitySet Name="RWSRoles" EntityType="RWS_DevelopmentModel.RWSRole" />
+    <EntitySet Name="RWSUsers" EntityType="RWS_DevelopmentModel.RWSUser" />
+    <EntitySet Name="Tags" EntityType="RWS_DevelopmentModel.Tag" />
+    <EntitySet Name="Teams" EntityType="RWS_DevelopmentModel.Team" />
+    <AssociationSet Name="FK_Competition_Region" Association="RWS_DevelopmentModel.FK_Competition_Region">
+      <End Role="Region" EntitySet="Regions" />
+      <End Role="Competition" EntitySet="Competitions" />
+    </AssociationSet>
+    <AssociationSet Name="FK_RWSProviderUser_RWSUser" Association="RWS_DevelopmentModel.FK_RWSProviderUser_RWSUser">
+      <End Role="RWSUser" EntitySet="RWSUsers" />
+      <End Role="RWSProviderUser" EntitySet="RWSProviderUsers" />
+    </AssociationSet>
+    <AssociationSet Name="CompetitionTeam" Association="RWS_DevelopmentModel.CompetitionTeam">
+      <End Role="Competition" EntitySet="Competitions" />
+      <End Role="Team" EntitySet="Teams" />
+    </AssociationSet>
+    <AssociationSet Name="RWSUserRole" Association="RWS_DevelopmentModel.RWSUserRole">
+      <End Role="RWSRole" EntitySet="RWSRoles" />
+      <End Role="RWSUser" EntitySet="RWSUsers" />
+    </AssociationSet>
+    <AssociationSet Name="TeamPlayer" Association="RWS_DevelopmentModel.TeamPlayer">
+      <End Role="Player" EntitySet="Players" />
+      <End Role="Team" EntitySet="Teams" />
+    </AssociationSet>
+    <EntitySet Name="ArticleTopXes" EntityType="RWS_DevelopmentModel.ArticleTopX" />
+    <EntitySet Name="sysdiagrams" EntityType="RWS_DevelopmentModel.sysdiagram" />
+    <AssociationSet Name="ImageTag" Association="RWS_DevelopmentModel.ImageTag">
+      <End Role="Image" EntitySet="Images" />
+      <End Role="Tag" EntitySet="Tags" />
+    </AssociationSet>
+    <EntitySet Name="Posts" EntityType="RWS_DevelopmentModel.Post" />
+    <EntitySet Name="PostTypes" EntityType="RWS_DevelopmentModel.PostType" />
+    <AssociationSet Name="FK_ArticleTopX_Article1" Association="RWS_DevelopmentModel.FK_ArticleTopX_Article1">
+      <End Role="Post" EntitySet="Posts" />
+      <End Role="ArticleTopX" EntitySet="ArticleTopXes" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Article_ArticleType1" Association="RWS_DevelopmentModel.FK_Article_ArticleType1">
+      <End Role="PostType" EntitySet="PostTypes" />
+      <End Role="Post" EntitySet="Posts" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Article_RWSUser11" Association="RWS_DevelopmentModel.FK_Article_RWSUser11">
+      <End Role="RWSUser" EntitySet="RWSUsers" />
+      <End Role="Post" EntitySet="Posts" />
+    </AssociationSet>
+    <AssociationSet Name="PostTag" Association="RWS_DevelopmentModel.PostTag">
+      <End Role="Post" EntitySet="Posts" />
+      <End Role="Tag" EntitySet="Tags" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Article_RWSUser" Association="RWS_DevelopmentModel.FK_Article_RWSUser">
+      <End Role="RWSUser" EntitySet="RWSUsers" />
+      <End Role="Post" EntitySet="Posts" />
+    </AssociationSet>
+    <EntitySet Name="Comments" EntityType="RWS_DevelopmentModel.Comment" />
+    <AssociationSet Name="FK_Comment_RWSUser" Association="RWS_DevelopmentModel.FK_Comment_RWSUser">
+      <End Role="RWSUser" EntitySet="RWSUsers" />
+      <End Role="Comment" EntitySet="Comments" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Comment_Post" Association="RWS_DevelopmentModel.FK_Comment_Post">
+      <End Role="Post" EntitySet="Posts" />
+      <End Role="Comment" EntitySet="Comments" />
+    </AssociationSet>
+  </EntityContainer>
+  <EntityType Name="Competition">
+    <Key>
+      <PropertyRef Name="CompetitionId" />
+    </Key>
+    <Property Name="CompetitionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="CompetitionName" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+    <Property Name="RegionId" Type="Int32" />
+    <NavigationProperty Name="Region" Relationship="RWS_DevelopmentModel.FK_Competition_Region" FromRole="Competition" ToRole="Region" />
+    <NavigationProperty Name="Teams" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Competition" ToRole="Team" />
+  </EntityType>
+  <EntityType Name="Image">
+    <Key>
+      <PropertyRef Name="ImageId" />
+    </Key>
+    <Property Name="ImageId" Type="Int32" Nullable="false" />
+    <Property Name="ImageURL" Type="String" Nullable="false" MaxLength="500" Unicode="true" FixedLength="false" />
+    <NavigationProperty Name="Tags" Relationship="RWS_DevelopmentModel.ImageTag" FromRole="Image" ToRole="Tag" />
+  </EntityType>
+  <EntityType Name="Player">
+    <Key>
+      <PropertyRef Name="PlayerId" />
+    </Key>
+    <Property Name="PlayerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="PlayerName" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+    <NavigationProperty Name="Teams" Relationship="RWS_DevelopmentModel.TeamPlayer" FromRole="Player" ToRole="Team" />
+  </EntityType>
+  <EntityType Name="Region">
+    <Key>
+      <PropertyRef Name="RegionId" />
+    </Key>
+    <Property Name="RegionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RegionName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+    <NavigationProperty Name="Competitions" Relationship="RWS_DevelopmentModel.FK_Competition_Region" FromRole="Region" ToRole="Competition" />
+  </EntityType>
+  <EntityType Name="RWSProviderUser">
+    <Key>
+      <PropertyRef Name="ID" />
+    </Key>
+    <Property Name="ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="Provider" Type="String" MaxLength="30" Unicode="true" FixedLength="false" />
+    <Property Name="ProviderUserId" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+    <Property Name="UserId" Type="Int32" />
+    <NavigationProperty Name="RWSUser" Relationship="RWS_DevelopmentModel.FK_RWSProviderUser_RWSUser" FromRole="RWSProviderUser" ToRole="RWSUser" />
+  </EntityType>
+  <EntityType Name="RWSRole">
+    <Key>
+      <PropertyRef Name="RoleId" />
+    </Key>
+    <Property Name="RoleId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="RoleName" Type="String" MaxLength="256" Unicode="true" FixedLength="false" />
+    <NavigationProperty Name="RWSUsers" Relationship="RWS_DevelopmentModel.RWSUserRole" FromRole="RWSRole" ToRole="RWSUser" />
+  </EntityType>
+  <EntityType Name="RWSUser">
+    <Key>
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="UserId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="UserName" Type="String" Nullable="false" MaxLength="500" Unicode="true" FixedLength="false" />
+    <Property Name="FirstName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+    <Property Name="LastName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+    <Property Name="Password" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+    <Property Name="Country" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+    <Property Name="Email" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+    <Property Name="ProfileImagePath" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+    <Property Name="CreationDate" Type="DateTime" Precision="3" />
+    <Property Name="ConfirmationDate" Type="DateTime" Precision="3" />
+    <Property Name="BanDate" Type="DateTime" Precision="3" />
+    <Property Name="IsConfirmed" Type="Boolean" />
+    <Property Name="IsBanned" Type="Boolean" />
+    <Property Name="ConfirmationToken" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+    <Property Name="LastPasswordFailureDate" Type="DateTime" Precision="3" />
+    <Property Name="PasswordFaliuresSinceLastSuccess" Type="Int32" />
+    <Property Name="PasswordChangedDate" Type="DateTime" Precision="3" />
+    <Property Name="PasswordSalt" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+    <Property Name="PasswordVerificationToken" Type="String" MaxLength="128" Unicode="true" FixedLength="false" />
+    <Property Name="PasswordVerificationTokenExpirationDate" Type="DateTime" Precision="3" />
+    <NavigationProperty Name="RWSProviderUsers" Relationship="RWS_DevelopmentModel.FK_RWSProviderUser_RWSUser" FromRole="RWSUser" ToRole="RWSProviderUser" />
+    <NavigationProperty Name="RWSRoles" Relationship="RWS_DevelopmentModel.RWSUserRole" FromRole="RWSUser" ToRole="RWSRole" />
+    <Property Type="Int32" Name="FavComp" />
+    <Property Type="Int32" Name="FavTeam" />
+    <Property Type="String" Name="AboutYou" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="Twitter" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="Google" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="DisplayName" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Posts" Relationship="RWS_DevelopmentModel.FK_Article_RWSUser" FromRole="RWSUser" ToRole="Post" />
+    <NavigationProperty Name="Comments" Relationship="RWS_DevelopmentModel.FK_Comment_RWSUser" FromRole="RWSUser" ToRole="Comment" />
+  </EntityType>
+  <EntityType Name="Tag">
+    <Key>
+      <PropertyRef Name="TagId" />
+    </Key>
+    <Property Name="TagId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TagName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+    <Property Name="Type" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+    <NavigationProperty Name="Images" Relationship="RWS_DevelopmentModel.ImageTag" FromRole="Tag" ToRole="Image" />
+    <NavigationProperty Name="Posts" Relationship="RWS_DevelopmentModel.PostTag" FromRole="Tag" ToRole="Post" />
+    <Property Type="Boolean" Name="isFeatured" />
+  </EntityType>
+  <EntityType Name="Team">
+    <Key>
+      <PropertyRef Name="TeamId" />
+    </Key>
+    <Property Name="TeamId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Name="TeamName" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+    <NavigationProperty Name="Competitions" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Team" ToRole="Competition" />
+    <NavigationProperty Name="Players" Relationship="RWS_DevelopmentModel.TeamPlayer" FromRole="Team" ToRole="Player" />
+  </EntityType>
+  <Association Name="FK_Competition_Region">
+    <End Role="Region" Type="RWS_DevelopmentModel.Region" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Competition" Type="RWS_DevelopmentModel.Competition" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Region">
+        <PropertyRef Name="RegionId" />
+      </Principal>
+      <Dependent Role="Competition">
+        <PropertyRef Name="RegionId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_RWSProviderUser_RWSUser">
+    <End Role="RWSUser" Type="RWS_DevelopmentModel.RWSUser" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="RWSProviderUser" Type="RWS_DevelopmentModel.RWSProviderUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RWSUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="RWSProviderUser">
+        <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="CompetitionTeam">
+    <End Role="Competition" Type="RWS_DevelopmentModel.Competition" Multiplicity="*" />
+    <End Role="Team" Type="RWS_DevelopmentModel.Team" Multiplicity="*" />
+  </Association>
+  <Association Name="RWSUserRole">
+    <End Role="RWSRole" Type="RWS_DevelopmentModel.RWSRole" Multiplicity="*" />
+    <End Role="RWSUser" Type="RWS_DevelopmentModel.RWSUser" Multiplicity="*" />
+  </Association>
+  <Association Name="TeamPlayer">
+    <End Role="Player" Type="RWS_DevelopmentModel.Player" Multiplicity="*" />
+    <End Role="Team" Type="RWS_DevelopmentModel.Team" Multiplicity="*" />
+  </Association>
+  <EntityType Name="ArticleTopX">
+    <Key>
+      <PropertyRef Name="ArticleTopXId" />
+    </Key>
+    <Property Type="Int32" Name="ArticleTopXId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Int32" Name="TopXOrder" />
+    <Property Type="String" Name="TopXTitle" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="TopXContent" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="TopXImage" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="TopXVideo" MaxLength="255" FixedLength="false" Unicode="true" />
+    <Property Type="Int32" Name="ArticleId" />
+    <NavigationProperty Name="Post" Relationship="RWS_DevelopmentModel.FK_ArticleTopX_Article1" FromRole="ArticleTopX" ToRole="Post" />
+  </EntityType>
+  <EntityType Name="sysdiagram">
+    <Key>
+      <PropertyRef Name="diagram_id" />
+    </Key>
+    <Property Type="String" Name="name" Nullable="false" MaxLength="128" FixedLength="false" Unicode="true" />
+    <Property Type="Int32" Name="principal_id" Nullable="false" />
+    <Property Type="Int32" Name="diagram_id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="Int32" Name="version" />
+    <Property Type="Binary" Name="definition" MaxLength="Max" FixedLength="false" />
+  </EntityType>
+  <Association Name="ImageTag">
+    <End Type="RWS_DevelopmentModel.Image" Role="Image" Multiplicity="*" />
+    <End Type="RWS_DevelopmentModel.Tag" Role="Tag" Multiplicity="*" />
+  </Association>
+  <EntityType Name="Post">
+    <Key>
+      <PropertyRef Name="PostId" />
+    </Key>
+    <Property Type="Int32" Name="PostId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="String" Name="Title" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="Content" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="MetaTags" Nullable="false" MaxLength="Max" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="FeaturedVideo" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="String" Name="FeaturedImage" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="Int32" Name="ViewsCount" Nullable="false" />
+    <Property Type="Boolean" Name="HasImage" />
+    <Property Type="Boolean" Name="IsFeatured" />
+    <Property Type="Boolean" Name="IsActive" />
+    <Property Type="Int32" Name="CreatedBy" Nullable="false" />
+    <Property Type="Int32" Name="UpdatedBy" />
+    <Property Type="DateTime" Name="CreationDate" Precision="3" />
+    <Property Type="DateTime" Name="ActivationDate" Precision="3" />
+    <Property Type="DateTime" Name="UpdateDate" Precision="3" />
+    <Property Type="Int32" Name="PostTypeId" />
+    <NavigationProperty Name="ArticleTopXes" Relationship="RWS_DevelopmentModel.FK_ArticleTopX_Article1" FromRole="Post" ToRole="ArticleTopX" />
+    <NavigationProperty Name="PostType" Relationship="RWS_DevelopmentModel.FK_Article_ArticleType1" FromRole="Post" ToRole="PostType" />
+    <NavigationProperty Name="Tags" Relationship="RWS_DevelopmentModel.PostTag" FromRole="Post" ToRole="Tag" />
+    <NavigationProperty Name="RWSUser" Relationship="RWS_DevelopmentModel.FK_Article_RWSUser" FromRole="Post" ToRole="RWSUser" />
+    <Property Type="Int32" Name="SharesCount" Nullable="false" />
+    <NavigationProperty Name="Comments" Relationship="RWS_DevelopmentModel.FK_Comment_Post" FromRole="Post" ToRole="Comment" />
+  </EntityType>
+  <EntityType Name="PostType">
+    <Key>
+      <PropertyRef Name="PostTypeId" />
+    </Key>
+    <Property Type="Int32" Name="PostTypeId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="String" Name="PostTypeName" MaxLength="100" FixedLength="false" Unicode="true" />
+    <NavigationProperty Name="Posts" Relationship="RWS_DevelopmentModel.FK_Article_ArticleType1" FromRole="PostType" ToRole="Post" />
+  </EntityType>
+  <Association Name="FK_ArticleTopX_Article1">
+    <End Type="RWS_DevelopmentModel.Post" Role="Post" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="RWS_DevelopmentModel.ArticleTopX" Role="ArticleTopX" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Post">
+        <PropertyRef Name="PostId" />
+      </Principal>
+      <Dependent Role="ArticleTopX">
+        <PropertyRef Name="ArticleId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Article_ArticleType1">
+    <End Type="RWS_DevelopmentModel.PostType" Role="PostType" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="RWS_DevelopmentModel.Post" Role="Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PostType">
+        <PropertyRef Name="PostTypeId" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="PostTypeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Article_RWSUser11">
+    <End Type="RWS_DevelopmentModel.RWSUser" Role="RWSUser" Multiplicity="0..1" />
+    <End Type="RWS_DevelopmentModel.Post" Role="Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RWSUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="UpdatedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="PostTag">
+    <End Type="RWS_DevelopmentModel.Post" Role="Post" Multiplicity="*" />
+    <End Type="RWS_DevelopmentModel.Tag" Role="Tag" Multiplicity="*" />
+  </Association>
+  <Association Name="FK_Article_RWSUser">
+    <End Type="RWS_DevelopmentModel.RWSUser" Role="RWSUser" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Type="RWS_DevelopmentModel.Post" Role="Post" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RWSUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Post">
+        <PropertyRef Name="CreatedBy" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <EntityType Name="Comment">
+    <Key>
+      <PropertyRef Name="CommentId" />
+    </Key>
+    <Property Type="Int32" Name="CommentId" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+    <Property Type="String" Name="CommentContent" FixedLength="false" Unicode="true" />
+    <Property Type="Int32" Name="CommentUserId" />
+    <NavigationProperty Name="RWSUser" Relationship="RWS_DevelopmentModel.FK_Comment_RWSUser" FromRole="Comment" ToRole="RWSUser" />
+    <Property Type="Int32" Name="CommentPostId" />
+    <NavigationProperty Name="Post" Relationship="RWS_DevelopmentModel.FK_Comment_Post" FromRole="Comment" ToRole="Post" />
+    <Property Type="DateTime" Name="CommentCreationDate" Precision="3" />
+  </EntityType>
+  <Association Name="FK_Comment_RWSUser">
+    <End Type="RWS_DevelopmentModel.RWSUser" Role="RWSUser" Multiplicity="0..1" />
+    <End Type="RWS_DevelopmentModel.Comment" Role="Comment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RWSUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Comment">
+        <PropertyRef Name="CommentUserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Comment_Post">
+    <End Type="RWS_DevelopmentModel.Post" Role="Post" Multiplicity="0..1" />
+    <End Type="RWS_DevelopmentModel.Comment" Role="Comment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Post">
+        <PropertyRef Name="PostId" />
+      </Principal>
+      <Dependent Role="Comment">
+        <PropertyRef Name="CommentPostId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+</Schema>

@@ -1,0 +1,19 @@
+﻿@model RWSDataLayer.Context.Tag
+@{
+    ViewBag.Title = "Add Tag";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/dropzone.css" rel="stylesheet" />
+
+<form id="addForm" class="form-horizontal dropzone" action="/Admin/AddImages" method="post" enctype="multipart/form-data">
+    <div class="fallback">
+        <input name="file" type="file" accept="image/*" multiple />
+    </div>
+</form>
+
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/dropzone.min.js"></script>
+<script type="text/javascript">
+</script>

@@ -1,0 +1,70 @@
+﻿<div class="container">
+    <div class="row">
+        <div class="article-type-page-title">
+            <p>شارك معنا الآن</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="write-button-container">
+            <div>
+                <a href="/Write">
+                    <div class="pull-left">
+                        <div class="hover" onmouseover="showbutton(this)">
+                            <div class="title">مقالة</div>
+                            <div class="icon"><i class="fa fa-newspaper-o"></i></div>
+                            <div class="write-button">
+                                <button hidden>أكتب</button></div>
+                        </div>
+                    </div>
+                </a>
+                <a href="/WriteTopX">
+                    <div class="pull-left">
+                        <div class="hover">
+                            <div class="title">مقالة توب X</div>
+                            <div class="icon"><i class="fa fa-trophy"></i></div>
+                            <div class="write-button">
+                                <button hidden>أكتب</button></div>
+                        </div>
+                    </div>
+                </a>
+                <a href="/Opinion">
+                    <div class="pull-left">
+                        <div class="hover">
+                            <div class="title">رأى</div>
+                            <div class="icon"><i class="fa fa-exclamation"></i></div>
+                            <div class="write-button">
+                                <button hidden>أكتب</button></div>
+                        </div>
+                    </div>
+                </a>
+                <a href="/Media">
+                    <div class="pull-left">
+                        <div class="hover">
+                            <div class="title">صورة</div>
+                            <div class="icon"><i class="fa fa-picture-o"></i></div>
+                            <div class="write-button">
+                                <button hidden>أكتب</button></div>
+                        </div>
+                    </div>
+                </a>
+                <a href="/Media">
+                    <div class="pull-left">
+                        <div class="hover">
+                            <div class="title">فيديو</div>
+                            <div class="icon"><i class="fa fa-video-camera"></i></div>
+                            <div class="write-button">
+                                <button hidden>أكتب</button></div>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function showbutton(e) {
+        //$(e).children(".write-button").css("padding", "0px");
+        $(e).children(".write-button").fadeIn("slow");
+    }
+</script>

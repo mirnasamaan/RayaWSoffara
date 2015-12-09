@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;he&#39;, {
+	title: &#39;הוראות נגישות&#39;,
+	contents: &#39;הוראות נגישות. לסגירה לחץ אסקייפ (ESC).&#39;,
+	legend: [
+		{
+		name: &#39;כללי&#39;,
+		items: [
+			{
+			name: &#39;סרגל הכלים&#39;,
+			legend: &#39;לחץ על ${toolbarFocus} כדי לנווט לסרגל הכלים. עבור לכפתור הבא עם מקש הטאב (TAB) או חץ שמאלי. עבור לכפתור הקודם עם מקש השיפט (SHIFT) + טאב (TAB) או חץ ימני. לחץ רווח או אנטר (ENTER) כדי להפעיל את הכפתור הנבחר.&#39;
+		},
+
+			{
+			name: &#39;דיאלוגים (חלונות תשאול)&#39;,
+			legend:
+				&#39;Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.&#39;  // MISSING
+		},
+
+			{
+			name: &#39;תפריט ההקשר (Context Menu)&#39;,
+			legend: &#39;לחץ ${contextMenu} או APPLICATION KEYכדי לפתוח את תפריט ההקשר. עבור לאפשרות הבאה עם טאב (TAB) או חץ למטה. עבור לאפשרות הקודמת עם שיפט (SHIFT) + טאב (TAB) או חץ למעלה. לחץ רווח או אנטר (ENTER) כדי לבחור את האפשרות. פתח את תת התפריט (Sub-menu) של האפשרות הנוכחית עם רווח או אנטר (ENTER) או חץ שמאלי. חזור לתפריט האב עם אסקייפ (ESC) או חץ שמאלי. סגור את תפריט ההקשר עם אסקייפ (ESC).&#39;
+		},
+
+			{
+			name: &#39;תפריטים צפים (List boxes)&#39;,
+			legend: &#39;Inside a list-box, move to next list item with TAB OR DOWN ARROW. Move to previous list item with SHIFT+TAB or UP ARROW. Press SPACE or ENTER to select the list option. Press ESC to close the list-box.&#39; // MISSING
+		},
+
+			{
+			name: &#39;עץ אלמנטים (Elements Path)&#39;,
+			legend: &#39;לחץ ${elementsPathFocus} כדי לנווט לעץ האלמנטים. עבור לפריט הבא עם טאב (TAB) או חץ ימני. עבור לפריט הקודם עם שיפט (SHIFT) + טאב (TAB) או חץ שמאלי. לחץ רווח או אנטר (ENTER) כדי לבחור את האלמנט בעורך.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;פקודות&#39;,
+		items: [
+			{
+			name: &#39; ביטול צעד אחרון&#39;,
+			legend: &#39;לחץ ${undo}&#39;
+		},
+			{
+			name: &#39; חזרה על צעד אחרון&#39;,
+			legend: &#39;לחץ ${redo}&#39;
+		},
+			{
+			name: &#39; הדגשה&#39;,
+			legend: &#39;לחץ ${bold}&#39;
+		},
+			{
+			name: &#39; הטייה&#39;,
+			legend: &#39;לחץ ${italic}&#39;
+		},
+			{
+			name: &#39; הוספת קו תחתון&#39;,
+			legend: &#39;לחץ ${underline}&#39;
+		},
+			{
+			name: &#39; הוספת לינק&#39;,
+			legend: &#39;לחץ ${link}&#39;
+		},
+			{
+			name: &#39; כיווץ סרגל הכלים&#39;,
+			legend: &#39;לחץ ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;גישה למיקום המיקוד הקודם&#39;,
+			legend: &#39;לחץ ${accessPreviousSpace} כדי לגשת למיקום המיקוד הלא-נגיש הקרוב לפני הסמן, למשל בין שני אלמנטים סמוכים מסוג HR. חזור על צירוף מקשים זה כדי להגיע למקומות מיקוד רחוקים יותר.&#39;
+		},
+			{
+			name: &#39;גישה למיקום המיקוד הבא&#39;,
+			legend: &#39;לחץ ${accessNextSpace} כדי לגשת למיקום המיקוד הלא-נגיש הקרוב אחרי הסמן, למשל בין שני אלמנטים סמוכים מסוג HR. חזור על צירוף מקשים זה כדי להגיע למקומות מיקוד רחוקים יותר.&#39;
+		},
+			{
+			name: &#39; הוראות נגישות&#39;,
+			legend: &#39;לחץ ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Backspace&#39;,
+	tab: &#39;Tab&#39;,
+	enter: &#39;Enter&#39;,
+	shift: &#39;Shift&#39;,
+	ctrl: &#39;Ctrl&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Pause&#39;,
+	capslock: &#39;Caps Lock&#39;,
+	escape: &#39;Escape&#39;,
+	pageUp: &#39;Page Up&#39;,
+	pageDown: &#39;Page Down&#39;,
+	end: &#39;End&#39;,
+	home: &#39;Home&#39;,
+	leftArrow: &#39;חץ שמאלה&#39;,
+	upArrow: &#39;חץ למעלה&#39;,
+	rightArrow: &#39;חץ ימינה&#39;,
+	downArrow: &#39;חץ למטה&#39;,
+	insert: &#39;הכנס&#39;,
+	&#39;delete&#39;: &#39;מחק&#39;,
+	leftWindowKey: &#39;Left Windows key&#39;, // MISSING
+	rightWindowKey: &#39;Right Windows key&#39;, // MISSING
+	selectKey: &#39;בחר מקש&#39;,
+	numpad0: &#39;Numpad 0&#39;, // MISSING
+	numpad1: &#39;Numpad 1&#39;, // MISSING
+	numpad2: &#39;Numpad 2&#39;, // MISSING
+	numpad3: &#39;Numpad 3&#39;, // MISSING
+	numpad4: &#39;Numpad 4&#39;, // MISSING
+	numpad5: &#39;Numpad 5&#39;, // MISSING
+	numpad6: &#39;Numpad 6&#39;, // MISSING
+	numpad7: &#39;Numpad 7&#39;, // MISSING
+	numpad8: &#39;Numpad 8&#39;, // MISSING
+	numpad9: &#39;Numpad 9&#39;, // MISSING
+	multiply: &#39;Multiply&#39;, // MISSING
+	add: &#39;הוסף&#39;,
+	subtract: &#39;Subtract&#39;, // MISSING
+	decimalPoint: &#39;Decimal Point&#39;, // MISSING
+	divide: &#39;Divide&#39;, // MISSING
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lock&#39;,
+	scrollLock: &#39;Scroll Lock&#39;,
+	semiColon: &#39;Semicolon&#39;, // MISSING
+	equalSign: &#39;Equal Sign&#39;, // MISSING
+	comma: &#39;Comma&#39;, // MISSING
+	dash: &#39;Dash&#39;, // MISSING
+	period: &#39;Period&#39;, // MISSING
+	forwardSlash: &#39;סלאש&#39;,
+	graveAccent: &#39;Grave Accent&#39;, // MISSING
+	openBracket: &#39;Open Bracket&#39;, // MISSING
+	backSlash: &#39;סלאש הפוך&#39;,
+	closeBracket: &#39;Close Bracket&#39;, // MISSING
+	singleQuote: &#39;ציטוט יחיד&#39;
+} );
+</pre>
+</body>
+</html>

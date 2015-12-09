@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;vi&#39;, {
+	title: &#39;Hướng dẫn trợ năng&#39;,
+	contents: &#39;Nội dung Hỗ trợ. Nhấn ESC để đóng hộp thoại.&#39;,
+	legend: [
+		{
+		name: &#39;Chung&#39;,
+		items: [
+			{
+			name: &#39;Thanh công cụ soạn thảo&#39;,
+			legend: &#39;Nhấn ${toolbarFocus} để điều hướng đến thanh công cụ. Nhấn TAB và SHIFT+TAB để chuyển đến nhóm thanh công cụ khác. Nhấn MŨI TÊN PHẢI hoặc MŨI TÊN TRÁI để chuyển sang nút khác trên thanh công cụ. Nhấn PHÍM CÁCH hoặc ENTER để kích hoạt nút trên thanh công cụ.&#39;
+		},
+
+			{
+			name: &#39;Hộp thoại Biên t&#39;,
+			legend:
+				&#39;Inside a dialog, press TAB to navigate to the next dialog element, press SHIFT+TAB to move to the previous dialog element, press ENTER to submit the dialog, press ESC to cancel the dialog. When a dialog has multiple tabs, the tab list can be reached either with ALT+F10 or with TAB as part of the dialog tabbing order. With tab list focused, move to the next and previous tab with RIGHT and LEFT ARROW, respectively.&#39;  // MISSING
+		},
+
+			{
+			name: &#39;Trình đơn Ngữ cảnh cBộ soạn thảo&#39;,
+			legend: &#39;Nhấn ${contextMenu} hoặc PHÍM ỨNG DỤNG để mở thực đơn ngữ cảnh. Sau đó nhấn TAB hoặc MŨI TÊN XUỐNG để di chuyển đến tuỳ chọn tiếp theo của thực đơn. Nhấn SHIFT+TAB hoặc MŨI TÊN LÊN để quay lại tuỳ chọn trước. Nhấn DẤU CÁCH hoặc ENTER để chọn tuỳ chọn của thực đơn. Nhấn DẤU CÁCH hoặc ENTER hoặc MŨI TÊN SANG PHẢI để mở thực đơn con của tuỳ chọn hiện tại. Nhấn ESC hoặc MŨI TÊN SANG TRÁI để quay trở lại thực đơn gốc. Nhấn ESC để đóng thực đơn ngữ cảnh.&#39;
+		},
+
+			{
+			name: &#39;Hộp danh sách trình biên tập&#39;,
+			legend: &#39;Trong một danh sách chọn, di chuyển đối tượng tiếp theo với phím TAB hoặc phím mũi tên hướng xuống. Di chuyển đến đối tượng trước đó bằng cách nhấn tổ hợp phím SHIFT+TAB hoặc mũi tên hướng lên. Phím khoảng cách hoặc phím ENTER để chọn các tùy chọn trong danh sách. Nhấn phím ESC để đóng lại danh sách chọn.&#39;
+		},
+
+			{
+			name: &#39;Thanh đường dẫn các đối tượng&#39;,
+			legend: &#39;Nhấn ${elementsPathFocus} để điều hướng các đối tượng trong thanh đường dẫn. Di chuyển đến đối tượng tiếp theo bằng phím TAB hoặc phím mũi tên bên phải. Di chuyển đến đối tượng trước đó bằng tổ hợp phím SHIFT+TAB hoặc phím mũi tên bên trái. Nhấn phím khoảng cách hoặc ENTER để chọn đối tượng trong trình soạn thảo.&#39;
+		}
+		]
+	},
+		{
+		name: &#39;Lệnh&#39;,
+		items: [
+			{
+			name: &#39;Làm lại lện&#39;,
+			legend: &#39;Ấn ${undo}&#39;
+		},
+			{
+			name: &#39;Làm lại lệnh&#39;,
+			legend: &#39;Ấn ${redo}&#39;
+		},
+			{
+			name: &#39;Lệnh in đậm&#39;,
+			legend: &#39;Ấn ${bold}&#39;
+		},
+			{
+			name: &#39;Lệnh in nghiêng&#39;,
+			legend: &#39;Ấn ${italic}&#39;
+		},
+			{
+			name: &#39;Lệnh gạch dưới&#39;,
+			legend: &#39;Ấn ${underline}&#39;
+		},
+			{
+			name: &#39;Lệnh liên kết&#39;,
+			legend: &#39;Nhấn ${link}&#39;
+		},
+			{
+			name: &#39;Lệnh hiển thị thanh công cụ&#39;,
+			legend: &#39;Nhấn${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39;Truy cập đến lệnh tập trung vào khoảng cách trước đó&#39;,
+			legend: &#39;Ấn ${accessPreviousSpace} để truy cập đến phần tập trung khoảng cách sau phần còn sót lại của khoảng cách gần nhất vốn không tác động đến được , thí dụ: hai yếu tố điều chỉnh HR. Lặp lại các phím kết họep này để vươn đến phần khoảng cách.&#39;
+		},
+			{
+			name: &#39;Truy cập phần đối tượng lệnh khoảng trống&#39;,
+			legend: &#39;Ấn ${accessNextSpace} để truy cập đến phần tập trung khoảng cách sau phần còn sót lại của khoảng cách gần nhất vốn không tác động đến được , thí dụ: hai yếu tố điều chỉnh HR. Lặp lại các phím kết họep này để vươn đến phần khoảng cách.&#39;
+		},
+			{
+			name: &#39;Trợ giúp liên quan&#39;,
+			legend: &#39;Nhấn ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Phím Backspace&#39;,
+	tab: &#39;Phím Tab&#39;,
+	enter: &#39;Phím Tab&#39;,
+	shift: &#39;Phím Shift&#39;,
+	ctrl: &#39;Phím Ctrl&#39;,
+	alt: &#39;Phím Alt&#39;,
+	pause: &#39;Phím Pause&#39;,
+	capslock: &#39;Phím Caps Lock&#39;,
+	escape: &#39;Phím Escape&#39;,
+	pageUp: &#39;Phím Page Up&#39;,
+	pageDown: &#39;Phím Page Down&#39;,
+	end: &#39;Phím End&#39;,
+	home: &#39;Phím Home&#39;,
+	leftArrow: &#39;Phím Left Arrow&#39;,
+	upArrow: &#39;Phím Up Arrow&#39;,
+	rightArrow: &#39;Phím Right Arrow&#39;,
+	downArrow: &#39;Phím Down Arrow&#39;,
+	insert: &#39;Chèn&#39;,
+	&#39;delete&#39;: &#39;Xóa&#39;,
+	leftWindowKey: &#39;Phím Left Windows&#39;,
+	rightWindowKey: &#39;Phím Right Windows &#39;,
+	selectKey: &#39;Chọn phím&#39;,
+	numpad0: &#39;Phím 0&#39;,
+	numpad1: &#39;Phím 1&#39;,
+	numpad2: &#39;Phím 2&#39;,
+	numpad3: &#39;Phím 3&#39;,
+	numpad4: &#39;Phím 4&#39;,
+	numpad5: &#39;Phím 5&#39;,
+	numpad6: &#39;Phím 6&#39;,
+	numpad7: &#39;Phím 7&#39;,
+	numpad8: &#39;Phím 8&#39;,
+	numpad9: &#39;Phím 9&#39;,
+	multiply: &#39;Nhân&#39;,
+	add: &#39;Thêm&#39;,
+	subtract: &#39;Trừ&#39;,
+	decimalPoint: &#39;Điểm số thập phân&#39;,
+	divide: &#39;Chia&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lock&#39;,
+	scrollLock: &#39;Scroll Lock&#39;,
+	semiColon: &#39;Dấu chấm phẩy&#39;,
+	equalSign: &#39;Đăng nhập bằng&#39;,
+	comma: &#39;Dấu phẩy&#39;,
+	dash: &#39;Dấu gạch ngang&#39;,
+	period: &#39;Phím .&#39;,
+	forwardSlash: &#39;Phím /&#39;,
+	graveAccent: &#39;Phím `&#39;,
+	openBracket: &#39;Open Bracket&#39;,
+	backSlash: &#39;Dấu gạch chéo ngược&#39;,
+	closeBracket: &#39;Gần giá đỡ&#39;,
+	singleQuote: &#39;Trích dẫn&#39;
+} );
+</pre>
+</body>
+</html>

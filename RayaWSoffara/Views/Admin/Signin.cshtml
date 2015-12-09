@@ -1,0 +1,107 @@
+﻿<!--<!DOCTYPE html>-->
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <link rel="shortcut icon" href="../images/favicon.png" type="image/png">
+
+    <title>Raya W Soffara Admin - Signin</title>
+
+    <link href="~/Content/CSS/style.default.css" rel="stylesheet" />
+    <link href="~/Content/CSS/Site-backoffice.css" rel="stylesheet" />
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+  <script src="../js/html5shiv.js"></script>
+  <script src="../js/respond.min.js"></script>
+  <![endif]-->
+</head>
+
+@{
+    ViewBag.Title = "Sign In";
+    Layout = "";
+}
+
+<body class="signin">
+
+    <!-- Preloader -->
+    <div id="preloader">
+        <div id="status"><i class="fa fa-spinner fa-spin"></i></div>
+    </div>
+
+    <section>
+        <!-- logopanel -->
+        <div class="signinpanel">
+            <div class="logopanel">
+                <h1><span>راية وصفارة</span></h1>
+            </div>
+            @if (!Html.ViewData.ModelState.IsValid)
+            {
+                <div class="row">
+                    <div class="alert alert-danger col-md-6 col-md-offset-3">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        @Html.ValidationSummary()
+                    </div>
+                </div>
+            }
+            @if (TempData["RedirectReason"] != null)
+            {
+                <div class="row">
+                    <div class="alert alert-danger col-md-6 col-md-offset-3">
+                        <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                        @TempData["RedirectReason"];
+                    </div>
+                </div>
+            }
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3">
+
+                    <form method="post" action="SignIn">
+                        <h4 class="nomargin">Sign In</h4>
+                        <input type="hidden" name="RedirectUrl" value="@ViewBag.RedirectUrl" />
+                        <input type="text" name="username" class="form-control uname" placeholder="username" />
+                        <input type="password" name="password" class="form-control pword" placeholder="password" />
+                        <a href=""><small>Forget password</small></a>
+                        <input type="submit" class="btn btn-success btn-block" value="Send" />
+                        @Html.AntiForgeryToken()
+                    </form>
+                </div>
+                <!-- col-sm-5 -->
+
+            </div>
+            <!-- row -->
+
+            <div class="signup-footer">
+                <div class="pull-left">
+                    &copy; 2014. All Rights Reserved. Bracket Bootstrap 3 Admin Template
+           
+                </div>
+                <div class="pull-right">
+                    Created By: <a href="http://themepixels.com/" target="_blank">ThemePixels</a>
+                </div>
+            </div>
+
+        </div>
+        <!-- signin -->
+
+    </section>
+
+
+    <script src="~/Content/Scripts/jquery-1.11.1.min.js"></script>
+    <script src="~/Content/Scripts/jquery-migrate-1.2.1.min.js"></script>
+    <script src="~/Content/Scripts/bootstrap.min.js"></script>
+    <script src="~/Content/Scripts/modernizr.min.js"></script>
+    <script src="~/Content/Scripts/retina.min.js"></script>
+
+    @*<script src="~/Content/Scripts/custom.js"></script>*@
+
+</body>
+</html>
+
+<script>
+    $(document).ready(function () {
+        $("#preloader").css("display", "none");
+    });
+</script>

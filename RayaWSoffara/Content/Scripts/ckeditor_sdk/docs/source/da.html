@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <title>The source code</title>
+  <link href="../resources/prettify/prettify.css" type="text/css" rel="stylesheet" />
+  <script type="text/javascript" src="../resources/prettify/prettify.js"></script>
+  <style type="text/css">
+    .highlight { display: block; background-color: #ddd; }
+  </style>
+  <script type="text/javascript">
+    function highlight() {
+      document.getElementById(location.hash.replace(/#/, "")).className = "highlight";
+    }
+  </script>
+</head>
+<body onload="prettyPrint(); highlight();">
+  <pre class="prettyprint lang-js"><span id='global-property-'>/**
+</span> * @license Copyright (c) 2003-2015, CKSource - Frederico Knabben. All rights reserved.
+ * For licensing, see LICENSE.md or http://ckeditor.com/license
+ */
+
+CKEDITOR.plugins.setLang( &#39;a11yhelp&#39;, &#39;da&#39;, {
+	title: &#39;Tilgængelighedsinstrukser&#39;,
+	contents: &#39;Onlinehjælp. For at lukke dette vindue klik ESC&#39;,
+	legend: [
+		{
+		name: &#39;Generelt&#39;,
+		items: [
+			{
+			name: &#39;Editor værktøjslinje&#39;,
+			legend: &#39;Tryk ${toolbarFocus} for at navigere til værktøjslinjen. Flyt til næste eller forrige værktøjsline gruppe ved hjælp af TAB eller SHIFT+TAB. Flyt til næste eller forrige værktøjslinje knap med venstre- eller højre piltast. Tryk på SPACE eller ENTER for at aktivere værktøjslinje knappen.&#39;
+		},
+
+			{
+			name: &#39;Editor dialogboks&#39;,
+			legend:
+				&#39;Inde i en dialogboks kan du, trykke på TAB for at navigere til næste element, trykke på SHIFT+TAB for at navigere til forrige element, trykke på ENTER for at afsende eller trykke på ESC for at lukke dialogboksen.\r\nNår en dialogboks har flere faner, fanelisten kan tilgås med ALT+F10 eller med TAB. Hvis fanelisten er i fokus kan du skifte til næste eller forrige tab, med højre- og venstre piltast.&#39; 
+		},
+
+			{
+			name: &#39;Editor Context Menu&#39;, // MISSING
+			legend: &#39;Press ${contextMenu} or APPLICATION KEY to open context-menu. Then move to next menu option with TAB or DOWN ARROW. Move to previous option with SHIFT+TAB or UP ARROW. Press SPACE or ENTER to select the menu option. Open sub-menu of current option with SPACE or ENTER or RIGHT ARROW. Go back to parent menu item with ESC or LEFT ARROW. Close context menu with ESC.&#39; // MISSING
+		},
+
+			{
+			name: &#39;Editor List Box&#39;, // MISSING
+			legend: &#39;Inside a list-box, move to next list item with TAB OR DOWN ARROW. Move to previous list item with SHIFT+TAB or UP ARROW. Press SPACE or ENTER to select the list option. Press ESC to close the list-box.&#39; // MISSING
+		},
+
+			{
+			name: &#39;Editor Element Path Bar&#39;, // MISSING
+			legend: &#39;Press ${elementsPathFocus} to navigate to the elements path bar. Move to next element button with TAB or RIGHT ARROW. Move to previous button with SHIFT+TAB or LEFT ARROW. Press SPACE or ENTER to select the element in editor.&#39; // MISSING
+		}
+		]
+	},
+		{
+		name: &#39;Kommandoer&#39;,
+		items: [
+			{
+			name: &#39;Fortryd kommando&#39;,
+			legend: &#39;Klik på ${undo}&#39;
+		},
+			{
+			name: &#39;Gentag kommando&#39;,
+			legend: &#39;Klik ${redo}&#39;
+		},
+			{
+			name: &#39;Fed kommando&#39;,
+			legend: &#39;Klik ${bold}&#39;
+		},
+			{
+			name: &#39;Kursiv kommando&#39;,
+			legend: &#39;Klik ${italic}&#39;
+		},
+			{
+			name: &#39;Understregnings kommando&#39;,
+			legend: &#39;Klik ${underline}&#39;
+		},
+			{
+			name: &#39;Link kommando&#39;,
+			legend: &#39;Klik ${link}&#39;
+		},
+			{
+			name: &#39; Toolbar Collapse command&#39;, // MISSING
+			legend: &#39;Klik ${toolbarCollapse}&#39;
+		},
+			{
+			name: &#39; Access previous focus space command&#39;, // MISSING
+			legend: &#39;Press ${accessPreviousSpace} to access the closest unreachable focus space before the caret, for example: two adjacent HR elements. Repeat the key combination to reach distant focus spaces.&#39; // MISSING
+		},
+			{
+			name: &#39; Access next focus space command&#39;, // MISSING
+			legend: &#39;Press ${accessNextSpace} to access the closest unreachable focus space after the caret, for example: two adjacent HR elements. Repeat the key combination to reach distant focus spaces.&#39; // MISSING
+		},
+			{
+			name: &#39;Tilgængelighedshjælp&#39;,
+			legend: &#39;Kilk ${a11yHelp}&#39;
+		}
+		]
+	}
+	],
+	backspace: &#39;Backspace&#39;,
+	tab: &#39;Tab&#39;,
+	enter: &#39;Enter&#39;,
+	shift: &#39;Shift&#39;,
+	ctrl: &#39;Ctrl&#39;,
+	alt: &#39;Alt&#39;,
+	pause: &#39;Pause&#39;,
+	capslock: &#39;Caps Lock&#39;,
+	escape: &#39;Escape&#39;,
+	pageUp: &#39;Page Up&#39;,
+	pageDown: &#39;Page Down&#39;,
+	end: &#39;End&#39;,
+	home: &#39;Home&#39;,
+	leftArrow: &#39;Venstre pil&#39;,
+	upArrow: &#39;Pil op&#39;,
+	rightArrow: &#39;Højre pil&#39;,
+	downArrow: &#39;Pil ned&#39;,
+	insert: &#39;Insert&#39;,
+	&#39;delete&#39;: &#39;Delete&#39;,
+	leftWindowKey: &#39;Venstre Windows tast&#39;,
+	rightWindowKey: &#39;Højre Windows tast&#39;,
+	selectKey: &#39;Select-knap&#39;,
+	numpad0: &#39;Numpad 0&#39;,
+	numpad1: &#39;Numpad 1&#39;,
+	numpad2: &#39;Numpad 2&#39;,
+	numpad3: &#39;Numpad 3&#39;,
+	numpad4: &#39;Numpad 4&#39;,
+	numpad5: &#39;Numpad 5&#39;,
+	numpad6: &#39;Numpad 6&#39;,
+	numpad7: &#39;Numpad 7&#39;,
+	numpad8: &#39;Numpad 8&#39;,
+	numpad9: &#39;Numpad 9&#39;,
+	multiply: &#39;Gange&#39;,
+	add: &#39;Plus&#39;,
+	subtract: &#39;Minus&#39;,
+	decimalPoint: &#39;Komma&#39;,
+	divide: &#39;Divider&#39;,
+	f1: &#39;F1&#39;,
+	f2: &#39;F2&#39;,
+	f3: &#39;F3&#39;,
+	f4: &#39;F4&#39;,
+	f5: &#39;F5&#39;,
+	f6: &#39;F6&#39;,
+	f7: &#39;F7&#39;,
+	f8: &#39;F8&#39;,
+	f9: &#39;F9&#39;,
+	f10: &#39;F10&#39;,
+	f11: &#39;F11&#39;,
+	f12: &#39;F12&#39;,
+	numLock: &#39;Num Lock&#39;,
+	scrollLock: &#39;Scroll Lock&#39;,
+	semiColon: &#39;Semikolon&#39;,
+	equalSign: &#39;Lighedstegn&#39;,
+	comma: &#39;Komma&#39;,
+	dash: &#39;Bindestreg&#39;,
+	period: &#39;Punktum&#39;,
+	forwardSlash: &#39;Skråstreg&#39;,
+	graveAccent: &#39;Accent grave&#39;,
+	openBracket: &#39;Start klamme&#39;,
+	backSlash: &#39;Omvendt skråstreg&#39;,
+	closeBracket: &#39;Slut klamme&#39;,
+	singleQuote: &#39;Enkelt citationstegn&#39;
+} );
+</pre>
+</body>
+</html>
