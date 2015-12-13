@@ -1738,7 +1738,7 @@ namespace RayaWSoffara.Controllers
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddImagePost()
         {
-            ViewBag.SubSidebarItem = "opinions";
+            ViewBag.SubSidebarItem = "image-posts";
             ViewBag.SidebarItem = "posts-management";
             ViewBag.PageHeader = "Posts Management";
             return View();
