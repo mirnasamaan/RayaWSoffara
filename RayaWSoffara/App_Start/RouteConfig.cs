@@ -359,23 +359,25 @@ namespace RayaWSoffara
                 url: "Admin/EditOpinion",
                 defaults: new { controller = "Admin", action = "EditOpinion", id = UrlParameter.Optional }
             );
+            #endregion
 
+            #region ImagePosts
             routes.MapRoute(
-                name: "Admin/DeleteOpinion",
-                url: "Admin/DeleteOpinion",
-                defaults: new { controller = "Admin", action = "DeleteOpinion", id = UrlParameter.Optional }
+                name: "Admin/ImagePosts",
+                url: "Admin/ImagePosts",
+                defaults: new { controller = "Admin", action = "ImagePosts", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
-                name: "Admin/DeactivateOpinion",
-                url: "Admin/DeactivateOpinion",
-                defaults: new { controller = "Admin", action = "DeactivateOpinion", id = UrlParameter.Optional }
+                name: "Admin/AddImageArticles",
+                url: "Admin/AddImageArticles",
+                defaults: new { controller = "Admin", action = "AddImagePost", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
-                name: "Admin/ActivateOpinion",
-                url: "Admin/ActivateOpinion",
-                defaults: new { controller = "Admin", action = "ActivateOpinion", id = UrlParameter.Optional }
+                name: "Admin/EditImagePost",
+                url: "Admin/EditImagePost",
+                defaults: new { controller = "Admin", action = "EditImagePost", id = UrlParameter.Optional }
             );
             #endregion
 
