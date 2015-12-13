@@ -1156,6 +1156,10 @@
     <Content Include="Views\Admin\EditOpinion.cshtml" />
     <Content Include="Views\Admin\ImagePosts.cshtml" />
     <Content Include="Views\Admin\AddImagePost.cshtml" />
+    <Content Include="Views\Admin\EditImagePost.cshtml" />
+    <Content Include="Views\Admin\Videos.cshtml" />
+    <Content Include="Views\Admin\AddVideo.cshtml" />
+    <Content Include="Views\Admin\EditVideo.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">

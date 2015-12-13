@@ -1,0 +1,112 @@
+﻿@{
+    ViewBag.Title = "Videos List";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="/Admin/AddVideo">Add Video</a>
+        </div>
+        <h4 class="panel-title">Videos List</h4>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table id="example" class="table table-primary">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th>Video</th>
+                        <th>Actions</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+
+    var dt = $('#example').dataTable({
+        "processing": true,
+        "serverSide": true,
+        "info": true,
+        "stateSave": true,
+        "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+        "ajax": {
+            "url": "/Admin/AjaxGetVideos",
+            "type": "GET"
+        },
+        "columns": [
+            {
+                "data": "ItemName"
+            },
+            {
+                "orderable": false,
+                "data": "Actions",
+                "className": "table-action"
+            },
+            {
+                "data": "Status"
+            }
+        ],
+        "order": [[0, "asc"]]
+    });
+
+    function Deactivate(e) {
+        var post_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to deactivate this video?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { PostId: post_id },
+                url: "/Admin/DeactivatePost",
+                success: function (data) {
+                    $(e).html("Inactive").attr("onclick", "Activate(this)").removeClass("label-success").addClass("label-danger");
+                }
+            });
+        }
+    }
+
+    function Activate(e) {
+        var post_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to activate this video?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { PostId: post_id },
+                url: "/Admin/ActivatePost",
+                success: function (data) {
+                    $(e).html("Active").attr("onclick", "Deactivate(this)").removeClass("label-danger").addClass("label-success");
+                }
+            });
+        }
+    }
+
+    function Edit(e) {
+        var post_id = $(e).parent().parent().attr("id");
+        window.location = "/Admin/EditVideo?PostId=" + post_id;
+    }
+
+    function Delete(e) {
+        var post_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to delete this video?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { PostId: post_id },
+                url: "/Admin/DeletePost",
+                success: function (data) {
+                    $(e).parent().parent().hide(1000);
+                }
+            });
+        }
+    }
+</script>

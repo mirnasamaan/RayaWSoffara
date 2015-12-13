@@ -1,24 +1,27 @@
-﻿@{
-    ViewBag.Title = "Add Image Post";
+﻿@model RayaWSoffara.Models.UserArticleVM
+@{
+    ViewBag.Title = "Edit Image";
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
 }
 <link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
 <link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.Jcrop.min.css" />
-<form id="addForm" class="form-horizontal" action="/Admin/AddImagePost" method="post" enctype="multipart/form-data">
+<form id="editForm" class="form-horizontal" action="/Admin/EditImagePost" method="post" enctype="multipart/form-data">
+    <input type="hidden" name ="newArticle.PostId" id="PostId" value="@Model.newArticle.PostId" />
     <div class="panel panel-default">
         <div class="panel-heading">
             <div class="panel-btns">
                 <a href="" class="panel-close">&times;</a>
                 <a href="" class="minimize">&minus;</a>
             </div>
-            <h4 class="panel-title">Add Image Post</h4>
+            <h4 class="panel-title">Edit Image</h4>
         </div>
         <div class="panel-body">
+
             <div class="form-group">
                 <label class="col-sm-2 control-label">Post Image:</label>
                 <div class="col-sm-10">
                     <div class="media dark_border" id="media_0">
-                        <img class="media_img" src="" />
+                        <img class="media_img" src=@(Model.newArticle.FeaturedImage == ""? null : "/Content/Article_Images/" + @Model.newArticle.FeaturedImage) />
                         <section class="image-upload-drop-target media_dropbox">
                             <div>أضف صورة أو فيديو</div>
                             <button type="button" class="upload video_embed_btn"><i class="fa fa-video-camera"></i></button>
@@ -36,9 +39,9 @@
             </div>
 
             <div class="form-group">
-                <label class="col-sm-2 control-label">Post Content:</label>
+                <label class="col-sm-2 control-label">Article Content:</label>
                 <div class="col-sm-10">
-                    <textarea class="form-control full-width" name="newArticle.Content"></textarea>
+                    <textarea class="full-width" name="newArticle.Content">@Html.Raw(Model.newArticle.Content)</textarea>
                 </div>
             </div>
 
@@ -99,7 +102,7 @@
         </div>
         <!-- panel-body -->
         <div class="panel-footer">
-            <button id="submit-btn" type="submit" class="btn btn-primary">Add Image</button>
+            <button id="submit-btn" type="submit" class="btn btn-primary">Submit Changes</button>
         </div>
         <!-- panel-footer -->
     </div>
@@ -111,64 +114,83 @@
 <script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.js"></script>
 <script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script src="~/Content/Scripts/script-backoffice.js"></script>
 <script type="text/javascript">
 
-    $('#articleTags').tagit({
-        tagSource: function (search, showChoices) {
-            if (search.term.length > 2) {
-                $.ajax({
-                    async: false,
-                    type: "POST",
-                    data: { Term: search.term },
-                    url: "/Home/GetTags",
-                    success: function (Tags) {
-                        availableTags = [];
-                        availableTagsID = [];
-                        $('.header_div_2 .keywords').children('p').each(function () {
-                            availableTags.push();
-                        });
-                        for (i = 0; i < Tags.length; i++) {
-                            availableTags.push(Tags[i].TagName);
-                            availableTagsID.push(Tags[i].TagID);
-                        }
-                        showChoices(availableTags);
-                    }
-                })
-            }
-        },
-        select: true,
-        sortable: true,
-        allowNewTags: false,
-        triggerKeys: ['enter', 'tab'],
-        beforeTagAdded: function (event, ui) {
-            if ($.inArray(ui.tagLabel, availableTags) == -1) {
-                return false;
+    var availableTags = [];
+    var availableTagsID = [];
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: { Term: "" },
+        url: "/Home/GetTags",
+        success: function (Tags) {
+            for (i = 0; i < Tags.length; i++) {
+                availableTags.push(Tags[i].TagName);
+                availableTagsID.push(Tags[i].TagID);
             }
         }
     });
 
-    $("#addForm").submit(function (e) {
+    var tagItems = [];
+    $.ajax({
+        type: "POST",
+        data: { PostId: $("#PostId").val() },
+        url: "/Admin/GetTagsForPost",
+        success: function (tags) {
+            tagItems = tags;
+        }
+    }).done(function () {
+        $.getScript("/Content/Scripts/tag-it.js").done(function () {
+            $('#articleTags').tagit({
+                tagSource: availableTags,
+                select: true,
+                sortable: true,
+                allowNewTags: false,
+                triggerKeys: ['enter', 'tab'],
+                beforeTagAdded: function (event, ui) {
+                    if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                        return false;
+                    }
+                },
+                afterTagAdded: function (event, ui) {
+                    var index = availableTags.indexOf(ui.tagLabel);
+                    var id = availableTagsID[index];
+                    $("#tags li").eq(-2).attr("data-id", id);
+                }
+            });
+        }).done(function () {
+            for (i = 0; i < tagItems.length; i++) {
+                $('#articleTags').tagit("createTag", tagItems[i].ItemName);
+            }
+        });
+    });
+
+    $("#editForm").submit(function (e) {
         src = $("#media_0 .media_img").attr("src");
         if ($("#video_url_0").attr("value") == "") {
             $("#article_picture_path_0").attr("value", src);
         }
+        $('#article_content').each(function () {
+            for (instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        });
 
+        $('.SelectedTags').remove();
         var tags_qs = "";
         $('#articleTags').children('li').each(function (index) {
             var tagname = $(this).children('span').text();
-            $("#submit-btn").append("<input name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
+            $("#submit-btn").append("<input class='SelectedTags' name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
         });
         return true;
     });
 
     $.validator.addMethod("ImageOrVideo", function (value, element) {
-        alert("in");
         img_src = $("#media_0 .media_img").attr("src");
         vid_src = $("#video_url_0").attr("value");
-        alert((img_src != "") || (vid_src != ""));
         return ((img_src != "") || (vid_src != ""));
     });
 
@@ -177,14 +199,13 @@
         return (tags_count > 1) ? true : false;
     });
 
-    $("#addForm").validate({
+    $("#editForm").validate({
         ignore: [],
         rules: {
             article_picture_path: "required",
             mySelect: { RequiredTag: true }
         },
         messages: {
-            article_picture_path: "This field is required.",
             mySelect: "This field is required."
         },
         errorPlacement: function (error, element) {
@@ -197,4 +218,21 @@
             }
         }
     });
+
+    $(".media_img").mouseenter(function () {
+        if ($(this).attr("src") != "" && $(".media_img").attr("src") != null) {
+            $(this).parent().children(".controls").css("display", "block");
+        }
+    });
+    //$(".media_img").mouseout(function () {
+    //    $(this).parent().children(".controls").css("display", "none");
+    //});
+    if ($(".media_img").attr("src") != "" && $(".media_img").attr("src") != null) {
+        $(".media_img").parent().children(".media_dropbox").css("display", "none");
+        var media_id = $(".media_img").parent().attr("id");
+        $("#media_id").val(media_id);
+        $("#" + media_id + " .article_picture_btn").click();
+    }
+
+
 </script>

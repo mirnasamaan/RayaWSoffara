@@ -321,23 +321,25 @@ namespace RayaWSoffara
                 url: "Admin/EditArticle",
                 defaults: new { controller = "Admin", action = "EditArticle", id = UrlParameter.Optional }
             );
+            #endregion
 
+            #region ArticleTopX
             routes.MapRoute(
-                name: "Admin/DeleteArticle",
-                url: "Admin/DeleteArticle",
-                defaults: new { controller = "Admin", action = "DeleteArticle", id = UrlParameter.Optional }
+                name: "Admin/ArticlesTopX",
+                url: "Admin/ArticlesTopX",
+                defaults: new { controller = "Admin", action = "ArticlesTopX", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
-                name: "Admin/DeactivateArticle",
-                url: "Admin/DeactivateArticle",
-                defaults: new { controller = "Admin", action = "DeactivateArticle", id = UrlParameter.Optional }
+                name: "Admin/AddArticleTopX",
+                url: "Admin/AddArticleTopX",
+                defaults: new { controller = "Admin", action = "AddArticleTopX", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
-                name: "Admin/ActivateArticle",
-                url: "Admin/ActivateArticle",
-                defaults: new { controller = "Admin", action = "ActivateArticle", id = UrlParameter.Optional }
+                name: "Admin/EditArticleTopX",
+                url: "Admin/EditArticleTopX",
+                defaults: new { controller = "Admin", action = "EditArticleTopX", id = UrlParameter.Optional }
             );
             #endregion
 
@@ -378,6 +380,26 @@ namespace RayaWSoffara
                 name: "Admin/EditImagePost",
                 url: "Admin/EditImagePost",
                 defaults: new { controller = "Admin", action = "EditImagePost", id = UrlParameter.Optional }
+            );
+            #endregion
+
+            #region Videos
+            routes.MapRoute(
+                name: "Admin/Videos",
+                url: "Admin/Videos",
+                defaults: new { controller = "Admin", action = "Videos", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/AddVideo",
+                url: "Admin/AddVideo",
+                defaults: new { controller = "Admin", action = "AddVideo", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/EditVideo",
+                url: "Admin/EditVideo",
+                defaults: new { controller = "Admin", action = "EditVideo", id = UrlParameter.Optional }
             );
             #endregion
 

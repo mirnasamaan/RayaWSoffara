@@ -222,27 +222,6 @@ $(document).ready(function () {
         $('.ul_grid').addClass('hide');
     });
 
-    //if ($(window).width() <= 768) {
-    //    $('.nav > li').click(function () {
-    //        $('.nav > li').each(function () {
-    //            $(this).find('.sub-menu').css('max-height', '0px');
-    //        });
-    //        var height = 0;
-    //        if ($(this).find('.sub-menu').css('max-height') == '0px') {
-    //            $(this).prevAll().each(function () {
-    //                height = height + $(this).height();
-    //            });
-
-    //            $(this).find('.sub-menu').css('max-height', '2000px');
-    //            $(this).find('.sub-menu').css('margin-top', height + 'px');
-    //        } else {
-    //            $(this).find('.sub-menu').css('max-height', '0');
-    //            $(this).find('.sub-menu').css('margin-top', '0');
-    //        }
-    //    });
-
-    //}
-
     if ($(".panel-body .media").length) {
         var box;
         for (var i = 0; i < $(".panel-body .media").length; i++) {
@@ -379,6 +358,7 @@ $(document).ready(function () {
 
     $("#embed_confirm").click(function () {
         var media_id = $("#video_id").attr("value");
+        alert(media_id);
         $("#media_id_vid").val(media_id);
         if ($("#modal_video_viewport").find("img").length < 1) {
             if ($("#embedded_video_link").val().indexOf('iframe') > -1) {
