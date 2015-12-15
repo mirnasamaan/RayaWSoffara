@@ -403,6 +403,14 @@ namespace RayaWSoffara
             );
             #endregion
 
+            #region Engagements
+            routes.MapRoute(
+                name: "Admin/Engagements",
+                url: "Admin/Engagements",
+                defaults: new { controller = "Admin", action = "Engagements", id = UrlParameter.Optional }
+            );
+            #endregion
+
             routes.MapRoute(
                 name: "Login",
                 url: "Login",

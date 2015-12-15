@@ -1,0 +1,138 @@
+﻿@{
+    ViewBag.Title = "Engagements List";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="javascript:void(0)" id="addEng">Add Engagement Type</a>
+        </div>
+        <h4 class="panel-title">Engagement Types</h4>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table id="example" class="table table-primary">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th>Engagement Type</th>
+                        <th>Engagement Weight</th>
+                        <th>Actions</th>
+                        <th></th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+@*<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>*@
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+
+    var dt = $('#example').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "info": true,
+        "stateSave": true,
+        "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+        "ajax": {
+            "url": "/Admin/AjaxGetEngagements",
+            "type": "GET"
+        },
+        "columns": [
+            {
+                "data": "ItemName",
+                "className": "engagement-type"
+            }, 
+            {
+                "data": "articlesCount",
+                "className": "engagement-weight"
+            },
+            {
+                "orderable": false,
+                "data": "Actions",
+                "className": "table-action"
+            },
+            {
+                "orderable": false,
+                "data": "Status"
+            }
+        ],
+        "order": [[0, "asc"]]
+    });
+
+    $("#addEng").on('click', function () {
+        var newRow = "<tr>" +
+        "<td class='engagement-type'>" + "<input class='engagement-type-add' type='text' />" + "</td>" +
+        "<td class='engagement-weight'>" + "<input class='engagement-weight-add' type='number' />" + "</td>" +
+        "<td class='table-action'>" + "" + "</td>" +
+        "<td>" + "<button onclick='Add(this)'>Save</button>" + "</td>";
+
+        $('#example').DataTable().row.add($(newRow));
+        $('#example tbody').prepend(newRow);
+    });
+
+    function Add(e) {
+        var eng_type = $(e).parent().parent().children(".engagement-type").children(".engagement-type-add").val();
+        var eng_weight = $(e).parent().parent().children(".engagement-weight").children(".engagement-weight-add").val();
+        $.ajax({
+            type: 'POST',
+            url: '/Admin/AddEngagementType',
+            data: { EngagementType: eng_type, EngagementWeight: eng_weight },
+            success: function (data) {
+                $(e).parent().parent().attr("id", data[2].Value);
+                $(e).parent().parent().children(".engagement-type").text(data[0].Value);
+                $(e).parent().parent().children(".engagement-weight").text(data[1].Value);
+                $(e).parent().parent().children(".table-action").text("").append("<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>");
+                $(e).parent().text("").append("<button onclick='Save(this)'>Save</button>");
+            },
+            error: function (error) { alert(JSON.stringify(error)); }
+        });
+    }
+
+    function Edit(e) {
+        var eng_id = $(e).parent().parent().attr("id");
+        var text = $(e).parent().parent().children(".engagement-type").text();
+        var weight = $(e).parent().parent().children(".engagement-weight").text();
+        $(e).parent().parent().children(".engagement-type").text("").append("<input class='engagement-type-edit' type='text' value='' />");
+        $(e).parent().parent().children(".engagement-type").children(".engagement-type-edit").val(text);
+        $(e).parent().parent().children(".engagement-weight").text("").append("<input class='engagement-weight-edit' type='number' value=" + weight + " />");
+    }
+
+    function Save(e) {
+        var eng_id = $(e).parent().parent().attr("id");
+        var eng_type = $("#" + eng_id + " .engagement-type-edit").val();
+        var eng_weight = $("#" + eng_id + " .engagement-weight-edit").val();
+        $.ajax({
+            type: 'POST',
+            url: '/Admin/EditEngagementType',
+            data: {EngagementTypeId: eng_id, EngagementType: eng_type, EngagementWeight: eng_weight},
+            success: function (data) {
+                $("#" + eng_id + " .engagement-type").text(data[0].Value);
+                $("#" + eng_id + " .engagement-weight").text(data[1].Value);
+            },
+            error: function(error){ alert(JSON.stringify(error));}
+        });
+    };
+
+    function Delete(e) {
+        var eng_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to delete this engagement type?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { EngagementTypeId: eng_id },
+                url: "/Admin/DeleteEngagementType",
+                success: function (data) {
+                    $(e).parent().parent().hide(1000);
+                }
+            });
+        }
+    }
+</script>

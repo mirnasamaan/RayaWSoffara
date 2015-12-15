@@ -389,33 +389,40 @@ namespace RWSDataLayer.Repositories
             return Context.Tags.Where(i => i.isFeatured == true).OrderBy(i => i.TagName);
         }
 
-        ///// <summary>
-        ///// Get user points
-        ///// </summary>
-        ///// <returns></returns>
-        //public double GetUserPoints(int userId, DateTime startDate, DateTime endDate)
-        //{
-        //    RWSUser user = Context.RWSUsers.Where(i => i.UserId == userId).FirstOrDefault();
-        //    int sharesCount = Context.Engagements.Where(i => user.Posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTypeId == 1).Where(i => i.EngTimestamp >= startDate).Where(i => i.EngTimestamp <= endDate).Count();
-        //    int likesCount = Context.Engagements.Where(i => user.Posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTypeId == 2).Where(i => i.EngTimestamp >= startDate).Where(i => i.EngTimestamp <= endDate).Count();
-        //    int viewsCount = Context.Engagements.Where(i => user.Posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTypeId == 3).Where(i => i.EngTimestamp >= startDate).Where(i => i.EngTimestamp <= endDate).Count();
+        public IQueryable<EngagementType> GetEngagementTypes(int? startIndex, int count = 10)
+        {
+            if (startIndex == null)
+                return Context.EngagementTypes;
+            else if (startIndex > Context.EngagementTypes.Count())
+                return null;
+            else
+                return Context.EngagementTypes.OrderByDescending(i => i.EngType).Skip(startIndex.Value).Take(count);
+        }
 
-        //    double sharesValue = sharesCount * Context.EngagementTypes.Where(i => i.EngTypeId == 1).FirstOrDefault().EngWeight.Value;
-        //    double likesValue = sharesCount * Context.EngagementTypes.Where(i => i.EngTypeId == 2).FirstOrDefault().EngWeight.Value;
-        //    double viewsValue = sharesCount * Context.EngagementTypes.Where(i => i.EngTypeId == 3).FirstOrDefault().EngWeight.Value;
+        public EngagementType GetEngagementTypeById(int EngTypeId)
+        {
+            return Context.EngagementTypes.FirstOrDefault(i => i.EngTypeId == EngTypeId);
+        }
 
-        //    return (sharesValue + likesValue + viewsValue);
+        public EngagementType AddEngagementType(EngagementType EngType)
+        {
+            Context.EngagementTypes.Add(EngType);
+            Context.SaveChanges();
+            return EngType;
+        }
 
-        //}
+        public EngagementType UpdateEngagementType(EngagementType EngType)
+        {
+            Context.Entry(EngType).State = System.Data.EntityState.Modified;
+            Context.SaveChanges();
+            return EngType;
+        }
 
-        ///// <summary>
-        ///// Get leaderboard authors
-        ///// </summary>
-        ///// <returns></returns>
-        //public IQueryable<RWSUser> GetLeaderboardAuthors(DateTime startDate, DateTime endDate)
-        //{
-        //    return Context.RWSUsers.Where(i => i. == true).OrderBy(i => i.TagName);
-        //}
+        public void DeleteEngagementType(EngagementType EngType)
+        {
+            Context.EngagementTypes.Remove(EngType);
+            Context.SaveChanges();
+        }
 
         /// <summary>
         /// 

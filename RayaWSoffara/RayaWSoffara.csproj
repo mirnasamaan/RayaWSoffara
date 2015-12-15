@@ -420,7 +420,6 @@
     <Content Include="Content\Scripts\ckeditor\samples\toolbarconfigurator\font\fontello.woff" />
     <Content Include="Content\Scripts\ckeditor\samples\toolbarconfigurator\lib\codemirror\LICENSE" />
     <Content Include="Content\Scripts\ckeditor\skins\moono\readme.md" />
-    <Content Include="ClassDiagram1.cd" />
     <Content Include="Content\CSS\fonts\fontawesome-webfont.woff2" />
     <None Include="Content\Scripts\jquery-1.7.1.intellisense.js" />
     <Content Include="Content\Scripts\bootstrap-datetimepicker.min.js" />
@@ -1160,6 +1159,10 @@
     <Content Include="Views\Admin\Videos.cshtml" />
     <Content Include="Views\Admin\AddVideo.cshtml" />
     <Content Include="Views\Admin\EditVideo.cshtml" />
+    <Content Include="Views\Admin\ArticlesTopX.cshtml" />
+    <Content Include="Views\Admin\AddArticleTopX.cshtml" />
+    <Content Include="Views\Admin\EditArticleTopX.cshtml" />
+    <Content Include="Views\Admin\Engagements.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">

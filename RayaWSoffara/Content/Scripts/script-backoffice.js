@@ -208,7 +208,7 @@ function cropImage() {
 $(document).ready(function () {
     $(".video_embed_btn").click(function () {
         var media_id = $(this).parent().parent().attr("id");
-        $("#video_id").attr("value", media_id);
+        $("#media_id_vid").attr("value", media_id);
         $("#videoModal_toggle_btn").click();
     });
 
@@ -268,6 +268,7 @@ $(document).ready(function () {
     
     $("#crop_cancel").on("click", function (e) {
         var media_id = $(this).parent().children("input").val();
+        alert(media_id);
         if ($("#" + media_id + " .media_img").attr("src") == "") {
             $("#" + media_id + " .media_img").removeAttr("hidden");
         }
@@ -294,21 +295,25 @@ $(document).ready(function () {
 
     $("#video_embed .close").click(function () {
         var media_id = $("#media_id_vid").val();
-        $("#" + media_id + " .media_img").attr("src", "");
+        //$("#" + media_id + " .media_img").attr("src", "");
         $("#" + media_id + " .media_img").removeAttr("hidden");
-        //$("#" + media_id + " .article_picture_btn").val("");
+        $("#" + media_id + " .article_picture_btn").val("");
     });
 
     $("#embed_cancel").on("click", function (e) {
-        var media_id = $("#video_id").attr("value")
-        $("#" + media_id + " .media_img").attr("src", "");
-        $("#" + media_id + " .media_img").removeAttr("hidden");
-        $("#" + media_id + " .article_picture_btn").val("");
-        if ($(".jcrop-holder").css("display") == "none") {
-            $(".jcrop-holder").css("display", "block");
-            $("#my-cropped-image").css("display", "none");
+        var media_id = $("#media_id_vid").attr("value");
+        if (media_id != "") {
+            //$("#" + media_id + " .media_img").attr("src", "");
+            //$("#" + media_id + " .media_img").removeAttr("hidden");
+            //$("#" + media_id + " .article_picture_btn").val("");
+            if ($(".jcrop-holder").css("display") == "none") {
+                $(".jcrop-holder").css("display", "block");
+                $("#my-cropped-image").css("display", "none");
+            } else {
+                $("#video_embed .close").click();
+            }
         } else {
-            $(".close").click();
+            $("#video_embed .close").click();
         }
     });
     
@@ -357,8 +362,7 @@ $(document).ready(function () {
     });
 
     $("#embed_confirm").click(function () {
-        var media_id = $("#video_id").attr("value");
-        alert(media_id);
+        var media_id = $("#media_id_vid").attr("value");
         $("#media_id_vid").val(media_id);
         if ($("#modal_video_viewport").find("img").length < 1) {
             if ($("#embedded_video_link").val().indexOf('iframe') > -1) {
@@ -418,6 +422,9 @@ $(document).ready(function () {
 
     $(".edit_btn").click(function (e) {
         var media_id = $(this).parent().parent().parent().attr("id");
+        if ($("#" + media_id + " .media_img").attr("src").indexOf("youtube") > -1) {
+            $("#media_id_vid").val(media_id);
+        }
         var id = media_id.split("_");
         if ($("#video_url_" + id[1]).attr("value") == "") {
             $("#pictureModal_toggle_btn").click();

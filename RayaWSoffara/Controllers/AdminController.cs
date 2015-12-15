@@ -69,7 +69,7 @@ namespace RayaWSoffara.Controllers
         public class DataItem
         {
             public string ItemName { get; set; }
-            public int articlesCount { get; set; }
+            public double articlesCount { get; set; }
             public string DT_RowId { get; set; }
             public string Status { get; set; }
             public string Actions { get; set; }
@@ -131,11 +131,12 @@ namespace RayaWSoffara.Controllers
             DataTableData dataTableData = new DataTableData();
             dataTableData.draw = draw;
             dataTableData.recordsTotal = total_rows;
-            int recordsFiltered = 0;
+            int recordsFiltered = total_rows;
             int displayedNum;
             List<DataItem> userprofiles = new List<DataItem>();
             watch = Stopwatch.StartNew();
-            IQueryable<RWSUser> users = _userRepo.GetAllUsers(start, length, out displayedNum);
+            int pageNum = start / length;
+            IQueryable<RWSUser> users = _userRepo.GetAllUsers(pageNum, length, out displayedNum);
             watch.Stop();
             var elapsedMS2 = watch.ElapsedMilliseconds;
             foreach (var item in users)
@@ -150,7 +151,7 @@ namespace RayaWSoffara.Controllers
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
 
-                userprofiles.Add(new DataItem { ItemName = item.UserName, articlesCount = item.Posts.Where(i => i.IsActive == true).Count(), Actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>", DT_RowId = item.UserName, Status = status });
+                userprofiles.Add(new DataItem { ItemName = item.UserName, articlesCount = _userRepo.GetUserActivePosts(item.UserId).Count(), Actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>", DT_RowId = item.UserName, Status = status });
             }
             dataTableData.data = userprofiles;
             //dataTableData.data = FilterData(ref recordsFiltered, start, length, search, sortColumn, sortDirection);
@@ -183,6 +184,7 @@ namespace RayaWSoffara.Controllers
             user.RWSRoles.Clear();
             user.RWSRoles.Add(role);
             user.Password = GetMd5Hash(user.Password);
+            user.IsConfirmed = true;
             _userRepo.AddUser(user);
             ViewBag.AddSuccess = true;
             return View("Users");
@@ -261,10 +263,12 @@ namespace RayaWSoffara.Controllers
         public ActionResult AddRegion(Region region, HttpPostedFileBase path)
         {
             Region reg = _compRepo.AddRegion(region);
+            reg.IsActive = true;
             Tag tag = new Tag();
             tag.TagName = region.RegionName;
             tag.TagType = 1;
             tag.TagTypeId = reg.RegionId;
+            tag.isActive = true;
             _postRepo.AddTag(tag);
             if (path != null && path.ContentLength > 0)
             {
@@ -423,9 +427,11 @@ namespace RayaWSoffara.Controllers
                 competition.Teams.Add(_compRepo.GetTeamById(Int32.Parse(item)));
             }
             Competition comp = _compRepo.AddCompetition(competition);
+            comp.isActive = true;
             Tag tag = new Tag();
             tag.TagName = comp.CompetitionName;
             tag.TagType = 2;
+            tag.isActive = true;
             tag.TagTypeId = comp.CompetitionId;
             _postRepo.AddTag(tag);
             if (path != null && path.ContentLength > 0)
@@ -616,6 +622,7 @@ namespace RayaWSoffara.Controllers
             {
                 compIds = competitions.Split(',').Select(s => int.Parse(s)).ToList();
             }
+            team.isActive = true;
             Team db_team = _compRepo.AddTeam(team, compIds);
             if (players != "")
             {
@@ -625,6 +632,7 @@ namespace RayaWSoffara.Controllers
             Tag tag = new Tag();
             tag.TagName = db_team.TeamName;
             tag.TagType = 3;
+            tag.isActive = true;
             tag.TagTypeId = db_team.TeamId;
             _postRepo.AddTag(tag);
             if (path != null && path.ContentLength > 0)
@@ -829,11 +837,13 @@ namespace RayaWSoffara.Controllers
             {
                 teamIds = teams.Split(',').Select(s => int.Parse(s)).ToList();
             }
+            player.isActive = true;
             Player db_player = _compRepo.AddPlayer(player, teamIds);
 
             Tag tag = new Tag();
             tag.TagName = db_player.PlayerName;
             tag.TagType = 4;
+            tag.isActive = true;
             tag.TagTypeId = db_player.PlayerId;
             _postRepo.AddTag(tag);
             if (path != null && path.ContentLength > 0)
@@ -1106,6 +1116,7 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         public ActionResult AddTag(Tag tag, HttpPostedFileBase path)
         {
+            tag.isActive = true;
             _postRepo.AddTag(tag);
             return Redirect("/Admin/Tags");
         }
@@ -1200,9 +1211,10 @@ namespace RayaWSoffara.Controllers
                 file.SaveAs(localpath);
                 Image image = new Image();
                 image.ImageURL = "/Content/Article_Images/" + fileName;
-                _compRepo.AddImage(image);
+                image = _compRepo.AddImage(image);
+                return View(image);
             }
-            return Redirect("/Admin/Images");
+            return Redirect("Admin/Images");
         }
 
         [CustomAuthorize(Roles = "Admin")]
@@ -1362,6 +1374,7 @@ namespace RayaWSoffara.Controllers
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
             article.newArticle.PostTypeId = 1;
+            article.newArticle.IsActive = true;
             Post addedArticle = _postRepo.AddPost(article.newArticle);
             _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
@@ -1490,12 +1503,12 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
-        public ActionResult AjaxGetArticles(int draw, int start, int length)
+        public ActionResult AjaxGetArticlesTopX(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            int total_rows = _postRepo.GetPosts(1, null).Count();
+            int total_rows = _postRepo.GetPosts(2, null).Count();
             if (length == -1)
             {
                 length = total_rows;
@@ -1516,7 +1529,7 @@ namespace RayaWSoffara.Controllers
             dataTableData.recordsTotal = total_rows;
             int recordsFiltered = total_rows;
             List<DataItem> posts = new List<DataItem>();
-            IQueryable<Post> posts_items = _postRepo.GetPosts(1, start, length);
+            IQueryable<Post> posts_items = _postRepo.GetPosts(2, start, length);
             foreach (var item in posts_items)
             {
                 string status;
@@ -1533,16 +1546,15 @@ namespace RayaWSoffara.Controllers
                 posts.Add(new DataItem { ItemName = item.Title, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
             }
             dataTableData.data = posts;
-            //dataTableData.data = FilterData(ref recordsFiltered, start, length, search, sortColumn, sortDirection);
             dataTableData.recordsFiltered = recordsFiltered;
 
             return Json(dataTableData, JsonRequestBehavior.AllowGet);
         }
 
         [CustomAuthorize(Roles = "Admin")]
-        public ActionResult AddArticle()
+        public ActionResult AddArticleTopX()
         {
-            ViewBag.SubSidebarItem = "articles";
+            ViewBag.SubSidebarItem = "articles-top-X";
             ViewBag.SidebarItem = "posts-management";
             ViewBag.PageHeader = "Posts Management";
             return View();
@@ -1551,10 +1563,8 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "Admin")]
         [ValidateInput(false)]
-        public ActionResult AddArticle(UserArticleVM article, string article_picture_path, string video_url)
+        public ActionResult AddArticleTopX(UserArticleVM article, string article_picture_path, string video_url)
         {
-            //IEnumerable<Tag> articlesTags = _postRepo.GetTags();
-            //ViewBag.tags = articlesTags.ToList();
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
             article.newArticle.CreationDate = DateTime.Now;
@@ -1589,19 +1599,43 @@ namespace RayaWSoffara.Controllers
             {
                 article.newArticle.HasImage = false;
                 article.newArticle.FeaturedVideo = video_url;
+                article.newArticle.FeaturedImage = "http://img.youtube.com/vi/" + video_url + "/0.jpg";
+            }
+
+            foreach (var item in article.newArticle.ArticleTopXes)
+            {
+                if (item.TopXImage != "")
+                {
+                    string path = AppDomain.CurrentDomain.BaseDirectory + item.TopXImage;
+                    if (item.TopXImage.Contains("youtube"))
+                    {
+                        string[] video_link = item.TopXImage.Split('/');
+                        string video = video_link.ElementAt(video_link.Length - 2);
+                        item.TopXVideo = video;
+                    } 
+                    else if (System.IO.File.Exists(path))
+                    {
+                        string[] separator = new string[] { "Temp/" };
+                        string[] temp = item.TopXImage.Split(separator, StringSplitOptions.None);
+                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        item.TopXImage = imgName;
+                    }
+                }
             }
 
             article.newArticle.Tags = null;
             article.newArticle.MetaTags = "";
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
-            article.newArticle.PostTypeId = 1;
+            article.newArticle.PostTypeId = 2;
+            article.newArticle.IsActive = true;
             Post addedArticle = _postRepo.AddPost(article.newArticle);
             _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
             {
                 ViewBag.ErrorMsg = 0;
-                return RedirectToAction("Articles");
+                return RedirectToAction("ArticlesTopX");
             }
             else
             {
@@ -1610,26 +1644,13 @@ namespace RayaWSoffara.Controllers
             }
         }
 
-        [HttpPost]
         [CustomAuthorize(Roles = "Admin")]
-        public ActionResult GetTagsForPost(int PostId)
-        {
-            IQueryable<Tag> db_tags = _postRepo.GetTagsForPost(PostId);
-            List<Item> tags = new List<Item>();
-            foreach (var item in db_tags)
-            {
-                tags.Add(new Item { ItemId = item.TagId, ItemName = item.TagName });
-            }
-            return Json(tags, JsonRequestBehavior.AllowGet);
-        }
-
-        [CustomAuthorize(Roles = "Admin")]
-        public ActionResult EditArticle(int PostId)
+        public ActionResult EditArticleTopX(int PostId)
         {
             Post article = _postRepo.GetPostById(PostId);
             UserArticleVM articleVM = new UserArticleVM();
             articleVM.newArticle = article;
-            ViewBag.SubSidebarItem = "articles";
+            ViewBag.SubSidebarItem = "articles-top-X";
             ViewBag.SidebarItem = "posts-management";
             ViewBag.PageHeader = "Posts Management";
             return View(articleVM);
@@ -1638,14 +1659,20 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "Admin")]
         [ValidateInput(false)]
-        public ActionResult EditArticle(UserArticleVM articleVM, string article_picture_path, string video_url)
+        public ActionResult EditArticleTopX(UserArticleVM articleVM, string article_picture_path, string video_url)
         {
             Post article = _postRepo.GetPostById(articleVM.newArticle.PostId);
             article.Title = articleVM.newArticle.Title;
             article.Content = articleVM.newArticle.Content;
             List<Tag> tags = _postRepo.getSelectedTags(articleVM.SelectedTags).ToList();
             HttpPostedFileBase picture = Request.Files[0];
-            if (picture.FileName != "" || article_picture_path != "")
+            if (video_url != null || video_url != string.Empty)
+            {
+                article.HasImage = false;
+                article.FeaturedVideo = video_url;
+                article.FeaturedImage = "http://img.youtube.com/vi/" + video_url + "/0.jpg";
+            }
+            else if (picture.FileName != "" || article_picture_path != "")
             {
                 if (article_picture_path != "")
                 {
@@ -1677,40 +1704,40 @@ namespace RayaWSoffara.Controllers
 
                 article.HasImage = true;
             }
-            else if (video_url != null || video_url != string.Empty)
+
+            var index = 0;
+            foreach (var item in articleVM.newArticle.ArticleTopXes)
             {
-                article.HasImage = false;
-                article.FeaturedVideo = video_url;
+                if (item.TopXImage != "")
+                {
+                    string path = AppDomain.CurrentDomain.BaseDirectory + item.TopXImage;
+                    if(item.TopXImage.Contains("youtube"))
+                    {
+                        string[] video_link = item.TopXImage.Split('/');
+                        string video = video_link.ElementAt(video_link.Length - 2);
+                        article.ArticleTopXes.ElementAt(index).TopXVideo = "https://www.youtube.com/watch?v=" + video;
+                    } 
+                    else if (System.IO.File.Exists(path))
+                    {
+                        string[] temp = item.TopXImage.Split('/');
+                        string imgName = "";
+                        if (temp.Last().Contains('_'))
+                        {
+                            imgName = temp.Last().Split('_').Last();
+                        }
+                        imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        article.ArticleTopXes.ElementAt(index).TopXImage = imgName;
+                    }
+                }
+                index++;
             }
+
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             _postRepo.UpdateArticle(article, currentUser);
             _postRepo.UpdatedArticleTags(articleVM.newArticle.PostId, tags);
-            return Redirect("/Admin/Articles");
-        }
-
-        [HttpPost]
-        [CustomAuthorize(Roles = "Admin")]
-        public ActionResult DeactivatePost(int PostId)
-        {
-            _postRepo.DeactivatePost(PostId);
-            return Json(true, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        [CustomAuthorize(Roles = "Admin")]
-        public ActionResult ActivatePost(int PostId)
-        {
-            _postRepo.ActivatePost(PostId);
-            return Json(true, JsonRequestBehavior.AllowGet);
-        }
-
-
-        [CustomAuthorize(Roles = "Admin")]
-        public ActionResult DeletePost(int PostId)
-        {
-            Post post = _postRepo.GetPostById(PostId);
-            _postRepo.DeletePost(post);
-            return Json(true, JsonRequestBehavior.AllowGet);
+            return Redirect("/Admin/ArticlesTopX");
         }
         #endregion
 
@@ -1827,6 +1854,7 @@ namespace RayaWSoffara.Controllers
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
             article.newArticle.PostTypeId = 3;
+            article.newArticle.IsActive = true;
             Post addedArticle = _postRepo.AddPost(article.newArticle);
             _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
@@ -2024,6 +2052,7 @@ namespace RayaWSoffara.Controllers
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
             article.newArticle.PostTypeId = 4;
+            article.newArticle.IsActive = true;
             article.newArticle.Content = "";
             Post addedArticle = _postRepo.AddPost(article.newArticle);
             _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
@@ -2111,7 +2140,7 @@ namespace RayaWSoffara.Controllers
         }
         #endregion
 
-        #region ImagePosts
+        #region Videos
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult Videos()
         {
@@ -2160,8 +2189,8 @@ namespace RayaWSoffara.Controllers
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
                 string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
-                string imageHtml = "<img src='http://img.youtube.com/vi/" + item.FeaturedVideo + "/0.jpg?w=230&h=140&mode=crop'/>";
-                posts.Add(new DataItem { ItemName = imageHtml, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
+                string videoHtml = "<iframe width='266' height='156' src='https://www.youtube.com/embed/" + item.FeaturedVideo + "' frameborder='0; allowfullscreen=''></iframe>";
+                posts.Add(new DataItem { ItemName = videoHtml, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
             }
             dataTableData.data = posts;
             dataTableData.recordsFiltered = recordsFiltered;
@@ -2224,6 +2253,7 @@ namespace RayaWSoffara.Controllers
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
             article.newArticle.PostTypeId = 4;
+            article.newArticle.IsActive = true;
             article.newArticle.Content = "";
             Post addedArticle = _postRepo.AddPost(article.newArticle);
             _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
@@ -2308,6 +2338,97 @@ namespace RayaWSoffara.Controllers
             _postRepo.UpdateArticle(video, currentUser);
             _postRepo.UpdatedArticleTags(articleVM.newArticle.PostId, tags);
             return Redirect("/Admin/Videos");
+        }
+        #endregion
+
+        #region Engagements
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult Engagements()
+        {
+            ViewBag.SidebarItem = "engagements-management";
+            ViewBag.PageHeader = "Engagements Management";
+            return View();
+        }
+
+        public ActionResult AjaxGetEngagements(int draw, int start, int length)
+        {
+            string search = Request.QueryString["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+            int total_rows = _postRepo.GetEngagementTypes(null).Count();
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+
+            // note: we only sort one column at a time
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.QueryString["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.QueryString["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            dataTableData.recordsTotal = total_rows;
+            int recordsFiltered = total_rows;
+            List<DataItem> posts = new List<DataItem>();
+            IQueryable<EngagementType> eng_items = _postRepo.GetEngagementTypes(start, length);
+            foreach (var item in eng_items)
+            {
+                string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
+                string savebtn = "<button onclick='Save(this)'>Save</button>";
+                posts.Add(new DataItem { ItemName = item.EngType, articlesCount = item.EngWeight.Value, Actions = actions, Status = savebtn, DT_RowId = item.EngTypeId.ToString() });
+            }
+            dataTableData.data = posts;
+            dataTableData.recordsFiltered = recordsFiltered;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
+        [ValidateInput(false)]
+        public ActionResult AddEngagementType(string EngagementType, double EngagementWeight)
+        {
+            EngagementType EngType = new EngagementType();
+            EngType.EngType = EngagementType;
+            EngType.EngWeight = EngagementWeight;
+            EngType = _postRepo.AddEngagementType(EngType);
+            dynamic data = new System.Dynamic.ExpandoObject();
+            data.EngType = EngType.EngType;
+            data.EngWeight = EngType.EngWeight;
+            data.EngTypeId = EngType.EngTypeId;
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
+        [ValidateInput(false)]
+        public ActionResult DeleteEngagementType(int EngagementTypeId)
+        {
+            EngagementType EngType = _postRepo.GetEngagementTypeById(EngagementTypeId);
+            _postRepo.DeleteEngagementType(EngType);
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
+        [ValidateInput(false)]
+        public ActionResult EditEngagementType(int EngagementTypeId, string EngagementType, double EngagementWeight)
+        {
+            EngagementType EngType = _postRepo.GetEngagementTypeById(EngagementTypeId);
+            EngType.EngType = EngagementType;
+            EngType.EngWeight = EngagementWeight;
+            EngType = _postRepo.UpdateEngagementType(EngType);
+            dynamic data = new System.Dynamic.ExpandoObject();
+            data.EngType = EngType.EngType;
+            data.EngWeight = EngType.EngWeight;
+            data.EngTypeId = EngType.EngTypeId;
+            return Json(data, JsonRequestBehavior.AllowGet);
         }
         #endregion
     }
