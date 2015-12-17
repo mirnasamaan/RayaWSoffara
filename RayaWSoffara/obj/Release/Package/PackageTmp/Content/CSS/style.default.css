@@ -322,7 +322,7 @@ strong {
 }
 
 .headermenu .dropdown-menu li a:hover {
-    background: #1caf9a;
+    background: #428BCA;
     color: #fff;
 }
 
@@ -484,7 +484,7 @@ strong {
 }
 
 .logopanel h1 span {
-    color: #1caf9a;
+    color: #428BCA;
 }
 
 .leftpanelinner {
@@ -526,7 +526,7 @@ strong {
     -webkit-border-radius: 100px;
     border-radius: 100px;
     float: left;
-    border: 2px solid #1CAF9A;
+    border: 2px solid #428BCA;
     padding: 2px;
     margin-left: 2px;
 }
@@ -618,7 +618,7 @@ strong {
 .nav-bracket > li.active > a,
 .nav-bracket > li.active > a:hover,
 .nav-bracket > li.active > a:focus {
-    background-color: #1caf9a;
+    background-color: #428BCA;
     color: #fff;
 }
 
@@ -678,7 +678,7 @@ strong {
 .nav-bracket .children > li > a:active,
 .nav-bracket .children > li > a:focus {
     text-decoration: none;
-    color: #1caf9a;
+    color: #428BCA;
 }
 
 .nav-bracket .children > li .fa {
@@ -691,7 +691,7 @@ strong {
 }
 
 .nav-bracket .children > li.active > a {
-    color: #1caf9a;
+    color: #428BCA;
 }
 
 .nav-bracket .children ul {
@@ -1063,8 +1063,8 @@ p {
 }
 
 .ckbox-success input[type="checkbox"]:checked + label:before {
-    border-color: #1CAF9A;
-    background-color: #1CAF9A;
+    border-color: #428BCA;
+    background-color: #428BCA;
 }
 
 .ckbox-danger input[type="checkbox"]:checked + label:before {
@@ -1131,11 +1131,11 @@ p {
 }
 
 .rdio-success input[type="radio"]:checked + label:before {
-    border-color: #1CAF9A;
+    border-color: #428BCA;
 }
 
 .rdio-success input[type="radio"]:checked + label::after {
-    background-color: #1CAF9A;
+    background-color: #428BCA;
 }
 
 .rdio-danger input[type="radio"]:checked + label:before {
@@ -1626,7 +1626,7 @@ div.error label.error:before {
 }
 
 .widget-weather .temp {
-    background-color: #1CAF9A;
+    background-color: #428BCA;
     color: #fff;
     padding: 10px 0;
 }
@@ -2004,7 +2004,7 @@ div.error label.error:before {
 }
 
 .table-success thead tr th {
-    background-color: #1CAF9A;
+    background-color: #428BCA;
 }
 
 .table-warning thead tr th {
@@ -2612,7 +2612,7 @@ div.error label.error:before {
 }
 
 .blog-quote .quote-success a {
-    background-color: #1CAF9A;
+    background-color: #428BCA;
     color: #fff;
 }
 
@@ -3394,7 +3394,7 @@ div.error label.error:before {
 }
 
 .leftpanel-collapsed .nav-bracket > li.nav-hover.active > a {
-    background: #1CAF9A;
+    background: #428BCA;
     color: #fff;
 }
 
@@ -3403,7 +3403,7 @@ div.error label.error:before {
 }
 
 .leftpanel-collapsed .nav-bracket > li.nav-hover.active > a > span:last-child {
-    background: #1CAF9A;
+    background: #428BCA;
     color: #fff;
 }
 
@@ -3554,7 +3554,7 @@ div.error label.error:before {
 }
 
 .chatuserlist .online .media-thumb {
-    border-color: #1CAF9A;
+    border-color: #428BCA;
 }
 
 .chatuserlist .media-object {
@@ -3657,8 +3657,8 @@ div.error label.error:before {
 .headerbar .topnav > ul > li > a:focus,
 .headerbar .topnav > ul > li.open > a,
 .headerbar .topnav > ul > li.active > a {
-    box-shadow: 0 3px 0 #1CAF9A;
-    color: #1CAF9A;
+    box-shadow: 0 3px 0 #428BCA;
+    color: #428BCA;
     background: none;
 }
 
@@ -3683,7 +3683,7 @@ div.error label.error:before {
 }
 
 .headerbar .topnav > ul > li .dropdown-menu > li > a:hover {
-    background: #1CAF9A;
+    background: #428BCA;
     color: #fff;
 }
 
@@ -3858,7 +3858,7 @@ div.error label.error:before {
 }
 
 .table-buglist .fa-magic {
-    color: #1CAF9A;
+    color: #428BCA;
 }
 
 .table-buglist .btn-group {

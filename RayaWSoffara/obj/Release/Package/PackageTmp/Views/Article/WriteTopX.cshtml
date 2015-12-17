@@ -567,7 +567,6 @@
         var items = $(".topX_item").length;
         for (var i = items; i>0; i--) {
             src = $("#media_" + i + " .media_img").attr("src");
-            //alert(src);
             $("#media_" + i + " .TopXImage_" + i).attr("value", src);
             $('#topX_Content_' + i).each(function () {
                 for (instance in CKEDITOR.instances)

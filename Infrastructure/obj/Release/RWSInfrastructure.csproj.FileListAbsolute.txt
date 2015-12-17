@@ -34,3 +34,12 @@ D:\Enlight\RayaWSofara\RayaWSofara\Infrastructure\bin\Release\EntityFramework.xm
 D:\Enlight\RayaWSofara\RayaWSofara\Infrastructure\obj\Release\RWSInfrastructure.csprojResolveAssemblyReference.cache
 D:\Enlight\RayaWSofara\RayaWSofara\Infrastructure\obj\Release\Infrastructure.dll
 D:\Enlight\RayaWSofara\RayaWSofara\Infrastructure\obj\Release\Infrastructure.pdb
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\bin\Release\Infrastructure.dll
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\bin\Release\Infrastructure.pdb
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\bin\Release\RWSDataLayer.dll
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\bin\Release\EntityFramework.dll
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\bin\Release\RWSDataLayer.pdb
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\bin\Release\EntityFramework.xml
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\obj\Release\RWSInfrastructure.csprojResolveAssemblyReference.cache
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\obj\Release\Infrastructure.dll
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\Infrastructure\obj\Release\Infrastructure.pdb

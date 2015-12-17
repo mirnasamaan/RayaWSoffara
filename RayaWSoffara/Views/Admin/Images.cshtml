@@ -44,12 +44,19 @@
             </div>
         </div>
     </div>
-    <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
+    <button class="btn btn-primary" id="viewMore" onclick="viewMore();"><span>More</span></button>
 </div>
 <script src="~/Content/Scripts/masonry.pkgd.min.js"></script>
 <script src="~/Content/Scripts/imagesloaded.pkgd.min.js"></script>
 
 <script type="text/javascript">
+    $('.grid').imagesLoaded(function () {
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            isFitWidth: true,
+            isOriginLeft: false
+        });
+    });
 
     var page = 1;
     var displayed_images_count = parseInt($(".grid-item").length);
@@ -77,15 +84,17 @@
         $.ajax({
             type: "POST",
             data: { page: page },
-            url: "/Admin/GetImages",
+            url: "/Admin/Images",
             beforeSend: function () {
                 $(".loading").removeClass("hidden");
             },
             success: function (images) {
                 page++;
-                images = $(images);
+                $images = $(images);
                 $(".loading").addClass("hidden");
-                $('.grid').append($images).masonry('appended', $images);
+                $('.grid').imagesLoaded(function () {
+                    $('.grid').append($images).masonry('appended', $images);
+                });
                 var displayed_images_count = parseInt($(".grid-item").length);
                 var all_images_count = parseInt($("#AllImagesCount").val());
                 if (displayed_images_count >= all_images_count) {

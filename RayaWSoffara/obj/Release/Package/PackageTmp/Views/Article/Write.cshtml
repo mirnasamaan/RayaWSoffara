@@ -211,6 +211,10 @@
         return $(element).multiselect("getChecked").length > 0;
     });
 
+    $.validator.addMethod("minChars", function (value, element) {
+        return $(value).length > 300;
+    });
+
     $.validator.addMethod("ImageOrVideo", function (value, element) {
         img_src = $("#media_0 .media_img").attr("src");
         vid_src = $("#video_url_0").attr("value");
@@ -226,13 +230,16 @@
         ignore: [],
         rules: {
             "newArticle.Title": "required",
-            "newArticle.Content": "required",
+            "newArticle.Content": { required: true, minChars: true },
             article_img: { ImageOrVideo: true },
             mySelect: { RequiredTag: true }
         },
         messages: {
             "newArticle.Title": "يجب إدخال عنوان المقالة.",
-            "newArticle.Content": "يجب إدخال مضمون المقالة.",
+            "newArticle.Content": {
+                required: "يجب إدخال مضمون المقالة.",
+                minChars: "يجب إدخال على الأقل 300 كلمة."
+            },
             article_img: "يجب إدخال صورة للمقالة.",
             mySelect: "يجب إدخال كلمة بحثية."
         },

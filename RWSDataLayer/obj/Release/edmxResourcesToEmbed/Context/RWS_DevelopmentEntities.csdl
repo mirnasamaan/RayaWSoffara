@@ -74,6 +74,7 @@
       <End Role="EngagementType" EntitySet="EngagementTypes" />
       <End Role="EngagementType1" EntitySet="EngagementTypes" />
     </AssociationSet>
+    <EntitySet Name="TagTypes" EntityType="RWS_DevelopmentModel.TagType" />
   </EntityContainer>
   <EntityType Name="ArticleTopX">
     <Key>
@@ -108,6 +109,8 @@
     <Property Name="RegionId" Type="Int32" />
     <NavigationProperty Name="Region" Relationship="RWS_DevelopmentModel.FK_Competition_Region" FromRole="Competition" ToRole="Region" />
     <NavigationProperty Name="Teams" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Competition" ToRole="Team" />
+    <Property Type="String" Name="CompetitionIcon" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="Boolean" Name="isActive" Nullable="false" />
   </EntityType>
   <EntityType Name="Image">
     <Key>
@@ -124,6 +127,8 @@
     <Property Name="PlayerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="PlayerName" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
     <NavigationProperty Name="Teams" Relationship="RWS_DevelopmentModel.TeamPlayer" FromRole="Player" ToRole="Team" />
+    <Property Type="Boolean" Name="isActive" Nullable="false" />
+    <Property Type="String" Name="PlayerIcon" MaxLength="100" FixedLength="false" Unicode="true" />
   </EntityType>
   <EntityType Name="Post">
     <Key>
@@ -167,6 +172,8 @@
     <Property Name="RegionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="RegionName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
     <NavigationProperty Name="Competitions" Relationship="RWS_DevelopmentModel.FK_Competition_Region" FromRole="Region" ToRole="Competition" />
+    <Property Type="String" Name="RegionIcon" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="Boolean" Name="IsActive" />
   </EntityType>
   <EntityType Name="RWSProviderUser">
     <Key>
@@ -237,10 +244,12 @@
     </Key>
     <Property Name="TagId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
     <Property Name="TagName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
-    <Property Name="Type" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
-    <Property Name="isFeatured" Type="Boolean" />
+    <Property Name="isFeatured" Type="Boolean" Nullable="false" />
     <NavigationProperty Name="Images" Relationship="RWS_DevelopmentModel.ImageTag" FromRole="Tag" ToRole="Image" />
     <NavigationProperty Name="Posts" Relationship="RWS_DevelopmentModel.PostTag" FromRole="Tag" ToRole="Post" />
+    <Property Type="Int32" Name="TagType" />
+    <Property Type="Boolean" Name="isActive" />
+    <Property Type="Int32" Name="TagTypeId" />
   </EntityType>
   <EntityType Name="Team">
     <Key>
@@ -250,6 +259,8 @@
     <Property Name="TeamName" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
     <NavigationProperty Name="Competitions" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Team" ToRole="Competition" />
     <NavigationProperty Name="Players" Relationship="RWS_DevelopmentModel.TeamPlayer" FromRole="Team" ToRole="Player" />
+    <Property Type="String" Name="TeamIcon" MaxLength="100" FixedLength="false" Unicode="true" />
+    <Property Type="Boolean" Name="isActive" Nullable="false" />
   </EntityType>
   <EntityType Name="Engagement">
     <Key>
@@ -423,4 +434,11 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <EntityType Name="TagType">
+    <Key>
+      <PropertyRef Name="TagType1" />
+    </Key>
+    <Property Type="Int32" Name="TagType1" Nullable="false" />
+    <Property Type="String" Name="TagName" MaxLength="255" FixedLength="false" Unicode="true" />
+  </EntityType>
 </Schema>

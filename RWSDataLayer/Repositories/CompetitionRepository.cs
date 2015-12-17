@@ -551,6 +551,13 @@ namespace RWSDataLayer.Repositories
             return image;
         }
 
+        public Image UpdateImage(Image image, List<int> tagIds)
+        {
+            Context.SaveChanges();
+            AddTagToImage(image, tagIds);
+            return image;
+        }
+
         public IQueryable<Tag> GetTagsForImage(int imageId)
         {
             return Context.Tags.Where(i => i.Images.Any(j => j.ImageId == imageId));

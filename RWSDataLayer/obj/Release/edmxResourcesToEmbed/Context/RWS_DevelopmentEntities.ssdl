@@ -22,6 +22,7 @@
     <EntitySet Name="TeamPlayer" EntityType="RWS_DevelopmentModel.Store.TeamPlayer" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Engagement" EntityType="RWS_DevelopmentModel.Store.Engagement" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="EngagementType" EntityType="RWS_DevelopmentModel.Store.EngagementType" store:Type="Tables" Schema="marvot" />
+    <EntitySet Name="TagType" EntityType="RWS_DevelopmentModel.Store.TagType" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="UserPointsView" EntityType="RWS_DevelopmentModel.Store.UserPointsView" store:Type="Views" store:Schema="marvot" store:Name="UserPointsView">
       <DefiningQuery>SELECT 
       [UserPointsView].[UserId] AS [UserId], 
@@ -136,6 +137,8 @@
     <Property Name="CompetitionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="CompetitionName" Type="nvarchar(max)" />
     <Property Name="RegionId" Type="int" />
+    <Property Name="CompetitionIcon" Type="nvarchar" MaxLength="100" />
+    <Property Name="isActive" Type="bit" Nullable="false" />
   </EntityType>
   <EntityType Name="CompetitionTeam">
     <Key>
@@ -166,6 +169,8 @@
     </Key>
     <Property Name="PlayerId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="PlayerName" Type="nvarchar" MaxLength="100" />
+    <Property Name="isActive" Type="bit" Nullable="false" />
+    <Property Name="PlayerIcon" Type="nvarchar" MaxLength="100" />
   </EntityType>
   <EntityType Name="Post">
     <Key>
@@ -210,6 +215,8 @@
     </Key>
     <Property Name="RegionId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="RegionName" Type="nvarchar" MaxLength="500" />
+    <Property Name="RegionIcon" Type="nvarchar" MaxLength="100" />
+    <Property Name="IsActive" Type="bit" />
   </EntityType>
   <EntityType Name="RWSProviderUser">
     <Key>
@@ -282,8 +289,10 @@
     </Key>
     <Property Name="TagId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="TagName" Type="nvarchar" MaxLength="500" />
-    <Property Name="Type" Type="nvarchar" MaxLength="100" />
-    <Property Name="isFeatured" Type="bit" />
+    <Property Name="isFeatured" Type="bit" Nullable="false" />
+    <Property Name="TagType" Type="int" />
+    <Property Name="isActive" Type="bit" />
+    <Property Name="TagTypeId" Type="int" />
   </EntityType>
   <EntityType Name="Team">
     <Key>
@@ -291,6 +300,8 @@
     </Key>
     <Property Name="TeamId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="TeamName" Type="nvarchar(max)" />
+    <Property Name="TeamIcon" Type="nvarchar" MaxLength="100" />
+    <Property Name="isActive" Type="bit" Nullable="false" />
   </EntityType>
   <EntityType Name="TeamPlayer">
     <Key>
@@ -316,6 +327,13 @@
     <Property Name="EngTypeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="EngType" Type="nvarchar" MaxLength="50" />
     <Property Name="EngWeight" Type="float" />
+  </EntityType>
+  <EntityType Name="TagType">
+    <Key>
+      <PropertyRef Name="TagType" />
+    </Key>
+    <Property Name="TagType" Type="int" Nullable="false" />
+    <Property Name="TagName" Type="nvarchar" MaxLength="255" />
   </EntityType>
   <!--Errors Found During Generation:
       warning 6002: The table/view 'RWS_Development.marvot.UserPointsView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.

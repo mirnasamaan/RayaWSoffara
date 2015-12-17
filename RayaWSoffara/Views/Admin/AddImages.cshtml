@@ -4,6 +4,11 @@
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
 }
 <link href="~/Content/CSS/dropzone.css" rel="stylesheet" />
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 
 <form id="addForm" class="form-horizontal dropzone" action="/Admin/AddImages" method="post" enctype="multipart/form-data">
     <div class="fallback">
@@ -11,9 +16,26 @@
     </div>
 </form>
 
-<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<div class="uploads">@Html.Partial("_UploadsPartial", Model)</div>
+
+@*<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>*@
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
 <script src="~/Content/Scripts/dropzone.min.js"></script>
 <script type="text/javascript">
+    $(function () {
+        var myDropzone = new Dropzone("#addForm");
+        myDropzone.on("success", function (response, file) {
+            //response.previewTemplate.appendChild(document.createTextNode(file));
+            $.ajax({
+                async: false,
+                type: "POST",
+                data: { ImageId: file.UniqueId },
+                url: "/Admin/GetImageById",
+                success: function (image) {
+                    $('.uploads').append(image);
+                }
+            })
+        });
+    })
 </script>

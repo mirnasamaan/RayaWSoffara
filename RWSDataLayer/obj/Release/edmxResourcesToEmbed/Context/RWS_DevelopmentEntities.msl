@@ -28,6 +28,8 @@
     <EntitySetMapping Name="Competitions">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Competition">
         <MappingFragment StoreEntitySet="Competition">
+          <ScalarProperty Name="isActive" ColumnName="isActive" />
+          <ScalarProperty Name="CompetitionIcon" ColumnName="CompetitionIcon" />
           <ScalarProperty Name="CompetitionId" ColumnName="CompetitionId" />
           <ScalarProperty Name="CompetitionName" ColumnName="CompetitionName" />
           <ScalarProperty Name="RegionId" ColumnName="RegionId" />
@@ -45,6 +47,8 @@
     <EntitySetMapping Name="Players">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Player">
         <MappingFragment StoreEntitySet="Player">
+          <ScalarProperty Name="PlayerIcon" ColumnName="PlayerIcon" />
+          <ScalarProperty Name="isActive" ColumnName="isActive" />
           <ScalarProperty Name="PlayerId" ColumnName="PlayerId" />
           <ScalarProperty Name="PlayerName" ColumnName="PlayerName" />
         </MappingFragment>
@@ -84,6 +88,8 @@
     <EntitySetMapping Name="Regions">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Region">
         <MappingFragment StoreEntitySet="Region">
+          <ScalarProperty Name="IsActive" ColumnName="IsActive" />
+          <ScalarProperty Name="RegionIcon" ColumnName="RegionIcon" />
           <ScalarProperty Name="RegionId" ColumnName="RegionId" />
           <ScalarProperty Name="RegionName" ColumnName="RegionName" />
         </MappingFragment>
@@ -153,9 +159,11 @@
     <EntitySetMapping Name="Tags">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Tag">
         <MappingFragment StoreEntitySet="Tag">
+          <ScalarProperty Name="TagTypeId" ColumnName="TagTypeId" />
+          <ScalarProperty Name="isActive" ColumnName="isActive" />
+          <ScalarProperty Name="TagType" ColumnName="TagType" />
           <ScalarProperty Name="TagId" ColumnName="TagId" />
           <ScalarProperty Name="TagName" ColumnName="TagName" />
-          <ScalarProperty Name="Type" ColumnName="Type" />
           <ScalarProperty Name="isFeatured" ColumnName="isFeatured" />
         </MappingFragment>
       </EntityTypeMapping>
@@ -163,6 +171,8 @@
     <EntitySetMapping Name="Teams">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Team">
         <MappingFragment StoreEntitySet="Team">
+          <ScalarProperty Name="isActive" ColumnName="isActive" />
+          <ScalarProperty Name="TeamIcon" ColumnName="TeamIcon" />
           <ScalarProperty Name="TeamId" ColumnName="TeamId" />
           <ScalarProperty Name="TeamName" ColumnName="TeamName" />
         </MappingFragment>
@@ -234,6 +244,14 @@
           <ScalarProperty Name="EngWeight" ColumnName="EngWeight" />
           <ScalarProperty Name="PostId" ColumnName="PostId" />
           <ScalarProperty Name="UserId" ColumnName="UserId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="TagTypes">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.TagType">
+        <MappingFragment StoreEntitySet="TagType">
+          <ScalarProperty Name="TagName" ColumnName="TagName" />
+          <ScalarProperty Name="TagType1" ColumnName="TagType" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>

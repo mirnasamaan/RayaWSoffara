@@ -1179,7 +1179,14 @@ namespace RayaWSoffara.Controllers
             }
             List<Image> images = _compRepo.GetImages(page.Value).ToList();
             ViewBag.AllImagesCount = _compRepo.GetAllImages().Count();
-            return View(images);
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_ImagesPartial", images);
+            }
+            else
+            {
+                return View(images);
+            }
         }
 
         [CustomAuthorize(Roles = "Admin")]
@@ -1206,13 +1213,13 @@ namespace RayaWSoffara.Controllers
             {
                 string extention = Path.GetExtension(file.FileName);
                 string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
-                string fileName = time + "_" + file.FileName;
+                string fileName = Path.GetFileNameWithoutExtension(file.FileName) + "_" + time + Path.GetExtension(file.FileName);
                 var localpath = Path.Combine(Server.MapPath("/Content/Article_Images"), fileName);
                 file.SaveAs(localpath);
                 Image image = new Image();
                 image.ImageURL = "/Content/Article_Images/" + fileName;
                 image = _compRepo.AddImage(image);
-                return View(image);
+                return Json(new { UniqueId = image.ImageId });
             }
             return Redirect("Admin/Images");
         }
@@ -1245,17 +1252,53 @@ namespace RayaWSoffara.Controllers
             return Redirect("/Admin/Images");
         }
 
-        //[CustomAuthorize(Roles = "Admin")]
-        //public ActionResult GetPlayers()
-        //{
-        //    List<Item> players = new List<Item>();
-        //    IQueryable<Player> db_players = _compRepo.GetAllPlayers();
-        //    foreach (var item in db_players)
-        //    {
-        //        players.Add(new Item() { ItemId = item.PlayerId, ItemName = item.PlayerName });
-        //    }
-        //    return Json(players, JsonRequestBehavior.AllowGet);
-        //}
+        [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult GetImageById(int ImageId)
+        {
+            Image image = _compRepo.GetImageById(ImageId);
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_UploadsPartial", image);
+            }
+            return null;
+        }
+
+        [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult EditImage(int ImageId, string ImageName, string SelectedTags)
+        {
+            List<int> tagIds = null;
+            if (SelectedTags != "")
+            {
+                tagIds = SelectedTags.Split(',').Select(s => int.Parse(s)).ToList();
+            }
+
+            Image img = _compRepo.GetImageById(ImageId);
+            string oldNameFullPath = img.ImageURL;
+            string path = img.ImageURL.Substring(0, img.ImageURL.LastIndexOf("/"));
+            string uniqueNamePart = img.ImageURL.Substring(img.ImageURL.LastIndexOf("_"));
+            img.ImageURL = path + "/" + ImageName + uniqueNamePart;
+            System.IO.File.Move(AppDomain.CurrentDomain.BaseDirectory + oldNameFullPath, AppDomain.CurrentDomain.BaseDirectory + img.ImageURL);
+
+            _compRepo.DeleteAllTagsForImage(img.ImageId);
+            img = _compRepo.UpdateImage(img, tagIds);
+
+            ImageDataItem data = new ImageDataItem();
+            data.ImageName = img.ImageURL;
+            data.Tags = new List<Item>();
+            foreach(var item in img.Tags) {
+                data.Tags.Add(new Item { ItemId = item.TagId, ItemName = item.TagName });
+            }
+
+            return Json(data, JsonRequestBehavior.AllowGet);
+        }
+
+        public class ImageDataItem
+        {
+            public string ImageName { set; get; }
+            public List<Item> Tags { get; set; }
+        }
         #endregion
 
         #region Articles
@@ -2345,6 +2388,7 @@ namespace RayaWSoffara.Controllers
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult Engagements()
         {
+            ViewBag.SubSidebarItem = "Engagements";
             ViewBag.SidebarItem = "engagements-management";
             ViewBag.PageHeader = "Engagements Management";
             return View();
@@ -2380,7 +2424,7 @@ namespace RayaWSoffara.Controllers
             foreach (var item in eng_items)
             {
                 string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
-                string savebtn = "<button onclick='Save(this)'>Save</button>";
+                string savebtn = "<button class='btn btn-primary btn-sm' onclick='Save(this)'>Save</button>";
                 posts.Add(new DataItem { ItemName = item.EngType, articlesCount = item.EngWeight.Value, Actions = actions, Status = savebtn, DT_RowId = item.EngTypeId.ToString() });
             }
             dataTableData.data = posts;

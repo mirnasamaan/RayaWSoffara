@@ -23,7 +23,7 @@ else
     
     <ul class="hidden-xs hidden-sm">
         <li class="register-container pull-left">
-            <button class="registerLink"><span class="hidden-sm hidden-xs">تسجيل الدخول</span><i class="fa fa-sign-in article-write pull-right"></i></button>
+            <a href="/Login"><button class="registerLink"><span class="hidden-sm hidden-xs">تسجيل الدخول</span><i class="fa fa-sign-in article-write pull-right"></i></button></a>
             @*@Html.ActionLink("تسجيل الدخول", "Login", "Account", routeValues: null, htmlAttributes: new { id = "registerLink" })*@@*<i class="fa fa-sign-in article-write pull-right"></i>*@
         </li>
         <li class="fblogin-container pull-left">
@@ -33,7 +33,7 @@ else
     <ul class="hidden-lg hidden-md visible-sm visible-xs">
         <li class="register-container pull-left">
             @*<a href="/Account/Login" id="registerLink"><i class="fa fa-sign-in article-write pull-right"></i></a>*@
-            <button class="registerLink"><span class="hidden-sm hidden-xs">تسجيل الدخول</span><i class="fa fa-sign-in article-write pull-right"></i></button>
+            <a href="/Login"><button class="registerLink"><span class="hidden-sm hidden-xs">تسجيل الدخول</span><i class="fa fa-sign-in article-write pull-right"></i></button></a>
         </li>
         <li class="fblogin-container pull-left">
             @Html.Action("ExternalLoginsList", "Home", new { ReturnUrl = ViewBag.ReturnUrl })

@@ -72,7 +72,7 @@
         "<td class='engagement-type'>" + "<input class='engagement-type-add' type='text' />" + "</td>" +
         "<td class='engagement-weight'>" + "<input class='engagement-weight-add' type='number' />" + "</td>" +
         "<td class='table-action'>" + "" + "</td>" +
-        "<td>" + "<button onclick='Add(this)'>Save</button>" + "</td>";
+        "<td>" + "<button class='btn btn-primary btn-sm' onclick='Add(this)'>Save</button>" + "</td>";
 
         $('#example').DataTable().row.add($(newRow));
         $('#example tbody').prepend(newRow);
@@ -90,7 +90,7 @@
                 $(e).parent().parent().children(".engagement-type").text(data[0].Value);
                 $(e).parent().parent().children(".engagement-weight").text(data[1].Value);
                 $(e).parent().parent().children(".table-action").text("").append("<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>");
-                $(e).parent().text("").append("<button onclick='Save(this)'>Save</button>");
+                $(e).parent().text("").append("<button class='btn btn-primary btn-sm' onclick='Save(this)'>Save</button>");
             },
             error: function (error) { alert(JSON.stringify(error)); }
         });

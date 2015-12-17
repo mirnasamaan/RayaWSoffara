@@ -64,6 +64,8 @@
 
 .grid-item img, #imageModal img {
     width: 100%;
+    border: 1px solid #428BCA;
+    border-radius: 3px;
 }
 
 .media {
@@ -240,4 +242,30 @@
     cursor: pointer;
     font-size: 1.2em;
     padding: 7px;
+}
+
+.imageItem {
+    margin: 15px 0;
+    padding: 10px 0;
+    background: white;
+    display: inline-block;
+    width: 100%;
+    border: 1px solid #CCCCCC;
+    border-radius: 3px;
+}
+
+.imageItem .thumbnail {
+    margin: 0 10px;
+}
+
+.imageItem .name > div {
+    padding-top: 6px;
+}
+
+.imageItem .name span {
+    padding: 0 10px;
+}
+
+.imageItem .tags > span {
+    padding-top: 6px;
 }
