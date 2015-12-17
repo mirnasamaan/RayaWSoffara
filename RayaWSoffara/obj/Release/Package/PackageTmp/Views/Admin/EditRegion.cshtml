@@ -1,0 +1,51 @@
+﻿@model RWSDataLayer.Context.Region
+@{
+    ViewBag.Title = "Edit Region";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+
+<form id="editForm" class="form-horizontal" action="/Admin/EditRegion" method="post" enctype = "multipart/form-data">
+    <input type="hidden" value="@Model.RegionId" name="RegionId" />
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-btns">
+                <a href="" class="panel-close">&times;</a>
+                <a href="" class="minimize">&minus;</a>
+            </div>
+            <h4 class="panel-title">Edit Region</h4>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Region Name:</label>
+                <div class="col-sm-8">
+                    <input type="text" name="RegionName" class="form-control" value="@Model.RegionName" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Region Icon:</label>
+                <div class="col-sm-8">
+                    <input name="path" class="form-control" type="file" accept="image/*" />
+                </div>
+            </div>
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-primary">Submit Changes</button>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel-default -->
+</form>
+
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js" ></script>
+<script type="text/javascript">
+    $("#editForm").validate({
+        rules: {
+            RegionName: "required"
+        }
+    });
+</script>

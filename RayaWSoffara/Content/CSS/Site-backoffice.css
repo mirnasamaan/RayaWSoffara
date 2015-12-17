@@ -269,3 +269,19 @@
 .imageItem .tags > span {
     padding-top: 6px;
 }
+
+.grid-item .close-btn {
+    position: absolute;
+    background: #428BCA;
+    color: white;
+    padding: 10px;
+    width: 40px;
+    height: 40px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    border-radius: 50%;
+    top: 0px;
+    left: 5px;
+    line-height: 20px;
+}

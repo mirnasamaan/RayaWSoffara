@@ -1,0 +1,112 @@
+﻿@model RWSDataLayer.Context.Image
+
+@if (Model != null)
+{
+    <div class="imageItem" id="@Model.ImageId">
+        <!--<form id="editImage" method="post" action="">-->
+            <div class="col-sm-1 thumbnail">
+                <img src="@Model.ImageURL?h=100&w=100&mode=crop" />
+            </div>
+            <div class="col-sm-4 name">
+                @{ var imagename = @Model.ImageURL.Split('/').Last();
+                   imagename = imagename.Substring(0, imagename.LastIndexOf("_")); }
+                <div>
+                    <span class="imagename" >@imagename<input type="hidden" name="ImageURL" class="ImageName" value="@imagename" /></span>
+                    <span><a href="javascript:void(0)" onclick="Edit(@Model.ImageId);return false;"><i class="fa fa-pencil"></i></a></span>
+                </div>
+            </div>
+            <div class="col-sm-5 tags">
+                <span class="col-sm-1">Tags</span>
+                <div class="col-sm-11">
+                    <ul class="form-control imageTags"></ul>
+                </div>
+            </div>
+            <div class="col-sm-1">
+                <button onclick="Save(@Model.ImageId)" class="btn btn-primary btn-sm">Save</button>
+            </div>
+
+            <input type="hidden" id="ImageId" name="ImageId" value="@Model.ImageId" />
+            <input type="hidden" id="selectedTags" name="selectedTags" value="" />
+        <!--</form>-->
+    </div>
+}
+
+<script>
+    var availableTags = [];
+    var availableTagsID = [];
+    $('.imageTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "Post",
+                    data: { Term: search.term },
+                    url: "/Home/GetTags",
+                    success: function (tags) {
+                        availableTags = [];
+                        availableTagsID = [];
+                        for (i = 0; i < tags.length; i++) {
+                            availableTags.push(tags[i].TagName);
+                            availableTagsID.push(tags[i].TagID);
+                        }
+                        showChoices(availableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                return false;
+            }
+        },
+        afterTagAdded: function (event, ui) {
+            var index = availableTags.indexOf(ui.tagLabel);
+            var id = availableTagsID[index];
+            var image_id = $(this).closest('div[class^="imageItem"]').attr("id");
+            $("#" + image_id + " .imageTags li").eq(-2).attr("data-id", id);
+        }
+    });
+
+    function Edit(image_id) {
+        var text = $("#" + image_id + " .imagename").text();
+        $("#" + image_id + " .imagename").text("").append("<input class='imagename-edit ImageName' name='ImageURL' type='text' value='" + text + "' />");
+        $("#" + image_id + " .imagename-edit").val(text);
+    }
+
+    function Save(image_id) {
+        var tags = "";
+        var noOfTags = parseInt($("#" + image_id + " .imageTags li").length - 1);
+        $('#' + image_id + ' .imageTags').children('li').each(function (e) {
+            if (parseInt(e) == parseInt(noOfTags)) {
+                return false;
+            }
+            var tagId = $(this).attr('data-id');
+            tags = tags + tagId + ",";
+        });
+        tags = tags.substring(0, tags.length - 1);
+        $("#selectedTags").val(tags);
+     
+        var imageName = $("#" + image_id + " .ImageName").val();
+        var imageId = image_id;
+
+        $.ajax({
+            type: 'POST',
+            url: '/Admin/EditImage',
+            //data: $('#editImage').serialize(),
+            data: { ImageName: imageName, ImageId: imageId, SelectedTags: tags },
+            success: function (data) {
+                var imagename = data.ImageName.substring(data.ImageName.lastIndexOf('/'));
+                imagename = imagename.substring(1, imagename.lastIndexOf('_'));
+                $("#" + image_id + " .imagename").text(imagename).append('<input type="hidden" name="ImageURL" class="ImageName" value="' + imagename + '" />');
+
+                for (i = 0; i < data.Tags.length; i++) {
+                    $('#' + imageId+ ' .imageTags').tagit("createTag", data.Tags[i].ItemName);
+                }
+            }
+        });
+    }
+</script>

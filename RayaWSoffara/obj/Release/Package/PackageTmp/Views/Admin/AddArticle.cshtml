@@ -1,0 +1,226 @@
+﻿@{
+    ViewBag.Title = "Add Article";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.Jcrop.min.css" />
+@if (@ViewBag.ErrorMsg == 1)
+{
+    <div class="ErrorMsg">All fields are required.</div>
+}
+<form id="addForm" class="form-horizontal" action="/Admin/AddArticle" method="post" enctype="multipart/form-data">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-btns">
+                <a href="" class="panel-close">&times;</a>
+                <a href="" class="minimize">&minus;</a>
+            </div>
+            <h4 class="panel-title">Add Article</h4>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Article Title:</label>
+                <div class="col-sm-10">
+                    <input type="text" name="newArticle.Title" class="form-control" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Article Media:</label>
+                <div class="col-sm-10">
+                    <div class="media dark_border" id="media_0">
+                        <img class="media_img" src="" />
+                        <section class="image-upload-drop-target media_dropbox">
+                            <div>أضف صورة أو فيديو</div>
+                            <button type="button" class="upload video_embed_btn"><i class="fa fa-video-camera"></i></button>
+                            <button type="button" class="upload picture_upload_btn"><i class="fa fa-picture-o"></i></button>
+                            <input type="file" name="article_picture" class="article_picture_btn hide" onchange="readURL(this)" />
+                        </section>
+                        <div class="controls">
+                            <section>
+                                <button type="button" class="upload delete_btn" onclick="delete_btn(this)"><i class="fa fa-trash"></i></button>
+                                <button type="button" class="upload edit_btn" id="edit_0"><i class="fa fa-pencil-square-o"></i></button>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Article Content:</label>
+                <div class="col-sm-10">
+                    <textarea class="ckeditor" id="article_content" name="newArticle.Content"></textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Tags:</label>
+                <div class="col-sm-10">
+                    <input name="mySelect" type="hidden" id="tagsCount" />
+                    <ul id="articleTags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit"></button>
+
+            <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed"></button>
+
+            <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
+                        </div>
+                        <div class="modal-body" id="video_modal_body">
+                            <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                            <div id="modal_video_viewport">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="media_id_vid" value="" />
+                            <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
+                            <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
+                        </div>
+                        <div class="modal-body" id="edit_modal_body">
+                            <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="media_id" value="" />
+                            <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
+                            <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" name="article_picture_path" id="article_picture_path_0" />
+            <input type="hidden" name="video_url" id="video_url_0" value="" />
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <button id="submit-btn" type="submit" class="btn btn-primary">Add Article</button>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel-default -->
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/script-backoffice.js"></script>
+<script type="text/javascript">
+
+    $('#articleTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    data: { Term: search.term },
+                    url: "/Home/GetTags",
+                    success: function (Tags) {
+                        availableTags = [];
+                        availableTagsID = [];
+                        $('.header_div_2 .keywords').children('p').each(function () {
+                            availableTags.push();
+                        });
+                        for (i = 0; i < Tags.length; i++) {
+                            availableTags.push(Tags[i].TagName);
+                            availableTagsID.push(Tags[i].TagID);
+                        }
+                        showChoices(availableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                return false;
+            }
+        }
+    });
+
+    $("#addForm").submit(function (e) {
+        src = $("#media_0 .media_img").attr("src");
+        if ($("#video_url_0").attr("value") == "") {
+            $("#article_picture_path_0").attr("value", src);
+        }
+        $('#article_content').each(function () {
+            for (instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        });
+
+        var tags_qs = "";
+        $('#articleTags').children('li').each(function (index) {
+            var tagname = $(this).children('span').text();
+            $("#submit-btn").append("<input name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
+        });
+        return true;
+    });
+
+    $.validator.addMethod("ImageOrVideo", function (value, element) {
+        alert("in");
+        img_src = $("#media_0 .media_img").attr("src");
+        vid_src = $("#video_url_0").attr("value");
+        alert((img_src != "") || (vid_src != ""));
+        return ((img_src != "") || (vid_src != ""));
+    });
+
+    $.validator.addMethod("RequiredTag", function (value, element) {
+        tags_count = $("#articleTags").children("li").length;
+        return (tags_count > 1) ? true : false;
+    });
+
+    $.validator.addMethod("minChars", function (value, element) {
+        return $(value).length > 300;
+    });
+
+    $("#addForm").validate({
+        ignore: [],
+        rules: {
+            "newArticle.Title": "required",
+            "newArticle.Content": { required: true, minChars: true },
+            article_picture_path: "required",
+            mySelect: { RequiredTag: true }
+        },
+        messages: {
+            "newArticle.Content": { required: "This field is required.", minChars: "You have to enter at least 300 words." },
+            article_picture_path: "This field is required.",
+            mySelect: "This field is required."
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "article_picture_path") {
+                error.insertAfter(".panel-body .media");
+            } else if (element.attr("name") == "newArticle.Content") {
+                error.insertAfter("#cke_article_content");
+            } else if (element.attr("name") == "mySelect") {
+                error.insertAfter("#articleTags");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+</script>

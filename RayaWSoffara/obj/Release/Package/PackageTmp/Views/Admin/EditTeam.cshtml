@@ -1,0 +1,198 @@
+﻿@model RWSDataLayer.Context.Team
+@{
+    ViewBag.Title = "Edit Team";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<form id="editForm" class="form-horizontal" action="/Admin/EditTeam" method="post" enctype = "multipart/form-data">
+    <input type="hidden" value="@Model.TeamId" name="TeamId" id="TeamId" />
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-btns">
+                <a href="" class="panel-close">&times;</a>
+                <a href="" class="minimize">&minus;</a>
+            </div>
+            <h4 class="panel-title">Edit Team</h4>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Team Name:</label>
+                <div class="col-sm-8">
+                    <input type="text" name="TeamName" class="form-control" value="@Model.TeamName" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Team Icon:</label>
+                <div class="col-sm-8">
+                    <input name="path" class="form-control" type="file" accept="image/*" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Competitions</label>
+                <div class="col-sm-8">
+                    <ul id="compsTags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Players</label>
+                <div class="col-sm-8">
+                    <ul id="playersTags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <input id="competitions" name="competitions" type="hidden" />
+            <input id="players" name="players" type="hidden" />
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <button type="submit" class="btn btn-primary">Submit Changes</button>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel-default -->
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript">
+
+    var compsavailableTags = [];
+    var compsavailableTagsID = [];
+    var playersavailableTags = [];
+    var playersavailableTagsID = [];
+    var compItems = [];
+    var playerItems = [];
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "/Admin/GetCompetitions",
+        success: function (comps) {
+            for (i = 0; i < comps.length; i++) {
+                compsavailableTags.push(comps[i].ItemName);
+                compsavailableTagsID.push(comps[i].ItemId);
+            }
+        }
+    });
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "/Admin/GetPlayers",
+        success: function (players) {
+            for (i = 0; i < players.length; i++) {
+                playersavailableTags.push(players[i].ItemName);
+                playersavailableTagsID.push(players[i].ItemId);
+            }
+        }
+    });
+
+    $.ajax({
+        type: "POST",
+        data: { TeamId: $("#TeamId").val() },
+        url: "/Admin/GetCompetitionsByTeamId",
+        success: function (comps) {
+            compItems = comps;
+        }
+    }).done(function () {
+        $.getScript("/Content/Scripts/tag-it.js").done(function () {
+            $('#compsTags').tagit({
+                tagSource: compsavailableTags,
+                select: true,
+                sortable: true,
+                allowNewTags: false,
+                triggerKeys: ['enter', 'tab'],
+                beforeTagAdded: function (event, ui) {
+                    if ($.inArray(ui.tagLabel, compsavailableTags) == -1) {
+                        return false;
+                    }
+                },
+                afterTagAdded: function (event, ui) {
+                    var index = compsavailableTags.indexOf(ui.tagLabel);
+                    var id = compsavailableTagsID[index];
+                    $("#compsTags li").eq(-2).attr("data-id", id);
+                }
+            });
+        }).done(function () {
+            for (i = 0; i < compItems.length; i++) {
+                $('#compsTags').tagit("createTag", compItems[i].ItemName);
+            }
+        });
+    });
+
+    $.ajax({
+        type: "POST",
+        data: { TeamId: $("#TeamId").val() },
+        url: "/Admin/GetPlayersByTeamId",
+        success: function (players) {
+            playerItems = players;
+        }
+    }).done(function () {
+        $.getScript("/Content/Scripts/tag-it.js").done(function () {
+            $('#playersTags').tagit({
+                tagSource: playersavailableTags,
+                select: true,
+                sortable: true,
+                allowNewTags: false,
+                triggerKeys: ['enter', 'tab'],
+                beforeTagAdded: function (event, ui) {
+                    if ($.inArray(ui.tagLabel, playersavailableTags) == -1) {
+                        return false;
+                    }
+                },
+                afterTagAdded: function (event, ui) {
+                    var index = playersavailableTags.indexOf(ui.tagLabel);
+                    var id = playersavailableTagsID[index];
+                    $("#playersTags li").eq(-2).attr("data-id", id);
+                }
+            });
+        }).done(function () {
+            for (i = 0; i < playerItems.length; i++) {
+                $('#playersTags').tagit("createTag", playerItems[i].ItemName);
+            }
+        });
+    });
+
+    $("#editForm").submit(function (e) {
+        var comps = "";
+        var noOfComps = parseInt($("#compsTags li").length - 1);
+
+        $('#compsTags').children('li').each(function (e) {
+            if (parseInt(e) == parseInt(noOfComps)) {
+                return false;
+            }
+            var compId = $(this).attr('data-id');
+            comps = comps + compId + ",";
+        });
+        comps = comps.substring(0, comps.length - 1);
+        $("#competitions").val(comps);
+
+        var players = "";
+        var noOfPlayers = parseInt($("#playersTags li").length - 1);
+
+        $('#playersTags').children('li').each(function (e) {
+            if (parseInt(e) == parseInt(noOfPlayers)) {
+                return false;
+            }
+            var playerId = $(this).attr('data-id');
+            players = players + playerId + ",";
+        });
+        players = players.substring(0, players.length - 1);
+        $("#players").val(players);
+        return true;
+    });
+
+    $("#editForm").validate({
+        rules: {
+            CompetitionName: "required"
+        }
+    });
+</script>

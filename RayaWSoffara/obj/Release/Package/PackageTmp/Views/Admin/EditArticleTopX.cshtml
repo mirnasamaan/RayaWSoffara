@@ -1,0 +1,630 @@
+﻿@model RayaWSoffara.Models.UserArticleVM
+@{
+    ViewBag.Title = "Add Article Top X";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.Jcrop.min.css" />
+@if (@ViewBag.ErrorMsg == 1)
+{
+    <div class="ErrorMsg">All fields are required.</div>
+}
+<form id="editForm" class="form-horizontal" action="/Admin/EditArticleTopX" method="post" enctype="multipart/form-data">
+    <input type="hidden" name ="newArticle.PostId" id="PostId" value="@Model.newArticle.PostId" />
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-btns">
+                <a href="" class="panel-close">&times;</a>
+                <a href="" class="minimize">&minus;</a>
+            </div>
+            <h4 class="panel-title">Edit Article Top X</h4>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Article Title:</label>
+                <div class="col-sm-10">
+                    <input type="text" name="newArticle.Title" id="newArticle_Title" class="form-control" value="@Model.newArticle.Title" />
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Article Media:</label>
+                <div class="col-sm-10">
+                    <div class="media dark_border" id="media_0">
+                        <img class="media_img" src="@(Model.newArticle.FeaturedVideo!=null?@Model.newArticle.FeaturedImage : "/Content/Article_Images/" + @Model.newArticle.FeaturedImage)" />
+                        <section class="image-upload-drop-target media_dropbox">
+                            <div>أضف صورة أو فيديو</div>
+                            <button type="button" class="upload video_embed_btn"><i class="fa fa-video-camera"></i></button>
+                            <button type="button" class="upload picture_upload_btn"><i class="fa fa-picture-o"></i></button>
+                            <input type="file" name="article_picture" class="article_picture_btn hide" onchange="readURL(this)" />
+                        </section>
+                        <div class="controls">
+                            <section>
+                                <button type="button" class="upload delete_btn" onclick="delete_btn(this)"><i class="fa fa-trash"></i></button>
+                                <button type="button" class="upload edit_btn" id="edit_0"><i class="fa fa-pencil-square-o"></i></button>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Article Content:</label>
+                <div class="col-sm-10">
+                    <textarea class="ckeditor" id="article_content" name="newArticle.Content">@Html.Raw(Model.newArticle.Content)</textarea>
+                </div>
+            </div>
+
+            <!--Start of TopX Tags-->
+
+            <div class="form-group">
+                <div class="col-sm-10 col-sm-offset-2">
+                    <button id="add_topX_item" class="full-width">إضافة</button>
+                </div>
+            </div>
+            <div id="topX_container" class="form-group">
+                @for (var i = Model.newArticle.ArticleTopXes.Count(); i > 0; i--)
+                {
+                    <div class="topX_item">
+                        <label class="col-sm-2 control-label">Article Title @i:</label>
+                        <div class="input-group input_margin col-sm-10">
+                            <div class="arrows-div">
+                                <button class="up-button pull-left" id="up_button_@i"></button>
+                                <button class="down-button pull-left" id="down_button_@i"></button>
+                            </div>
+                            <input type="text" name="newArticle.ArticleTopXes[@(i - 1)].TopXTitle" class="col-sm-11 pull-left topX-title dark_border" id="topX_title_@i" value = "@Model.newArticle.ArticleTopXes.ElementAt(i-1).TopXTitle" />
+                            <input type="hidden" name="newArticle.ArticleTopXes[@(i - 1)].TopXOrder" value="@i" />
+                            <input type="hidden" name="article_picture_path[@i]" id="article_picture_path_@i" value="" />
+                            <input type="hidden" name="video_url[@i]" id="video_url_@i" value="" />
+                        </div>
+                        <div class="input-group full-width input_margin">
+                            <label class="col-sm-2 control-label">Article Media @i:</label>
+                            <div class="col-sm-10">
+                                <div class="media dark_border" id="media_@i">
+                                    <input name="newArticle.ArticleTopXes[@(i - 1)].TopXImage" class="TopXImage_@i" value="" type="hidden" />
+                                    <img class="media_img" src="@(Model.newArticle.ArticleTopXes.ElementAt(i-1).TopXVideo!=null?@Model.newArticle.ArticleTopXes.ElementAt(i-1).TopXImage : "/Content/Article_Images/" + @Model.newArticle.ArticleTopXes.ElementAt(i-1).TopXImage)" />
+                                    <section class="image-upload-drop-target media_dropbox">
+                                        <div>أضف صورة أو فيديو</div>
+                                        <button type="button" class="upload video_embed_btn"><i class="fa fa-video-camera"></i></button>
+                                        <button type="button" class="upload picture_upload_btn"><i class="fa fa-picture-o"></i></button>
+                                        <input type="file" name="article_picture" class="article_picture_btn hide" onchange="readURL(this)" />
+                                    </section>
+                                    <div class="controls">
+                                        <section>
+                                            <button type="button" class="upload delete_btn" onclick="delete_btn(this)"><i class="fa fa-trash"></i></button>
+                                            <button type="button" class="upload edit_btn" id="edit_@i"><i class="fa fa-pencil-square-o"></i></button>
+                                        </section>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="input-group full-width input_margin">
+                            <label class="col-sm-2 control-label">Article Content @i:</label>
+                            <div class="col-sm-10">
+                                <textarea name="newArticle.ArticleTopXes[@(i - 1)].TopXContent" class="ckeditor" id="topX_Content_@i">@Model.newArticle.ArticleTopXes.ElementAt(i-1).TopXContent</textarea>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!--End of TopX Tags-->
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Tags:</label>
+                <div class="col-sm-10">
+                    <input name="mySelect" type="hidden" id="tagsCount" />
+                    <ul id="articleTags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit"></button>
+
+            <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed"></button>
+
+            <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
+                        </div>
+                        <div class="modal-body" id="video_modal_body">
+                            <input type="hidden" id="video_id" value="media_0" />
+                            <textarea id="embedded_video_link" class="full-width" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                            <div id="modal_video_viewport">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="media_id_vid" value="" />
+                            <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
+                            <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
+                        </div>
+                        <div class="modal-body" id="edit_modal_body">
+                            <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="media_id" value="" />
+                            <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
+                            <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" name="article_picture_path" id="article_picture_path_0" value="@Model.newArticle.FeaturedImage" />
+            <input type="hidden" name="video_url" id="video_url_0" value="@Model.newArticle.FeaturedVideo" />
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <button id="submit-btn" type="submit" class="btn btn-primary">Add Article</button>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel-default -->
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/script-backoffice.js"></script>
+<script type="text/javascript">
+
+    var availableTags = [];
+    var availableTagsID = [];
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: { Term: "" },
+        url: "/Home/GetTags",
+        success: function (Tags) {
+            for (i = 0; i < Tags.length; i++) {
+                availableTags.push(Tags[i].TagName);
+                availableTagsID.push(Tags[i].TagID);
+            }
+        }
+    });
+
+    var tagItems = [];
+    $.ajax({
+        type: "POST",
+        data: { PostId: $("#PostId").val() },
+        url: "/Admin/GetTagsForPost",
+        success: function (tags) {
+            tagItems = tags;
+        }
+    }).done(function () {
+        $.getScript("/Content/Scripts/tag-it.js").done(function () {
+            $('#articleTags').tagit({
+                tagSource: availableTags,
+                select: true,
+                sortable: true,
+                allowNewTags: false,
+                triggerKeys: ['enter', 'tab'],
+                beforeTagAdded: function (event, ui) {
+                    if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                        return false;
+                    }
+                },
+                afterTagAdded: function (event, ui) {
+                    var index = availableTags.indexOf(ui.tagLabel);
+                    var id = availableTagsID[index];
+                    $("#tags li").eq(-2).attr("data-id", id);
+                }
+            });
+        }).done(function () {
+            for (i = 0; i < tagItems.length; i++) {
+                $('#articleTags').tagit("createTag", tagItems[i].ItemName);
+            }
+        });
+    });
+
+    $(document).ready(function () {
+        for (var i = 3; i > 0; i--) {
+            if ($("#topX_Content_" + i).length) {
+                CKEDITOR.replace('topX_Content_' + i);
+                $("#topX_order_" + i).val(i);
+            }
+            $("#up_button_3").prop('disabled', true);
+            $("#down_button_1").prop('disabled', true);
+        }
+
+        $(".up-button").click(function (e) {
+            e.preventDefault();
+            var id = $(this).attr("id");
+            id = id.split("_");
+            order1 = id[2];
+            order2 = parseInt(order1) + 1;
+
+            title1 = $("#topX_title_" + order1).val();
+            title2 = $("#topX_title_" + order2).val();
+            $("#topX_title_" + order2).val(title1);
+            $("#topX_title_" + order1).val(title2);
+
+            src1 = $("#media_" + order1 + " .media_img").attr("src");
+            src2 = $("#media_" + order2 + " .media_img").attr("src");
+            $("#media_" + order2 + " .media_img").attr("src", src1);
+            $("#media_" + order1 + " .media_img").attr("src", src2);
+
+            path1 = $("#article_picture_path_" + order1).attr("value");
+            path2 = $("#article_picture_path_" + order2).attr("value");
+            $("#article_picture_path_" + order2).attr("value", path1);
+            $("#article_picture_path_" + order1).attr("value", path2);
+
+            video1 = $("#video_" + order1).attr("value");
+            video2 = $("#video_" + order2).attr("value");
+            $("#video_" + order2).attr("value", video1);
+            $("#video_" + order1).attr("value", video2);
+
+            video_path1 = $("#video_url_" + order1).attr("value");
+            video_path2 = $("#video_url_" + order2).attr("value");
+            $("#video_url_" + order2).attr("value", video_path1);
+            $("#video_url_" + order1).attr("value", video_path2);
+
+            content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+            content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+            CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+            CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+        });
+
+        $(".down-button").click(function (e) {
+            e.preventDefault();
+            var id = $(this).attr("id");
+            id = id.split("_");
+            order1 = id[2];
+            order2 = parseInt(order1) - 1;
+
+            title1 = $("#topX_title_" + order1).val();
+            title2 = $("#topX_title_" + order2).val()
+            $("#topX_title_" + order2).val(title1);
+            $("#topX_title_" + order1).val(title2);
+
+            src1 = $("#media_" + order1 + " .media_img").attr("src");
+            src2 = $("#media_" + order2 + " .media_img").attr("src");
+            $("#media_" + order2 + " .media_img").attr("src", src1);
+            $("#media_" + order1 + " .media_img").attr("src", src2);
+
+            path1 = $("#article_picture_path_" + order1).attr("value");
+            path2 = $("#article_picture_path_" + order2).attr("value");
+            $("#article_picture_path_" + order2).attr("value", path1);
+            $("#article_picture_path_" + order1).attr("value", path2);
+
+            video1 = $("#video_" + order1).attr("value");
+            video2 = $("#video_" + order2).attr("value");
+            $("#video_" + order2).attr("value", video1);
+            $("#video_" + order1).attr("value", video2);
+
+            video_path1 = $("#video_url_" + order1).attr("value");
+            video_path2 = $("#video_url_" + order2).attr("value");
+            $("#video_url_" + order2).attr("value", video_path1);
+            $("#video_url_" + order1).attr("value", video_path2);
+
+            content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+            content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+            CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+            CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+        });
+
+        $("#add_topX_item").click(function (e) {
+            e.preventDefault();
+            var count = $("#topX_container > div").length;
+
+            var html = '<div class="topX_item added">';
+            html += '<label class="col-sm-2 control-label">Article Title ' + (count + 1) + ':</label><div class="input-group input_margin col-sm-10">';
+            html += '<button class="pull-right remove-button" id="topX_del_' + (count + 1) + '" onclick="removeTopX(this)"><i class="fa fa-times"></i></button>';
+            html += '<input type="text" name="newArticle.ArticleTopXes[' + count + '].TopXTitle" class="col-sm-11 pull-left topX-title dark_border" id="topX_title_' + (count + 1) + '" placeholder = "Add Title" />';
+            html += '<input type="hidden" name="newArticle.ArticleTopXes[' + count + '].TopXOrder" value="' + (count + 1) + '" />';
+            html += '<input type="hidden" name="article_picture_path[' + (count + 1) + ']" id="article_picture_path_' + (count + 1) + '" value="" />';
+            html += '<input type="hidden" name="video_url[' + (count + 1) + ']" id="video_url_' + (count + 1) + '" value="" />';
+            html += '<div class="arrows-div">';
+            html += '<button class="up-button pull-left" id="up_button_' + (count + 1) + '"></button>';
+            html += '<button class="down-button pull-left" id="down_button_' + (count + 1) + '"></button>';
+            html += '</div></div>';
+            html += '<label class="col-sm-2 control-label">Article Media ' + (count + 1) + '</label>';
+            html += '<div class="input-group col-sm-10 input_margin">';
+            html += '<div class="media" id="media_' + parseInt($("#topX_container > div").length + 1) + '" class="dark_border">';
+            html += '<input name="newArticle.ArticleTopXes[' + count + '].TopXImage" class="TopXImage_' + (count + 1) + '" value="" type="hidden" />';
+            html += '<img class="media_img" src="" />';
+            html += '<section class="image-upload-drop-target media_dropbox">';
+            html += '<div>أضف صورة أو فيديو</div>';
+            html += '<button type="button" class="upload video_embed_btn"><i class="fa fa-video-camera"></i></button>';
+            html += '<button type="button" class="upload picture_upload_btn"><i class="fa fa-picture-o"></i></button>';
+            html += '<input type="file" name="article_picture" class="article_picture_btn hide" onchange="readURL(this)" />';
+            html += '</section>';
+            html += '<div class="controls">';
+            html += '<section>';
+            html += '<button type="button" class="upload delete_btn" onclick="delete_btn(this)"><i class="fa fa-trash"></i></button>';
+            html += '<button type="button" class="upload edit_btn" id="edit_' + (count + 1) + '"><i class="fa fa-pencil-square-o"></i></button>';
+            html += '</section></div></div></div>';
+            html += '<label class="col-sm-2 control-label">Article Content ' + (count + 1) + '</label>';
+            html += '<div class="input-group col-sm-10 input_margin">';
+            html += '<textarea name="newArticle.ArticleTopXes[' + count + '].TopXContent" id="topX_Content_' + (count + 1) + '"></textarea></div></div>';
+
+            $("#topX_container").prepend(html);
+            $("#topX_order_" + (count + 1)).val(count + 1);
+            $("#up_button_" + count).prop('disabled', false);
+            $("#up_button_" + (count + 1)).prop('disabled', true);
+
+            $(".up-button-2").click(function (e) {
+                e.preventDefault();
+                var id = $(this).attr("id");
+                id = id.split("_");
+                order1 = id[2];
+                order2 = parseInt(order1) + 1;
+
+                title1 = $("#topX_title_" + order1).val();
+                title2 = $("#topX_title_" + order2).val();
+                $("#topX_title_" + order2).val(title1);
+                $("#topX_title_" + order1).val(title2);
+
+                src1 = $("#media_" + order1 + " .media_img").attr("src");
+                src2 = $("#media_" + order2 + " .media_img").attr("src");
+                $("#media_" + order2 + " .media_img").attr("src", src1);
+                $("#media_" + order1 + " .media_img").attr("src", src2);
+
+                path1 = $("#article_picture_path_" + order1).attr("value");
+                path2 = $("#article_picture_path_" + order2).attr("value");
+                $("#article_picture_path_" + order2).attr("value", path1);
+                $("#article_picture_path_" + order1).attr("value", path2);
+
+                video1 = $("#video_" + order1).attr("value");
+                video2 = $("#video_" + order2).attr("value");
+                $("#video_" + order2).attr("value", video1);
+                $("#video_" + order1).attr("value", video2);
+
+                video_path1 = $("#video_url_" + order1).attr("value");
+                video_path2 = $("#video_url_" + order2).attr("value");
+                $("#video_url_" + order2).attr("value", video_path1);
+                $("#video_url_" + order1).attr("value", video_path2);
+
+                content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+                content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+                CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+                CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+            });
+            $(".down-button-2").click(function (e) {
+                e.preventDefault();
+                var id = $(this).attr("id");
+                id = id.split("_");
+                order1 = id[2];
+                order2 = parseInt(order1) - 1;
+
+                title1 = $("#topX_title_" + order1).val();
+                title2 = $("#topX_title_" + order2).val()
+                $("#topX_title_" + order2).val(title1);
+                $("#topX_title_" + order1).val(title2);
+
+                src1 = $("#media_" + order1 + " .media_img").attr("src");
+                src2 = $("#media_" + order2 + " .media_img").attr("src");
+                $("#media_" + order2 + " .media_img").attr("src", src1);
+                $("#media_" + order1 + " .media_img").attr("src", src2);
+
+                path1 = $("#article_picture_path_" + order1).attr("value");
+                path2 = $("#article_picture_path_" + order2).attr("value");
+                $("#article_picture_path_" + order2).attr("value", path1);
+                $("#article_picture_path_" + order1).attr("value", path2);
+
+                video1 = $("#video_" + order1).attr("value");
+                video2 = $("#video_" + order2).attr("value");
+                $("#video_" + order2).attr("value", video1);
+                $("#video_" + order1).attr("value", video2);
+
+                video_path1 = $("#video_url_" + order1).attr("value");
+                video_path2 = $("#video_url_" + order2).attr("value");
+                $("#video_url_" + order2).attr("value", video_path1);
+                $("#video_url_" + order1).attr("value", video_path2);
+
+                content1 = CKEDITOR.instances['topX_Content_' + order1].getData();
+                content2 = CKEDITOR.instances['topX_Content_' + order2].getData();
+                CKEDITOR.instances['topX_Content_' + order1].setData(content2);
+                CKEDITOR.instances['topX_Content_' + order2].setData(content1);
+            });
+
+            var box;
+            box = document.getElementById('media_' + parseInt($("#topX_container > div").length));
+            box.addEventListener("dragenter", OnDragEnter, false);
+            box.addEventListener("dragover", OnDragOver, false);
+            box.addEventListener("drop", OnDrop, false);
+
+            $(".edit_btn").click(function () {
+                var media_id = $(this).parent().parent().parent().attr("id");
+                var id = media_id.split("_");
+                if ($("#video_url_" + id[1]).attr("value") == "") {
+                    $("#pictureModal_toggle_btn").click();
+                    $("edit_modal_body").find(".jcrop-holder").remove();
+                    $("#edit_modal_body").find("img").remove();
+                    $("#edit_modal_body").find("div").remove();
+                    $('#edit_modal_body').prepend('<img id="my-cropped-image" src="#" style="" />');
+                    $('#edit_modal_body').prepend('<img id="crop_target" />');
+                    $("#my-cropped-image").attr("src", $("#" + media_id + " .media_img").attr("src"));
+
+                    $("#crop_btn").css("display", "block");
+                    $("#crop_btn").click(function () {
+                        $("#my-cropped-image").Jcrop({
+                            onChange: setCoordsAndImgSize,
+                            aspectRatio: 2,
+                            boxWidth: 598
+                        });
+                        editFlag = true;
+                    });
+                } else {
+                    embed_video(e);
+                }
+            });
+
+            if ($("#topX_Content_" + (count + 1)).length) {
+                CKEDITOR.replace('topX_Content_' + (count + 1));
+            }
+
+            $('#addForm').data('validator', null);
+            $("#addForm").unbind('validate');
+
+            $("#addForm").validate({
+                ignore: [],
+                rules: (function () {
+                    results = {}
+                    results["newArticle.Title"] = { required: true }
+                    results["newArticle.Content"] = { required: true, minChars: true }
+                    results["article_picture_path"] = { required: true }
+                    results["mySelect"] = { RequiredTag: true }
+                    for (var i = 0; i < $(".topX_item").length; i++) {
+                        results["newArticle.ArticleTopXes[" + i + "].TopXTitle"] = { required: true }
+                        results["newArticle.ArticleTopXes[" + i + "].TopXImage"] = { required: true }
+                        results["newArticle.ArticleTopXes[" + i + "].TopXContent"] = { required: true, minChars: true }
+                    }
+                    return results;
+                })(),
+                messages: (function () {
+                    results = {}
+                    results["newArticle.Content"] = { minChars: "Please enter a minimum of 10 characters." }
+                    results["mySelect"] = { RequiredTag: "This field is required." }
+                    for (var i = 0; i < $(".topX_item").length; i++) {
+                        results["newArticle.ArticleTopXes[" + i + "].TopXContent"] = { minChars: "Please enter a minimum of 10 characters." }
+                    }
+                    return results;
+                })(),
+                errorPlacement: function (error, element) {
+                    for (var i = 0; i < $(".topX_item").length; i++) {
+                        if (element.attr("name") == "article_picture_path") {
+                            error.insertAfter("#media_0");
+                        } else if (element.attr("name") == "newArticle.Content") {
+                            error.insertAfter("#cke_article_content");
+                        } else if (element.attr("name") == "mySelect") {
+                            error.insertAfter("#articleTags");
+                        } else if (element.attr("name") == "newArticle.ArticleTopXes[" + i + "].TopXImage") {
+                            error.insertAfter("#media_" + (i + 1));
+                        } else if (element.attr("name") == "newArticle.ArticleTopXes[" + i + "].TopXContent") {
+                            error.insertAfter("#cke_topX_Content_" + (i + 1));
+                        } else if (element.attr("name") == "newArticle.ArticleTopXes[" + i + "].TopXTitle") {
+                            error.insertAfter("#topX_title_" + (i + 1));
+                        } else if (element.attr("name") == "newArticle.Title") {
+                            error.insertAfter("#newArticle_Title");
+                        }
+                    }
+                }
+            });
+        });
+    });
+
+    $("#editForm").submit(function (e) {
+        src = $("#media_0 .media_img").attr("src");
+        if ($("#video_url_0").attr("value") == "") {
+            $("#article_picture_path_0").attr("value", src);
+        }
+        $('#article_content').each(function () {
+            for (instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        });
+
+        $('.SelectedTags').remove();
+        var tags_qs = "";
+        $('#articleTags').children('li').each(function (index) {
+            var tagname = $(this).children('span').text();
+            $("#submit-btn").append("<input class='SelectedTags' name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
+        });
+
+        var items = $(".topX_item").length;
+        for (var i = items; i > 0; i--) {
+            src = $("#media_" + i + " .media_img").attr("src");
+            $("#media_" + i + " .TopXImage_" + i).attr("value", src);
+            $('#topX_Content_' + i).each(function () {
+                for (instance in CKEDITOR.instances)
+                    CKEDITOR.instances[instance].updateElement();
+            });
+        }
+        return true;
+    });
+
+    $(".media_img").mouseenter(function () {
+        if ($(this).attr("src") != "") {
+            $(this).parent().children(".controls").css("display", "block");
+        }
+    });
+    //$(".media_img").mouseout(function () {
+    //    $(this).parent().children(".controls").css("display", "none");
+    //});
+    if ($(".media_img").attr("src") != "") {
+        $(".media_img").parent().children(".media_dropbox").css("display", "none");
+        var media_id = $(".media_img").parent().attr("id");
+        $("#media_id").val(media_id);
+        $("#" + media_id + " .article_picture_btn").click();
+    }
+
+    $.validator.addMethod("ImageOrVideo", function (value, element) {
+        img_src = $("#media_0 .media_img").attr("src");
+        vid_src = $("#video_url_0").attr("value");
+        return ((img_src != "") || (vid_src != ""));
+    });
+
+    $.validator.addMethod("RequiredTag", function (value, element) {
+        tags_count = $("#articleTags").children("li").length;
+        return (tags_count > 1) ? true : false;
+    });
+
+    $.validator.addMethod("minChars", function (value, element) {
+        return (value.length > 10);
+    });
+
+    $("#editForm").validate({
+        ignore: [],
+        rules: (function () {
+            results = {}
+            results["newArticle.Title"] = { required: true }
+            results["newArticle.Content"] = { required: true, minChars: true }
+            results["article_picture_path"] = { required: true }
+            results["mySelect"] = { RequiredTag: true }
+            for (var i = 0; i < $(".topX_item").length; i++) {
+                results["newArticle.ArticleTopXes[" + i + "].TopXTitle"] = { required: true }
+                results["newArticle.ArticleTopXes[" + i + "].TopXImage"] = { required: true }
+                results["newArticle.ArticleTopXes[" + i + "].TopXContent"] = { required: true, minChars: true }
+            }
+            return results;
+        })(),
+        messages: (function () {
+            results = {}
+            results["newArticle.Content"] = { minChars: "Please enter a minimum of 10 characters." }
+            results["mySelect"] = { RequiredTag: "This field is required." }
+            for (var i = 0; i < $(".topX_item").length; i++) {
+                results["newArticle.ArticleTopXes[" + i + "].TopXContent"] = { minChars: "Please enter a minimum of 10 characters." }
+            }
+            return results;
+        })(),
+        errorPlacement: function (error, element) {
+            for (var i = 0; i < $(".topX_item").length; i++) {
+                if (element.attr("name") == "article_picture_path") {
+                    error.insertAfter("#media_0");
+                } else if (element.attr("name") == "newArticle.Content") {
+                    error.insertAfter("#cke_article_content");
+                } else if (element.attr("name") == "mySelect") {
+                    error.insertAfter("#articleTags");
+                } else if (element.attr("name") == "newArticle.ArticleTopXes[" + i + "].TopXImage") {
+                    error.insertAfter("#media_" + (i + 1));
+                } else if (element.attr("name") == "newArticle.ArticleTopXes[" + i + "].TopXContent") {
+                    error.insertAfter("#cke_topX_Content_" + (i + 1));
+                } else if (element.attr("name") == "newArticle.ArticleTopXes[" + i + "].TopXTitle") {
+                    error.insertAfter("#topX_title_" + (i + 1));
+                } else if (element.attr("name") == "newArticle.Title") {
+                    error.insertAfter("#newArticle_Title");
+                }
+            }
+        }
+    });
+</script>

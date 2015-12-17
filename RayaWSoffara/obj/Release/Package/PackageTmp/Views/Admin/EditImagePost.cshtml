@@ -1,0 +1,238 @@
+﻿@model RayaWSoffara.Models.UserArticleVM
+@{
+    ViewBag.Title = "Edit Image";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
+<link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.Jcrop.min.css" />
+<form id="editForm" class="form-horizontal" action="/Admin/EditImagePost" method="post" enctype="multipart/form-data">
+    <input type="hidden" name ="newArticle.PostId" id="PostId" value="@Model.newArticle.PostId" />
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <div class="panel-btns">
+                <a href="" class="panel-close">&times;</a>
+                <a href="" class="minimize">&minus;</a>
+            </div>
+            <h4 class="panel-title">Edit Image</h4>
+        </div>
+        <div class="panel-body">
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Post Image:</label>
+                <div class="col-sm-10">
+                    <div class="media dark_border" id="media_0">
+                        <img class="media_img" src=@(Model.newArticle.FeaturedImage == ""? null : "/Content/Article_Images/" + @Model.newArticle.FeaturedImage) />
+                        <section class="image-upload-drop-target media_dropbox">
+                            <div>أضف صورة أو فيديو</div>
+                            <button type="button" class="upload video_embed_btn"><i class="fa fa-video-camera"></i></button>
+                            <button type="button" class="upload picture_upload_btn"><i class="fa fa-picture-o"></i></button>
+                            <input type="file" name="article_picture" class="article_picture_btn hide" onchange="readURL(this)" />
+                        </section>
+                        <div class="controls">
+                            <section>
+                                <button type="button" class="upload delete_btn" onclick="delete_btn(this)"><i class="fa fa-trash"></i></button>
+                                <button type="button" class="upload edit_btn" id="edit_0"><i class="fa fa-pencil-square-o"></i></button>
+                            </section>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Article Content:</label>
+                <div class="col-sm-10">
+                    <textarea class="full-width" name="newArticle.Content">@Html.Raw(Model.newArticle.Content)</textarea>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="col-sm-2 control-label">Tags:</label>
+                <div class="col-sm-10">
+                    <input name="mySelect" type="hidden" id="tagsCount" />
+                    <ul id="articleTags" class="form-control"></ul>
+                </div>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit"></button>
+
+            <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed"></button>
+
+            <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
+                        </div>
+                        <div class="modal-body" id="video_modal_body">
+                            <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                            <div id="modal_video_viewport">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="media_id_vid" value="" />
+                            <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
+                            <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                            <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
+                        </div>
+                        <div class="modal-body" id="edit_modal_body">
+                            <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
+                        </div>
+                        <div class="modal-footer">
+                            <input type="hidden" id="media_id" value="" />
+                            <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
+                            <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" name="article_picture_path" id="article_picture_path_0" />
+            <input type="hidden" name="video_url" id="video_url_0" value="" />
+        </div>
+        <!-- panel-body -->
+        <div class="panel-footer">
+            <button id="submit-btn" type="submit" class="btn btn-primary">Submit Changes</button>
+        </div>
+        <!-- panel-footer -->
+    </div>
+    <!-- panel-default -->
+</form>
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.js"></script>
+<script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.11.1/additional-methods.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/script-backoffice.js"></script>
+<script type="text/javascript">
+
+    var availableTags = [];
+    var availableTagsID = [];
+    $.ajax({
+        async: false,
+        type: "POST",
+        data: { Term: "" },
+        url: "/Home/GetTags",
+        success: function (Tags) {
+            for (i = 0; i < Tags.length; i++) {
+                availableTags.push(Tags[i].TagName);
+                availableTagsID.push(Tags[i].TagID);
+            }
+        }
+    });
+
+    var tagItems = [];
+    $.ajax({
+        type: "POST",
+        data: { PostId: $("#PostId").val() },
+        url: "/Admin/GetTagsForPost",
+        success: function (tags) {
+            tagItems = tags;
+        }
+    }).done(function () {
+        $.getScript("/Content/Scripts/tag-it.js").done(function () {
+            $('#articleTags').tagit({
+                tagSource: availableTags,
+                select: true,
+                sortable: true,
+                allowNewTags: false,
+                triggerKeys: ['enter', 'tab'],
+                beforeTagAdded: function (event, ui) {
+                    if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                        return false;
+                    }
+                },
+                afterTagAdded: function (event, ui) {
+                    var index = availableTags.indexOf(ui.tagLabel);
+                    var id = availableTagsID[index];
+                    $("#tags li").eq(-2).attr("data-id", id);
+                }
+            });
+        }).done(function () {
+            for (i = 0; i < tagItems.length; i++) {
+                $('#articleTags').tagit("createTag", tagItems[i].ItemName);
+            }
+        });
+    });
+
+    $("#editForm").submit(function (e) {
+        src = $("#media_0 .media_img").attr("src");
+        if ($("#video_url_0").attr("value") == "") {
+            $("#article_picture_path_0").attr("value", src);
+        }
+        $('#article_content').each(function () {
+            for (instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        });
+
+        $('.SelectedTags').remove();
+        var tags_qs = "";
+        $('#articleTags').children('li').each(function (index) {
+            var tagname = $(this).children('span').text();
+            $("#submit-btn").append("<input class='SelectedTags' name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
+        });
+        return true;
+    });
+
+    $.validator.addMethod("ImageOrVideo", function (value, element) {
+        img_src = $("#media_0 .media_img").attr("src");
+        vid_src = $("#video_url_0").attr("value");
+        return ((img_src != "") || (vid_src != ""));
+    });
+
+    $.validator.addMethod("RequiredTag", function (value, element) {
+        tags_count = $("#articleTags").children("li").length;
+        return (tags_count > 1) ? true : false;
+    });
+
+    $("#editForm").validate({
+        ignore: [],
+        rules: {
+            article_picture_path: "required",
+            mySelect: { RequiredTag: true }
+        },
+        messages: {
+            mySelect: "This field is required."
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "article_picture_path") {
+                error.insertAfter(".panel-body .media");
+            } else if (element.attr("name") == "mySelect") {
+                error.insertAfter("#articleTags");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+    $(".media_img").mouseenter(function () {
+        if ($(this).attr("src") != "" && $(".media_img").attr("src") != null) {
+            $(this).parent().children(".controls").css("display", "block");
+        }
+    });
+    //$(".media_img").mouseout(function () {
+    //    $(this).parent().children(".controls").css("display", "none");
+    //});
+    if ($(".media_img").attr("src") != "" && $(".media_img").attr("src") != null) {
+        $(".media_img").parent().children(".media_dropbox").css("display", "none");
+        var media_id = $(".media_img").parent().attr("id");
+        $("#media_id").val(media_id);
+        $("#" + media_id + " .article_picture_btn").click();
+    }
+
+
+</script>

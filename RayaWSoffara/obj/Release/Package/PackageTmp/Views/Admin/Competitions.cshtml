@@ -1,0 +1,137 @@
+﻿@{
+    ViewBag.Title = "Competitions List";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+@if (@ViewBag.AddSuccess == true)
+{
+    <script>
+        jQuery.gritter.add({
+            title: 'Competition Added!',
+            sticky: false,
+            time: ''
+        });
+    </script>
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="/Admin/AddCompetition">Add Competition</a>
+        </div>
+        <h4 class="panel-title">Competitions List</h4>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table id="example" class="table table-primary">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th>Competition Name</th>
+                        <th>Actions</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+
+    var dt = $('#example').dataTable({
+        "processing": true,
+        "serverSide": true,
+        "info": true,
+        "stateSave": true,
+        "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+        "ajax": {
+            "url": "@string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))/Admin/AjaxGetCompetitions",
+            "type": "GET"
+        },
+        "columns": [
+            {
+                "data": "ItemName"
+            },
+            {
+                "orderable": false,
+                "data": "Actions",
+                "className": "table-action"
+            },
+            {
+                "data": "Status"
+            }
+        ],
+        "order": [[0, "asc"]]
+    });
+
+    function Deactivate(e) {
+        var comp_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to deactivate this competition?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { CompId: comp_id },
+                url: "/Admin/DeactivateCompetition",
+                success: function (data) {
+                    $(e).html("Inactive").attr("onclick", "Activate(this)").removeClass("label-success").addClass("label-danger");
+                    jQuery.gritter.add({
+                        title: 'Competition Deactivated!',
+                        sticky: false,
+                        time: ''
+                    });
+                }
+            });
+        }
+    }
+
+    function Activate(e) {
+        var comp_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to activate this competition?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { CompId: comp_id },
+                url: "/Admin/ActivateCompetition",
+                success: function (data) {
+                    $(e).html("Active").attr("onclick", "Deactivate(this)").removeClass("label-danger").addClass("label-success");
+                    jQuery.gritter.add({
+                        title: 'Competition Activated!',
+                        sticky: false,
+                        time: ''
+                    });
+                }
+            });
+        }
+    }
+
+    function Edit(e) {
+        var comp_id = $(e).parent().parent().attr("id");
+        window.location = "/Admin/EditCompetition?CompId=" + comp_id;
+    }
+
+    function Delete(e) {
+        var comp_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to delete this competition?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { CompId: comp_id },
+                url: "/Admin/DeleteCompetition",
+                success: function (data) {
+                    $(e).parent().parent().hide(1000);
+                    jQuery.gritter.add({
+                        title: 'Competition Deleted!',
+                        sticky: false,
+                        time: ''
+                    });
+                }
+            });
+        }
+    }
+</script>

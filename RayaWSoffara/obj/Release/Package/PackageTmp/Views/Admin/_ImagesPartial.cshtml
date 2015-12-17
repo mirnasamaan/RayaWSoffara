@@ -4,9 +4,8 @@
 {
     foreach (var item in Model)
     {
-    <div class="grid-item">
-        <div onclick="deleteImage(@item.ImageId)" class="close-btn hidden">x</div>
-        <img onclick="imageSettings(@item.ImageId)" id="@item.ImageId" src="@item.ImageURL?w=732&h=340&mode=crop" width="266" height="124" />
+    <div class="grid-item" onclick="imageSettings(@item.ImageId)">
+        <img id="@item.ImageId" src="@item.ImageURL?w=732&h=340&mode=crop" width="266" height="124" />
     </div>
     }
 }
@@ -58,29 +57,6 @@
             }
         }
     });
-
-    $(".grid-item").mouseover(function () {
-        var imageid = $(this).children("img").attr("id");
-        $(this).children(".close-btn").removeClass("hidden");
-    });
-
-    $(".grid-item").mouseout(function () {
-        $(this).children(".close-btn").addClass("hidden");
-    });
-
-    function deleteImage(imageid) {
-        $(this).parent().off("click");
-        if (confirm("Are you sure you want to delete this image?")) {
-            $.ajax({
-                type: "POST",
-                data: { ImageId: imageid },
-                url: "/Admin/DeleteImage",
-                success: function () {
-                    $('.grid').masonry('remove', $("#" + imageid).parent()).masonry('layout');;
-                }
-            });
-        }
-    };
 
     function imageSettings(image_id) {
         $("#imageId").val(image_id);

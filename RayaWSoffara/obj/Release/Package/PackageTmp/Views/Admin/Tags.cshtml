@@ -1,0 +1,172 @@
+﻿@{
+    ViewBag.Title = "Tag List";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+@if (@ViewBag.AddSuccess == true)
+{
+    <script>
+        jQuery.gritter.add({
+            title: 'Tag Added!',
+            sticky: false,
+            time: ''
+        });
+    </script>
+}
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="/Admin/AddTag">Add Tag</a>
+        </div>
+        <h4 class="panel-title">Tags List</h4>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <table id="example" class="table table-primary">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th>Tag Name</th>
+                        <th>Actions</th>
+                        <th>Status</th>
+                        <th>Featured</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+
+    var dt = $('#example').dataTable({
+        "processing": true,
+        "serverSide": true,
+        "info": true,
+        "stateSave": true,
+        "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+        "ajax": {
+            "url": "/Admin/AjaxGetTags",
+            "type": "GET"
+        },
+        "columns": [
+            { "data": "ItemName", "orderable": true },
+            {
+                "orderable": false,
+                "data": "Actions",
+                "className": "table-action"
+            },
+            {
+                "orderable": false,
+                "data": "Status"
+            },
+            {
+                "orderable": false,
+                "data": "Featured",
+            }
+        ],
+        "order": [[0, "asc"]]
+    });
+
+    function Edit(e) {
+        var tag_id = $(e).parent().parent().attr("id");
+        window.location = "/Admin/EditTag?TagId=" + tag_id;
+    }
+
+    function Delete(e) {
+        var tag_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to delete this tag?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { TagId: tag_id },
+                url: "/Admin/DeleteTag",
+                success: function (data) {
+                    $(e).parent().parent().hide(1000);
+                    jQuery.gritter.add({
+                        title: 'Tag Deleted!',
+                        sticky: false,
+                        time: ''
+                    });
+                }
+            });
+        }
+    }
+
+    function Deactivate(e) {
+        var tag_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to deactivate this tag?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { TagId: tag_id },
+                url: "/Admin/DeactivateTag",
+                success: function (data) {
+                    $(e).html("Inactive").attr("onclick", "Activate(this)").removeClass("label-success").addClass("label-danger");
+                    jQuery.gritter.add({
+                        title: 'Tag Deactivated!',
+                        sticky: false,
+                        time: ''
+                    });
+                }
+            });
+        }
+    }
+
+    function Activate(e) {
+        var tag_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to activate this tag?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { TagId: tag_id },
+                url: "/Admin/ActivateTag",
+                success: function (data) {
+                    $(e).html("Active").attr("onclick", "Deactivate(this)").removeClass("label-danger").addClass("label-success");
+                    jQuery.gritter.add({
+                        title: 'Tag Activated!',
+                        sticky: false,
+                        time: ''
+                    });
+                }
+            });
+        }
+
+    }
+
+    function RemoveFeatured(e) {
+        var tag_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to set this tag as not featured?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { TagId: tag_id },
+                url: "/Admin/RemoveTagAsFeatured",
+                success: function (data) {
+                    $(e).html("Not Featured").attr("onclick", "SetFeatured(this)").removeClass("label-warning").addClass("label-default");
+                }
+            });
+        }
+    }
+
+    function SetFeatured(e) {
+        var tag_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to set this tag as featured?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { TagId: tag_id },
+                url: "/Admin/SetTagAsFeatured",
+                success: function (data) {
+                    $(e).html("Featured").attr("onclick", "RemoveFeature(this)").removeClass("label-default").addClass("label-warning");
+                }
+            });
+        }
+    }
+</script>
