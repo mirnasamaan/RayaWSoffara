@@ -89,7 +89,7 @@ namespace RWSDataLayer.Repositories
         /// </summary>
         public IQueryable<Post> GeUserPostsWithMonthId(int UserId, int MonthId, int YearId)
         {
-            IQueryable<Post> posts = Context.Posts.Where(i => i.RWSUser.UserId == UserId).Where(i => i.ActivationDate.Value.Month == MonthId).Where(i => i.ActivationDate.Value.Year == YearId);
+            IQueryable<Post> posts = Context.Posts.Where(i => i.CreatedBy == UserId).Where(i => i.ActivationDate.Value.Month == MonthId).Where(i => i.ActivationDate.Value.Year == YearId);
             return posts;
         }
 
@@ -251,7 +251,7 @@ namespace RWSDataLayer.Repositories
         /// <returns></returns>
         public int GetViewsCountByUserId(int id)
         {
-            return Context.Posts.Where(i => i.CreatedBy == id).Where(i => i.IsActive == true).ToList().Select(i => i.ViewsCount).Sum();
+            return Context.Posts.Where(i => i.CreatedBy == id).Where(i => i.IsActive == true).Select(i => i.ViewsCount).Sum();
         }
 
         /// <summary>

@@ -1,0 +1,129 @@
+﻿@{
+    ViewBag.Title = "Leaderboard";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        @*<div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="javascript:void(0)" onclick="Export()">Export to Excel</a>
+        </div>*@
+        <h4 class="panel-title">User Points</h4>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">User Name</label>
+                <div class="col-sm-10 no-padding">
+                    <select class="username" data-placeholder="Choose...">
+                        <option value=""></option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-7"></div>
+        </div>
+        <div class="form-group">
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">From</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="fromDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">To</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="toDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-primary" href="javascript:void(0)" onclick="submit()">Go</a>
+            </div>
+        </div>
+        <div class="vertical-space"></div>
+        <div class="vertical-space"></div>
+        <div class="table-responsive">
+            <table id="table" class="table table-primary">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th>User Name</th>
+                        <th>This Week</th>
+                        <th>This Month</th>
+                        <th>All Time</th>
+                        <th>Custom</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+@*<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>*@
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script src="~/Content/Scripts/select2.min.js"></script>
+<script type="text/javascript">
+
+    $('#fromDate').datepicker();
+    $('#toDate').datepicker();
+
+    $.ajax({
+        async: false,
+        type: "GET",
+        url: "/Admin/GetUserNames",
+        success: function (users) {
+            for (i = 0; i < users.length; i++) {
+                $(".username").append('<option value=' + users[i].ItemId + '>' + users[i].ItemName + '</option>');
+            }
+
+            $(".username").select2({
+                width: '100%'
+            });
+        }
+    });
+
+    function submit() {
+        var username = $(".username .select2-chosen").text();
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+
+        if ($.fn.DataTable.isDataTable('#table')) {
+            $("#table").DataTable().destroy();
+        }
+        var dt = $('#table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "info": true,
+            "stateSave": true,
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "ajax": {
+                "url": "/Admin/AjaxGetUserPoints",
+                "type": "POST",
+                "data": { "userName": username, "fromDate": fromDate, "toDate": toDate }
+            },
+            "columns": [
+                {
+                    "data": "ItemName"
+                },
+                {
+                    "data": "Actions"
+                },
+                {
+                    "data": "articlesCount"
+                },
+                {
+                    "data": "Featured"
+                },
+                {
+                    "data": "Status"
+                }
+            ],
+            "order": [[0, "asc"]]
+        });
+    }
+</script>

@@ -1,0 +1,224 @@
+﻿@{
+    ViewBag.Title = "Leaderboard";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="javascript:void(0)" onclick="Export()">Export to Excel</a>
+        </div>
+        <h4 class="panel-title">Leaderboard</h4>
+    </div>
+    <div class="panel-body">
+        <ul class="nav nav-tabs">
+            <li><a href="#week" onclick="week()" data-toggle="tab"><strong>This Week</strong></a></li>
+            <li class="active"><a href="#month" data-toggle="tab"><strong>This Month</strong></a></li>
+            <li><a href="#alltime" onclick="alltime()" data-toggle="tab"><strong>All Time</strong></a></li>
+            <li><a href="#custom" onclick="custom()" data-toggle="tab"><strong>Custom</strong></a></li>
+        </ul>
+        <div class="tab-content mb30">
+            <div class="tab-pane" id="week">
+                <div class="table-responsive">
+                    <table id="week_table" class="table table-primary">
+                        <thead>
+                            <tr style="text-align: left;">
+                                <th>User Name</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane active" id="month">
+                <div class="table-responsive">
+                    <table id="month_table" class="table table-primary">
+                        <thead>
+                            <tr style="text-align: left;">
+                                <th>User Name</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane" id="alltime">
+                <div class="table-responsive">
+                    <table id="alltime_table" class="table table-primary">
+                        <thead>
+                            <tr style="text-align: left;">
+                                <th>User Name</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+            <div class="tab-pane" id="custom">
+                <div class="col-sm-5">
+                    <div class="col-sm-2 text">From</div>
+                    <div class="input-group col-sm-10">
+                        <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="fromDate">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="col-sm-5">
+                    <div class="col-sm-2 text">To</div>
+                    <div class="input-group col-sm-10">
+                        <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="toDate">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                    </div>
+                </div>
+                <div class="col-sm-2">
+                    <a class="btn btn-primary" href="javascript:void(0)" onclick="custom()">Go</a>
+                </div>
+                <div class="vertical-space"></div>
+                <div class="vertical-space"></div>
+                <div class="table-responsive">
+                    <table id="custom_table" class="table table-primary">
+                        <thead>
+                            <tr style="text-align: left;">
+                                <th>User Name</th>
+                                <th>Points</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+@*<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>*@
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+
+    $('#fromDate').datepicker();
+    $('#toDate').datepicker();
+
+    var month_dt = $('#month_table').DataTable({
+        "processing": true,
+        "serverSide": true,
+        "info": true,
+        "stateSave": true,
+        "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+        "ajax": {
+            "url": "/Admin/AjaxGetLeaderboard",
+            "type": "POST",
+            "data": { "filter": "month" }
+        },
+        "columns": [
+            {
+                "data": "ItemName"
+            },
+            {
+                "data": "articlesCount"
+            }
+        ],
+        "order": [[0, "asc"]]
+    });
+
+    var week_dt;
+    var alltime_dt;
+    var custom_dt
+
+    function week() {
+        if (!$.fn.DataTable.isDataTable('#week_table')) {
+            week_dt = $('#week_table').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "info": true,
+                "stateSave": true,
+                "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+                "ajax": {
+                    "url": "/Admin/AjaxGetLeaderboard",
+                    "type": "POST",
+                    "data": { "filter": "week" }
+                },
+                "columns": [
+                    {
+                        "data": "ItemName"
+                    },
+                    {
+                        "data": "articlesCount"
+                    }
+                ],
+                "order": [[0, "asc"]]
+            });
+        }
+    };
+
+    function alltime() {
+        if (!$.fn.DataTable.isDataTable('#alltime_table')) {
+            alltime_dt = $('#alltime_table').DataTable({
+                "processing": true,
+                "serverSide": true,
+                "info": true,
+                "stateSave": true,
+                "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+                "ajax": {
+                    "url": "/Admin/AjaxGetLeaderboard",
+                    "type": "POST",
+                    "data": { "filter": "alltime" }
+                },
+                "columns": [
+                    {
+                        "data": "ItemName"
+                    },
+                    {
+                        "data": "articlesCount"
+                    }
+                ],
+                "order": [[0, "asc"]]
+            });
+        }
+    };
+
+    function custom() {
+        if ($.fn.DataTable.isDataTable('#custom_table')) {
+            $("#custom_table").DataTable().destroy();
+        }
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+        custom_dt = $('#custom_table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "info": true,
+            "stateSave": true,
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "ajax": {
+                "url": "/Admin/AjaxGetLeaderboard",
+                "type": "POST",
+                "data": { "filter": "custom", "fromDate": fromDate, "toDate": toDate }
+            },
+            "columns": [
+                {
+                    "data": "ItemName"
+                },
+                {
+                    "data": "articlesCount"
+                }
+            ],
+            "order": [[0, "asc"]]
+        });
+    };
+
+    function Export() {
+        if ($('#week').attr("class").indexOf("active") > -1) {
+            window.location = "/Admin/Export?filter=week&fromDate=&toDate=";
+        } else if ($('#month').attr("class").indexOf("active") > -1) {
+            window.location = "/Admin/Export?filter=month&fromDate=&toDate=";
+        } else if ($('#alltime').attr("class").indexOf("active") > -1) {
+            window.location = "/Admin/Export?filter=alltime&fromDate=&toDate=";
+        } else if ($('#custom').attr("class").indexOf("active") > -1) {
+            var fromDate = $("#fromDate").val();
+            var toDate = $("#toDate").val();
+            window.location = "/Admin/Export?filter=custom&fromDate=" + fromDate + "&toDate=" + toDate;
+        }
+    };
+</script>

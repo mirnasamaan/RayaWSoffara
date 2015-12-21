@@ -136,8 +136,8 @@ namespace RWSDataLayer.Repositories
         {
             if (Context.RWSUsers.Any(x => x.UserId == UserId))
             {
-                RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == UserId);
-                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == user.UserId).Where(i => i.IsActive.Value);
+                //RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == UserId);
+                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == UserId).Where(i => i.IsActive.Value);
                 IQueryable<Engagement> views = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i=> i.EngTypeId == 3).Where(i => i.EngTimestamp.Value.Month == MonthId).Where(i => i.EngTimestamp.Value.Year == YearId);
                 return views.Count();
             }
@@ -178,8 +178,8 @@ namespace RWSDataLayer.Repositories
         {
             if (Context.RWSUsers.Any(x => x.UserId == UserId))
             {
-                RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == UserId);
-                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == user.UserId).Where(i => i.IsActive.Value);
+                //RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == UserId);
+                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == UserId).Where(i => i.IsActive.Value);
                 IQueryable<Engagement> likes = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTypeId == 2).Where(i => i.EngTimestamp.Value.Month == MonthId).Where(i => i.EngTimestamp.Value.Year == YearId);
                 return likes.Count();
             }
@@ -220,8 +220,8 @@ namespace RWSDataLayer.Repositories
         {
             if (Context.RWSUsers.Any(x => x.UserId == UserId))
             {
-                RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == UserId);
-                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == user.UserId).Where(i => i.IsActive.Value);
+                //RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == UserId);
+                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == UserId).Where(i => i.IsActive.Value);
                 IQueryable<Engagement> shares = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTypeId == 1).Where(i => i.EngTimestamp.Value.Month == MonthId).Where(i => i.EngTimestamp.Value.Year == YearId);
                 return shares.Count();
             }
@@ -262,8 +262,8 @@ namespace RWSDataLayer.Repositories
         {
             if (Context.RWSUsers.Any(x => x.UserId == userId))
             {
-                RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == userId);
-                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == user.UserId).Where(i => i.IsActive.Value);
+                //RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == userId);
+                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == userId).Where(i => i.IsActive.Value);
                 IQueryable<Engagement> engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTimestamp.Value.Month == monthId).Where(i => i.EngTimestamp.Value.Year == yearId);
 
                 double points = 0;

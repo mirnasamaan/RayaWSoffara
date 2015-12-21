@@ -11,6 +11,8 @@ using System.Text;
 using System.Web.Security;
 using System.Diagnostics;
 using System.IO;
+using ClosedXML.Excel;
+using System.Data;
 
 namespace RayaWSoffara.Controllers
 {
@@ -2423,7 +2425,8 @@ namespace RayaWSoffara.Controllers
             IQueryable<EngagementType> eng_items = _postRepo.GetEngagementTypes(start, length);
             foreach (var item in eng_items)
             {
-                string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
+                //string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
+                string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a>";
                 string savebtn = "<button class='btn btn-primary btn-sm' onclick='Save(this)'>Save</button>";
                 posts.Add(new DataItem { ItemName = item.EngType, articlesCount = item.EngWeight.Value, Actions = actions, Status = savebtn, DT_RowId = item.EngTypeId.ToString() });
             }
@@ -2474,6 +2477,317 @@ namespace RayaWSoffara.Controllers
             data.EngTypeId = EngType.EngTypeId;
             return Json(data, JsonRequestBehavior.AllowGet);
         }
+        #endregion
+
+        #region Reports
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult Leaderboard()
+        {
+            ViewBag.SubSidebarItem = "leaderboard";
+            ViewBag.SidebarItem = "reports-management";
+            ViewBag.PageHeader = "Reports";
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AjaxGetLeaderboard(int draw, int start, int length, string filter, string fromDate, string toDate)
+        {
+            string search = Request.QueryString["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+            
+            // note: we only sort one column at a time
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.QueryString["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.QueryString["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            List<DataItem> data = new List<DataItem>();
+
+            if (filter == "week")
+            {
+                DateTime WeekStartDate = DateTime.Today.AddDays(-1 * (int)(DateTime.Today.DayOfWeek));
+                DateTime WeekEndDate = WeekStartDate.AddDays(6);
+                List<int> LeaderIdsWeekly = _userRepo.GetLeaderboardAuthorIds(WeekStartDate, WeekEndDate);
+                //List<UserPointsVM> WeeklyLeadersPoints = new List<UserPointsVM>();
+                foreach (var item in LeaderIdsWeekly)
+                {
+                    //WeeklyLeadersPoints.Add(new UserPointsVM { UserId = item, UserProfilePicture = _userRepo.GetUserByUserId(item).ProfileImagePath, UserName = _userRepo.GetUserByUserId(item).UserName, PointsValue = _userRepo.GetUserPointsBySelectedDate(item, WeekStartDate, WeekEndDate) });
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, WeekStartDate, WeekEndDate), DT_RowId = item.ToString() });
+                }
+                dataTableData.data = data;
+            }
+            else if (filter == "month")
+            {
+                DateTime MonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateTime MonthEndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                List<int> LeaderIdsMonthly = _userRepo.GetLeaderboardAuthorIds(MonthStartDate, MonthEndDate);
+                foreach (var item in LeaderIdsMonthly)
+                {
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, MonthStartDate, MonthEndDate), DT_RowId = item.ToString() });
+                }  
+                dataTableData.data = data;
+            }
+            else if (filter == "alltime")
+            {
+                List<int> LeaderIdsAllTime = _userRepo.GetLeaderboardAuthorIds(null, null);
+                List<UserPointsVM> AllTimeLeadersPoints = new List<UserPointsVM>();
+                foreach (var item in LeaderIdsAllTime)
+                {
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, null, null), DT_RowId = item.ToString() });
+                }
+                dataTableData.data = data;
+            }
+            else if (filter == "custom")
+            {
+                DateTime? from = null;
+                DateTime? to = null;
+                string[] from_date, to_date;
+                if (fromDate != "" && fromDate != null)
+                {
+                    from_date = fromDate.Split('/');
+                    from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+                }
+                if (toDate != "" && toDate != null)
+                {
+                    to_date = toDate.Split('/');
+                    to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+                }
+
+                List<int> LeaderIdsMonthly = _userRepo.GetLeaderboardAuthorIds(from, to);
+                foreach (var item in LeaderIdsMonthly)
+                {
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, from, to), DT_RowId = item.ToString() });
+                }
+                dataTableData.data = data;
+            }
+            int total_rows = data.Count();
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+            dataTableData.recordsTotal = total_rows;
+            dataTableData.recordsFiltered = total_rows;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+        }
+
+        public MemoryStream GetStream(XLWorkbook excelWorkbook)
+        {
+            MemoryStream fs = new MemoryStream();
+            excelWorkbook.SaveAs(fs);
+            fs.Position = 0;
+            return fs;
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public void Export(string filter, string fromDate, string toDate)
+        {
+            List<DataItem> data = new List<DataItem>();
+            XLWorkbook wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("RWS Leaderboard");
+            string fileNamePrefix = "";
+
+            ws.Cell("B2").Value = "Raya W Soffara Leaderboard";
+
+            if (filter == "week")
+            {
+                fileNamePrefix = "Week_Leaderboard_";
+                DateTime WeekStartDate = DateTime.Today.AddDays(-1 * (int)(DateTime.Today.DayOfWeek));
+                DateTime WeekEndDate = WeekStartDate.AddDays(6);
+                List<int> LeaderIdsWeekly = _userRepo.GetLeaderboardAuthorIds(WeekStartDate, WeekEndDate);
+                foreach (var item in LeaderIdsWeekly)
+                {
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, WeekStartDate, WeekEndDate), DT_RowId = item.ToString() });
+                }
+                ws.Cell("C3").Value = "From:  " + WeekStartDate;
+                ws.Cell("D3").Value = "To:  " + WeekEndDate;
+            }
+            else if (filter == "month")
+            {
+                fileNamePrefix = "Month_Leaderboard_";
+                DateTime MonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                DateTime MonthEndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                List<int> LeaderIdsMonthly = _userRepo.GetLeaderboardAuthorIds(MonthStartDate, MonthEndDate);
+                foreach (var item in LeaderIdsMonthly)
+                {
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, MonthStartDate, MonthEndDate), DT_RowId = item.ToString() });
+                }
+                ws.Cell("C3").Value = "From:  " + MonthStartDate;
+                ws.Cell("D3").Value = "To:  " + MonthEndDate;
+            }
+            else if (filter == "alltime")
+            {
+                fileNamePrefix = "AllTime_Leaderboard_";
+                List<int> LeaderIdsAllTime = _userRepo.GetLeaderboardAuthorIds(null, null);
+                List<UserPointsVM> AllTimeLeadersPoints = new List<UserPointsVM>();
+                foreach (var item in LeaderIdsAllTime)
+                {
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, null, null), DT_RowId = item.ToString() });
+                }
+                ws.Cell("C3").Value = "All Time";
+            }
+            else if (filter == "custom")
+            {
+                fileNamePrefix = "Custom_Leaderboard_";
+                DateTime? from = null;
+                DateTime? to = null;
+                string[] from_date, to_date;
+                if (fromDate != null && fromDate != "")
+                {
+                    from_date = fromDate.Split('/');
+                    from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+                }
+                if (toDate != null && toDate != "")
+                {
+                    to_date = toDate.Split('/');
+                    to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+                }
+
+                List<int> LeaderIdsMonthly = _userRepo.GetLeaderboardAuthorIds(from, to);
+                foreach (var item in LeaderIdsMonthly)
+                {
+                    data.Add(new DataItem { ItemName = _userRepo.GetUserByUserId(item).UserName, articlesCount = _userRepo.GetUserPointsBySelectedDate(item, from, to), DT_RowId = item.ToString() });
+                }
+                ws.Cell("C3").Value = "From:  " + from;
+                ws.Cell("D3").Value = "To:  " + to;
+            }
+
+            ws.Cell("C4").Value = "User Name";
+            ws.Cell("D4").Value = "Points";
+            int rowNum = 5;
+
+            foreach (var item in data)
+            {
+                ws.Cell("C" + rowNum).Value = item.ItemName;
+                ws.Cell("D" + rowNum).Value = item.articlesCount;
+                rowNum++;
+            }
+
+            // From worksheet
+            var rngTable = ws.Range("B2:C6");
+
+            // From another range
+            //var rngDates = rngTable.Range("D3:D5"); // The address is relative to rngTable (NOT the worksheet)
+            //var rngNumbers = rngTable.Range("E3:E5"); // The address is relative to rngTable (NOT the worksheet)
+
+            // Using OpenXML's predefined formats
+            //rngDates.Style.NumberFormat.NumberFormatId = 15;
+
+            // Using a custom format
+            //rngNumbers.Style.NumberFormat.Format = "$ #,##0";
+
+            var rngHeaders = ws.Range("B2:C2"); // The address is relative to rngTable (NOT the worksheet)
+            rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rngHeaders.Style.Font.Bold = true;
+            rngHeaders.Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
+
+            ws.Range("A3:F3").Style.Font.Bold = true;
+            ws.Range("A3:F3").Style.Fill.BackgroundColor = XLColor.Aqua;
+            ws.Range("A3:F3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Range("A4:F4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
+
+            ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
+            ws.Row(2).Merge();
+
+            ws.Columns(2, 6).AdjustToContents();
+
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            MemoryStream stream = GetStream(wb);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.ms-excel";
+            Response.BinaryWrite(stream.ToArray());
+            Response.End();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult UserPoints() {
+            ViewBag.SubSidebarItem = "user-points";
+            ViewBag.SidebarItem = "reports-management";
+            ViewBag.PageHeader = "Reports";
+            return View();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult GetUserNames()
+        {
+            List<Item> users = new List<Item>();
+            IQueryable<RWSUser> usersList = _userRepo.GetAllActiveUsers();
+            foreach (var item in usersList)
+            {
+                users.Add(new Item { ItemId = item.UserId, ItemName = item.UserName });
+            }
+            return Json(users, JsonRequestBehavior.AllowGet);
+        }
+
+        [HttpPost]
+        public ActionResult AjaxGetUserPoints(int draw, int start, int length, string userName, string fromDate, string toDate)
+        {
+            string search = Request.QueryString["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+
+            // note: we only sort one column at a time
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.QueryString["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.QueryString["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            List<DataItem> data = new List<DataItem>();
+
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != "" && fromDate != null)
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != "" && toDate != null)
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+
+            DateTime WeekStartDate = DateTime.Today.AddDays(-1 * (int)(DateTime.Today.DayOfWeek));
+            DateTime WeekEndDate = WeekStartDate.AddDays(6);
+
+            int userId = _userRepo.GetUserByUsername(userName).UserId;
+            double customPoints = _userRepo.GetUserPointsBySelectedDate(userId, from, to);
+            double weekPoints = _userRepo.GetUserPointsBySelectedDate(userId, WeekStartDate, WeekEndDate);
+            double monthPoints = _userRepo.GetUserPointsByMonthId(userId, DateTime.Now.Month, DateTime.Now.Year);
+            double alltimePoints = _userRepo.GetUserPointsBySelectedDate(userId, null, null);
+
+            data.Add(new DataItem { ItemName = userName, Actions = weekPoints.ToString(), articlesCount = monthPoints, Featured = alltimePoints.ToString(), Status = customPoints.ToString(), DT_RowId = userId.ToString() });
+            dataTableData.data = data;
+            
+            int total_rows = data.Count();
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+            dataTableData.recordsTotal = total_rows;
+            dataTableData.recordsFiltered = total_rows;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+        }
+
         #endregion
     }
 }

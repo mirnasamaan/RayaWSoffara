@@ -39,6 +39,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ClosedXML">
+      <HintPath>..\..\..\Downloads\ClosedXML_v0.76.0.0\ClosedXML.dll</HintPath>
+    </Reference>
+    <Reference Include="DocumentFormat.OpenXml">
+      <HintPath>..\..\..\My Web Sites\TravelListing\bin\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
     <Reference Include="DotNetOpenAuth.AspNet">
       <HintPath>..\packages\DotNetOpenAuth.AspNet.4.3.4.13329\lib\net40-full\DotNetOpenAuth.AspNet.dll</HintPath>
     </Reference>
@@ -1163,6 +1169,8 @@
     <Content Include="Views\Admin\AddArticleTopX.cshtml" />
     <Content Include="Views\Admin\EditArticleTopX.cshtml" />
     <Content Include="Views\Admin\Engagements.cshtml" />
+    <Content Include="Views\Admin\Leaderboard.cshtml" />
+    <Content Include="Views\Admin\UserPoints.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">

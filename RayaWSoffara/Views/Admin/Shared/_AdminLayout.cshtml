@@ -8,6 +8,7 @@
   <link rel="shortcut icon" href="../images/favicon.png" type="image/png">
     
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
+<script src="~/Content/Scripts/jquery-ui-1.10.3.min.js"></script>
   <title>Raya W Soffara Admin - @ViewBag.Title</title>
     
 <link href="~/Content/CSS/bootstrap.css" rel="stylesheet" />
@@ -91,6 +92,12 @@
           </ul>
         </li>
         <li class="@(ViewBag.SidebarItem == "engagements-management"?"active":"")""><a href="/Admin/Engagements"><i class="fa fa-thumbs-o-up"></i> <span>Engagements</span></a></li>
+        <li class="nav-parent @(ViewBag.SidebarItem == "reports-management"?"active nav-active":"")"><a href=""><i class="fa fa-file-text-o"></i> <span>Reports</span></a>
+          <ul class="children" style="@(ViewBag.SidebarItem == "reports-management"?"display:block;":"")">
+            <li class="@(ViewBag.SubSidebarItem == "user-points"?"active":"")"><a href="/Admin/UserPoints"><i class="fa fa-caret-right"></i>User Points</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "leaderboard"?"active":"")"><a href="/Admin/Leaderboard"><i class="fa fa-caret-right"></i>Leaderboard</a></li>
+          </ul>
+        </li>
       </ul>
     </div><!-- leftpanelinner -->
   </div><!-- leftpanel -->
@@ -153,7 +160,7 @@
 
 @*<script src="~/Content/Scripts/jquery-1.11.1.min.js"></script>*@
 <script src="~/Content/Scripts/jquery-migrate-1.2.1.min.js"></script>
-<script src="~/Content/Scripts/jquery-ui-1.10.3.min.js"></script>
+@*<script src="~/Content/Scripts/jquery-ui-1.10.3.min.js"></script>*@
 <script src="~/Content/Scripts/bootstrap.min.js"></script>
 <script src="~/Content/Scripts/modernizr.min.js"></script>
 

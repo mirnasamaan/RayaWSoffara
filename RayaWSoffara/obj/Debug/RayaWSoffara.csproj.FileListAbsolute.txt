@@ -704,3 +704,6 @@ C:\Users\ODH\Documents\GitHub\RayaWSoffara\RayaWSoffara\obj\Debug\RayaWSoffara.c
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RayaWSoffara\obj\Debug\RayaWSoffara.csprojResolveAssemblyReference.cache
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RayaWSoffara\obj\Debug\RayaWSoffara.dll
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RayaWSoffara\obj\Debug\RayaWSoffara.pdb
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\RayaWSoffara\bin\ClosedXML.dll
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\RayaWSoffara\bin\ClosedXML.xml
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\RayaWSoffara\bin\DocumentFormat.OpenXml.dll

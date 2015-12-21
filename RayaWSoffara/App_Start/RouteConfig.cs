@@ -411,6 +411,26 @@ namespace RayaWSoffara
             );
             #endregion
 
+            #region Reports
+            routes.MapRoute(
+                name: "Admin/Leaderboard",
+                url: "Admin/Leaderboard",
+                defaults: new { controller = "Admin", action = "Leaderboard", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Admin/UserPoints",
+                url: "Admin/UserPoints",
+                defaults: new { controller = "Admin", action = "UserPoints", id = UrlParameter.Optional }
+            );
+
+            //routes.MapRoute(
+            //    name: "Admin/Export",
+            //    url: "Admin/Export",
+            //    defaults: new { controller = "Admin", action = "Export", id = UrlParameter.Optional }
+            //);
+            #endregion
+
             routes.MapRoute(
                 name: "Login",
                 url: "Login",

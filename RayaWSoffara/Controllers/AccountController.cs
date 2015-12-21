@@ -395,7 +395,7 @@ namespace RayaWSoffara.Controllers
             userProfile.UserName = user.UserName;
             userProfile.FirstName = user.FirstName;
             userProfile.LastName = user.LastName;
-            userProfile.articlesCount = user.Posts.Where(i => i.IsActive == true).Count();
+            userProfile.articlesCount = _userRepo.GetUserActivePosts(user.UserId).Count(); //user.Posts.Where(i => i.IsActive == true).Count();
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
 
@@ -462,12 +462,12 @@ namespace RayaWSoffara.Controllers
             userProfile.UserName = user.UserName;
             userProfile.FirstName = user.FirstName;
             userProfile.LastName = user.LastName;
-            userProfile.articlesCount = user.Posts.Where(i => i.IsActive == true).Count();
+            userProfile.articlesCount = _userRepo.GetUserActivePosts(user.UserId).Count(); //user.Posts.Where(i => i.IsActive == true).Count();
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
 
             ArticleRepository _articleRepo = new ArticleRepository();
-            userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
+            //userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
             userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
 
             ViewBag.userProfile = userProfile;

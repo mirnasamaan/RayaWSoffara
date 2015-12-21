@@ -285,3 +285,16 @@
     left: 5px;
     line-height: 20px;
 }
+
+#custom .text {
+    line-height: 35px;
+}
+
+.vertical-space {
+    height: 10px;
+    clear: both;
+}
+
+.no-padding {
+    padding: 0;
+}
