@@ -3499,6 +3499,10 @@ input {
     margin: 10px 0;
 }
 
+.achievements {
+    margin-top: 20px;
+}
+
 .achievements .achievement-item {
     margin: 0 13px;
     padding: 0 !important;
@@ -4478,6 +4482,21 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
     height: 130px;
     background: rgb(222, 222, 222);
     margin-top: 11px;
+}
+
+.pointsgraph #flot-tooltip {
+    font-size: 12px;
+    font-family: Verdana, Arial, sans-serif;
+    position: absolute;
+    display: none;
+    border: 2px solid;
+    padding: 2px;
+    background-color: #FFF;
+    opacity: 0.8;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -khtml-border-radius: 5px;
+    border-radius: 5px;
 }
 /*===========================================================================================================================================*/
 

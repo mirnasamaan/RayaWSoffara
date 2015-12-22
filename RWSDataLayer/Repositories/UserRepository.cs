@@ -293,6 +293,10 @@ namespace RWSDataLayer.Repositories
                 RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == userId);
                 IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == user.UserId).Where(i => i.IsActive.Value);
                 IQueryable<Engagement> engagements;
+                if (startDate != null && endDate == null)
+                {
+                    endDate = DateTime.Now;
+                }
                 if (startDate == null && endDate == null)
                 {
                     engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value));

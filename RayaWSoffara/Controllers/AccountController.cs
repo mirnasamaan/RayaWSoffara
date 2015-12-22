@@ -403,8 +403,6 @@ namespace RayaWSoffara.Controllers
             userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
             userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
 
-            ViewBag.userProfile = userProfile;
-
             int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.Now.Year * 12 + DateTime.Now.Month)) + 1;
             //int membershipMonthCount = (((DateTime.Now.Year-1) - (user.ConfirmationDate.Value.Year+1))*12) + (12-user.ConfirmationDate.Value.Month+1) + (DateTime.Now.Month);
             List<UserPointsVM> totalPoints = new List<UserPointsVM>();
@@ -448,7 +446,7 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.TotalPoints = totalPoints;
 
-            return View();
+            return View(userProfile);
         }
 
         [AllowAnonymous]
@@ -469,8 +467,6 @@ namespace RayaWSoffara.Controllers
             ArticleRepository _articleRepo = new ArticleRepository();
             //userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
             userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
-
-            ViewBag.userProfile = userProfile;
 
             UserPointsDetailsVM points = new UserPointsDetailsVM();
             points.UserId = userProfile.UserId;
@@ -496,7 +492,7 @@ namespace RayaWSoffara.Controllers
             points.TotalPointsValue = _userRepo.GetUserPointsByMonthId(userProfile.UserId, MonthId, YearId);
             points.PostsPoints = new List<PostPointsVM>();
 
-            IQueryable<Post> posts = _articleRepo.GeUserPostsWithMonthId(userProfile.UserId, MonthId, YearId);
+            IQueryable<Post> posts = _articleRepo.GetUserPostsWithMonthId(userProfile.UserId, MonthId, YearId);
 
             foreach (var item in posts)
             {
@@ -517,7 +513,70 @@ namespace RayaWSoffara.Controllers
 
             ViewBag.PointsDetails = points;
 
-            return View();
+            return View(userProfile);
+        }
+
+        public class GraphData
+        {
+          public double Value { get; set; }
+          public long Date { get; set; }
+        }
+
+        public static long GetJavascriptTimestamp(DateTime input)
+        {
+            TimeSpan span = new System.TimeSpan(DateTime.Parse("1/1/1970").Ticks);
+            DateTime time = input.Subtract(span);
+            return (long)(time.Ticks / 10000);
+        }
+
+        public ActionResult GetGraphPoints(int userId)
+        {
+            int currMonth = DateTime.Now.Month;
+            int currYear = DateTime.Now.Year;
+            int beginMonth, beginYear;
+
+            beginMonth = currMonth - 6 + 1;
+            beginYear = currYear;
+            if (beginMonth < 1)
+            {
+                beginMonth += 12;
+                beginYear--;
+            }
+
+            //double[][] points = new double[6][];
+            double[][] points = new double[6][];
+            //List<GraphData> points = new List<GraphData>();
+            //string[] months = new string[6];
+            for (int i = 0; i < 6; i++)
+            {
+                int month = beginMonth + i;
+                int year = beginYear;
+                if (month > 12)
+                {
+                    month -= 12;
+                    year = beginYear + 1;
+                }
+
+                //months[i] = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month) + year;
+
+                //GraphData point = new GraphData() { Date = GetJavascriptTimestamp(new DateTime(year, month, 1)), Value = _userRepo.GetUserPointsByMonthId(userId, month, year) };
+                points[i] = new double[2];
+                points[i][0] = GetJavascriptTimestamp(new DateTime(year, month, 1));
+                points[i][1] = _userRepo.GetUserPointsByMonthId(userId, month, year);
+            }
+
+            //points.Add(new GraphData() { Date = 1262304000000, Value = 6 });
+            //points.Add(new GraphData() { Date = 1264982400000, Value = 3057 });
+            //points.Add(new GraphData() { Date = 1267401600000, Value = 20434 });
+            //points.Add(new GraphData() { Date = 1270080000000, Value = 31982 });
+            //points.Add(new GraphData() { Date = 1272672000000, Value = 26602 });
+            //points.Add(new GraphData() { Date = 1275350400000, Value = 27826 });
+
+            //dynamic data = new System.Dynamic.ExpandoObject();
+            //data.Points = points;
+            //data.Months = months;
+            
+            return Json(points, JsonRequestBehavior.AllowGet);
         }
 
         [Authorize]

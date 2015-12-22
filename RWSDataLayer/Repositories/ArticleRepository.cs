@@ -81,15 +81,18 @@ namespace RWSDataLayer.Repositories
         }
 
         /// <summary>
-        /// Get user posts in month
+        /// Get user posts with engagements this month
         /// <param name="UserId">User Id</param>
         /// <param name="MonthId">Month Id</param>
         /// <param name="YearId">Year Id</param>
         /// <returns></returns>
         /// </summary>
-        public IQueryable<Post> GeUserPostsWithMonthId(int UserId, int MonthId, int YearId)
+        public IQueryable<Post> GetUserPostsWithMonthId(int UserId, int MonthId, int YearId)
         {
-            IQueryable<Post> posts = Context.Posts.Where(i => i.CreatedBy == UserId).Where(i => i.ActivationDate.Value.Month == MonthId).Where(i => i.ActivationDate.Value.Year == YearId);
+            IQueryable<Post> posts = Context.Posts.Where(i => i.CreatedBy == UserId) //check user id
+                .Where(i => i.Engagements.Any(j => j.EngTimestamp.Value.Month == MonthId && j.EngTimestamp.Value.Year == YearId)) //post has any engagement made this month
+                .OrderByDescending(i => i.Engagements.Where(j => j.EngTimestamp.Value.Month == MonthId && j.EngTimestamp.Value.Year == YearId).Sum(j => j.EngagementType.EngWeight)) //order by sum of points on this post made this month
+                .Take(5);
             return posts;
         }
 

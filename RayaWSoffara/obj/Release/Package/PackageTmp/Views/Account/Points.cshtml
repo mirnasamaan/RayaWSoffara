@@ -8,15 +8,15 @@
 <div class="container" id="profile_container">
     <div class="profile-title profile-title2 col-md-4 col-xs-12">
         <div class="user-data-title">
-            <span>@ViewBag.userProfile.FirstName @ViewBag.userProfile.LastName</span>
+            <span>@Model.FirstName @Model.LastName</span>
             <div class="clear-fix"></div>
-            <div>@ViewBag.userProfile.UserName</div>
+            <div>@Model.UserName</div>
         </div>
         <div class="clear-fix"></div>
         <div class="user-image">
-            @if (@ViewBag.userProfile.profileImgUrl != null)
+            @if (@Model.profileImgUrl != null)
             {
-                <img class="pull-left" src="@ViewBag.userProfile.profileImgUrl?w=100&h=100&mode=crop" />
+                <img class="pull-left" src="@Model.profileImgUrl?w=100&h=100&mode=crop" />
             }
             else
             {
@@ -27,11 +27,11 @@
         <div class="user-data">
             <div class="numerics">
                 <div class="pull-left col-md-6">
-                    <div>@ViewBag.userProfile.articlesCount</div>
+                    <div>@Model.articlesCount</div>
                     <label>مقالة</label>
                 </div>
                 <div class="pull-left col-md-6">
-                    <div>@ViewBag.userProfile.viewsCount</div>
+                    <div>@Model.viewsCount</div>
                     <label>مشاهدة</label>
                 </div>
             </div>
@@ -42,27 +42,27 @@
             <div class="profile-sub-title">معلومات شخصية</div>
             <div class="form-group">
                 <label class="pull-left">البطولة المفضلة</label>
-                <input class="form-control" value="@ViewBag.userProfile.FavCompName" disabled />
+                <input class="form-control" value="@Model.FavCompName" disabled />
             </div>
             <div class="form-group">
                 <label class="pull-left">الفريق المفضل</label>
-                <input class="form-control" value="@ViewBag.userProfile.FavTeamName" disabled />
+                <input class="form-control" value="@Model.FavTeamName" disabled />
             </div>
             <div class="form-group">
                 <label class="pull-left">أسم المستخدم</label>
-                <input type="text" class="form-control" name="DisplayName" value="@ViewBag.userProfile.DisplayName" disabled />
+                <input type="text" class="form-control" name="DisplayName" value="@Model.DisplayName" disabled />
             </div>
             <div class="form-group">
-                <label class="pull-left">نبذة عن @ViewBag.userProfile.FirstName</label>
-                <textarea class="form-control" name="AboutYou" disabled>@ViewBag.userProfile.AboutYou</textarea>
+                <label class="pull-left">نبذة عن @Model.FirstName</label>
+                <textarea class="form-control" name="AboutYou" disabled>@Model.AboutYou</textarea>
             </div>
             <div class="form-group">
                 <label class="pull-left">حساب تويتر</label>
-                <input type="text" class="form-control" name="Twitter" value="@ViewBag.userProfile.Twitter" disabled />
+                <input type="text" class="form-control" name="Twitter" value="@Model.Twitter" disabled />
             </div>
             <div class="form-group">
                 <label class="pull-left">حساب جوجل بلس</label>
-                <input type="text" class="form-control" name="Google" value="@ViewBag.userProfile.Google" disabled />
+                <input type="text" class="form-control" name="Google" value="@Model.Google" disabled />
             </div>
         </div>
 

@@ -6,18 +6,18 @@
 
 <div class="clear-fix"></div>
 <div class="container" id="profile_container">
+    <input id="userId" type="hidden"  value="@Model.UserId"/>
     <div class="profile-title profile-title2 col-md-4 col-xs-12">
         <div class="user-data-title">
-            @*<span>Mirna Samaan</span>*@
-            <span>@ViewBag.userProfile.FirstName @ViewBag.userProfile.LastName</span>
+            <span>@Model.FirstName @Model.LastName</span>
             <div class="clear-fix"></div>
-            <div>@ViewBag.userProfile.UserName</div>
+            <div>@Model.UserName</div>
         </div>
         <div class="clear-fix"></div>
         <div class="user-image">
-            @if (@ViewBag.userProfile.profileImgUrl != null)
+            @if (@Model.profileImgUrl != null)
             {
-                <img class="pull-left" src="@ViewBag.userProfile.profileImgUrl?w=100&h=100&mode=crop" />
+                <img class="pull-left" src="@Model.profileImgUrl?w=100&h=100&mode=crop" />
             }
             else
             {
@@ -28,11 +28,11 @@
         <div class="user-data">
             <div class="numerics">
                 <div class="pull-left col-md-6">
-                    <div>@ViewBag.userProfile.articlesCount</div>
+                    <div>@Model.articlesCount</div>
                     <label>مقالة</label>
                 </div>
                 <div class="pull-left col-md-6">
-                    <div>@ViewBag.userProfile.viewsCount</div>
+                    <div>@Model.viewsCount</div>
                     <label>مشاهدة</label>
                 </div>
             </div>
@@ -43,27 +43,27 @@
             <div class="profile-sub-title">معلومات شخصية</div>
             <div class="form-group">
                 <label class="pull-left">البطولة المفضلة</label>
-                <input class="form-control" value="@ViewBag.userProfile.FavCompName" disabled />
+                <input class="form-control" value="@Model.FavCompName" disabled />
             </div>
             <div class="form-group">
                 <label class="pull-left">الفريق المفضل</label>
-                <input class="form-control" value="@ViewBag.userProfile.FavTeamName" disabled />
+                <input class="form-control" value="@Model.FavTeamName" disabled />
             </div>
             <div class="form-group">
                 <label class="pull-left">أسم المستخدم</label>
-                <input type="text" class="form-control" name="DisplayName" value="@ViewBag.userProfile.DisplayName" disabled />
+                <input type="text" class="form-control" name="DisplayName" value="@Model.DisplayName" disabled />
             </div>
             <div class="form-group">
-                <label class="pull-left">نبذة عن @ViewBag.userProfile.FirstName</label>
-                <textarea class="form-control" name="AboutYou" disabled>@ViewBag.userProfile.AboutYou</textarea>
+                <label class="pull-left">نبذة عن @Model.FirstName</label>
+                <textarea class="form-control" name="AboutYou" disabled>@Model.AboutYou</textarea>
             </div>
             <div class="form-group">
                 <label class="pull-left">حساب تويتر</label>
-                <input type="text" class="form-control" name="Twitter" value="@ViewBag.userProfile.Twitter" disabled />
+                <input type="text" class="form-control" name="Twitter" value="@Model.Twitter" disabled />
             </div>
             <div class="form-group">
                 <label class="pull-left">حساب جوجل بلس</label>
-                <input type="text" class="form-control" name="Google" value="@ViewBag.userProfile.Google" disabled />
+                <input type="text" class="form-control" name="Google" value="@Model.Google" disabled />
             </div>
         </div>
 
@@ -73,20 +73,24 @@
         <div class="achievement-container">
             <div class="clear-fix"></div>
             <div class="profile-sub-title">نقاط الكاتب</div>
+            <div class="pointsgraph">
+                <div id="basicflot" style="width: 100%; height: 300px"></div>
+            </div>
             <div class="achievements">
-            @foreach (var item in ViewBag.TotalPoints)
-            {
-                <a href="/Points?Username=@ViewBag.userProfile.UserName&MonthId=@item.MonthId&YearId=@item.YearId">
-                    <div class="achievement-item pull-left col-lg-2">
-                        <div class="month-value">@item.MonthName @item.YearId</div>
-                        <div class="icon"><img src="/Content/Images/medal.png" /></div>
-                        <div class="points-value">
-                            <div>@item.PointsValue</div>
-                            <div>نقطة</div>
+                @foreach (var item in ViewBag.TotalPoints)
+                {
+                    <a href="/Points?Username=@Model.UserName&MonthId=@item.MonthId&YearId=@item.YearId">
+                        <div class="achievement-item pull-left col-lg-2">
+                            <div class="month-value">@item.MonthName @item.YearId</div>
+                            <div class="icon">
+                                <img src="/Content/Images/medal.png" /></div>
+                            <div class="points-value">
+                                <div>@item.PointsValue</div>
+                                <div>نقطة</div>
+                            </div>
                         </div>
-                    </div>
-                </a>
-            }
+                    </a>
+                }
             </div>
         </div>
         <div class="clear-fix"></div>
@@ -94,11 +98,11 @@
             @*<div class="title pull-left">مقالات الكاتب</div>*@
             <div class="profile-sub-title">مقالات الكاتب</div>
             <div class="clear-fix"></div>
-            @if (@ViewBag.userProfile.articlesCount == 0)
+            @if (@Model.articlesCount == 0)
             {
                 <div class="no-results pull-left">لا توجد مقالات لهذا الكاتب.</div>
             }
-            @foreach (var article in @ViewBag.userProfile.recentArticles)
+            @foreach (var article in @Model.recentArticles)
             {
                 <div class="recent-articles">
                     <div class="col-md-4 col-xs-12">
@@ -131,6 +135,107 @@
 
         </div>
     </div>
-
-
 </div>
+
+<script src="~/Content/Scripts/flot/jquery.flot.min.js"></script>
+<script src="~/Content/Scripts/flot/jquery.flot.resize.min.js"></script>
+<script src="~/Content/Scripts/flot/jquery.flot.time.min.js"></script>
+<script>
+    //var d = [[1262304000000, 6], [1264982400000, 3057], [1267401600000, 20434], [1270080000000, 31982], [1272672000000, 26602], [1275350400000, 27826], [1277942400000, 24302], [1280620800000, 24237], [1283299200000, 21004], [1285891200000, 12144], [1288569600000, 10577], [1291161600000, 10295]];
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Account/GetGraphPoints",
+            type: 'POST',
+            data: { userId: $("#userId").val()},
+            success: function (points) {
+                var dataSet = [
+                    { label: "Points", data: points, points: { fillColor: "#4572A7", size: 5 }, color: '#4572A7' }
+                ];
+
+                $.plot($("#basicflot"), dataSet, {
+                    xaxis: {
+                        mode: "time",
+                        tickSize: [1, "month"],
+                        timeformat: "%b %Y",
+                        tickLength: 0,
+                        axisLabel: 'Month',
+                        axisLabelUseCanvas: true,
+                        axisLabelFontSizePixels: 12,
+                        axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                        axisLabelPadding: 5
+                    },
+                    yaxis: {
+                        axisLabel: 'Points',
+                        axisLabelUseCanvas: true,
+                        axisLabelFontSizePixels: 12,
+                        axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                        axisLabelPadding: 5
+                    },
+                    series: {
+                        lines: {
+                            show: true,
+                            fill: true
+                        },
+                        points: {
+                            radius: 3,
+                            show: true,
+                            fill: true
+                        },
+                    },
+                    grid: {
+                        borderWidth: 1,
+                        hoverable: true
+                    }
+                });
+
+                function showTooltip(x, y, contents, z) {
+                    $('<div id="flot-tooltip">' + contents + '</div>').css({
+                        top: y - 210,
+                        left: x - 120,
+                        'border-color': z,
+                    }).appendTo(".pointsgraph").fadeIn(200);
+                }
+
+                function getMonthName(numericMonth) {
+                    var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                    var alphaMonth = monthArray[numericMonth];
+
+                    return alphaMonth;
+                }
+
+                function convertToDate(timestamp) {
+                    var newDate = new Date(timestamp);
+                    var dateString = newDate.getMonth();
+                    var monthName = getMonthName(dateString);
+
+                    return monthName;
+                }
+
+                var previousPoint = null;
+                $("#basicflot").bind("plothover", function (event, pos, item) {
+                    if (item) {
+                        if ((previousPoint != item.dataIndex) || (previousLabel != item.series.label)) {
+                            previousPoint = item.dataIndex;
+                            previousLabel = item.series.label;
+
+                            $("#flot-tooltip").remove();
+
+                            var x = convertToDate(item.datapoint[0]),
+                            y = item.datapoint[1];
+                            z = item.series.color;
+
+                            showTooltip(item.pageX, item.pageY,
+                                "<b>" + item.series.label + "</b><br /> " + x + " = " + y,
+                                z);
+                        }
+                    } else {
+                        $("#flot-tooltip").remove();
+                        previousPoint = null;
+                    }
+                });
+            }
+        });
+   
+    });
+</script>
