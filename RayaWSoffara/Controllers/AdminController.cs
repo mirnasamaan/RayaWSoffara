@@ -36,7 +36,7 @@ namespace RayaWSoffara.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult SignIn(string username, string password, string RedirectUrl)
+        public ActionResult Signin(string username, string password, string RedirectUrl)
         {
             RWSUser user = _userRepo.GetUserByUsernameAndPassword(username, password);
             bool userValid = _userRepo.UserExists(username, password);

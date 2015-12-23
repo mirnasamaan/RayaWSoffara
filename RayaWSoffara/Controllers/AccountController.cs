@@ -543,10 +543,7 @@ namespace RayaWSoffara.Controllers
                 beginYear--;
             }
 
-            //double[][] points = new double[6][];
             double[][] points = new double[6][];
-            //List<GraphData> points = new List<GraphData>();
-            //string[] months = new string[6];
             for (int i = 0; i < 6; i++)
             {
                 int month = beginMonth + i;
@@ -557,25 +554,11 @@ namespace RayaWSoffara.Controllers
                     year = beginYear + 1;
                 }
 
-                //months[i] = CultureInfo.CurrentCulture.DateTimeFormat.GetMonthName(month) + year;
-
-                //GraphData point = new GraphData() { Date = GetJavascriptTimestamp(new DateTime(year, month, 1)), Value = _userRepo.GetUserPointsByMonthId(userId, month, year) };
                 points[i] = new double[2];
                 points[i][0] = GetJavascriptTimestamp(new DateTime(year, month, 1));
                 points[i][1] = _userRepo.GetUserPointsByMonthId(userId, month, year);
             }
 
-            //points.Add(new GraphData() { Date = 1262304000000, Value = 6 });
-            //points.Add(new GraphData() { Date = 1264982400000, Value = 3057 });
-            //points.Add(new GraphData() { Date = 1267401600000, Value = 20434 });
-            //points.Add(new GraphData() { Date = 1270080000000, Value = 31982 });
-            //points.Add(new GraphData() { Date = 1272672000000, Value = 26602 });
-            //points.Add(new GraphData() { Date = 1275350400000, Value = 27826 });
-
-            //dynamic data = new System.Dynamic.ExpandoObject();
-            //data.Points = points;
-            //data.Months = months;
-            
             return Json(points, JsonRequestBehavior.AllowGet);
         }
 

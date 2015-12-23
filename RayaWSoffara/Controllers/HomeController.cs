@@ -18,6 +18,7 @@ namespace RayaWSoffara.Controllers
     [AllowAnonymous]
     public class HomeController : SearchController
     {
+        [AllowAnonymous]
         public ActionResult Index(string posts, string tags, string count)
         {
             IndexVM result = new IndexVM();

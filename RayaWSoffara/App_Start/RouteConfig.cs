@@ -12,7 +12,7 @@ namespace RayaWSoffara
         public static void RegisterRoutes(RouteCollection routes)
         {
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
-
+            
             routes.MapRoute(
                 name: "Admin",
                 url: "Admin",
@@ -21,7 +21,7 @@ namespace RayaWSoffara
 
             routes.MapRoute(
                 name: "Admin/Signin",
-                url: "Signin",
+                url: "Admin/Signin",
                 defaults: new { controller = "Admin", action = "Signin", id = UrlParameter.Optional }
             );
 
@@ -423,12 +423,6 @@ namespace RayaWSoffara
                 url: "Admin/UserPoints",
                 defaults: new { controller = "Admin", action = "UserPoints", id = UrlParameter.Optional }
             );
-
-            //routes.MapRoute(
-            //    name: "Admin/Export",
-            //    url: "Admin/Export",
-            //    defaults: new { controller = "Admin", action = "Export", id = UrlParameter.Optional }
-            //);
             #endregion
 
             routes.MapRoute(
@@ -558,10 +552,10 @@ namespace RayaWSoffara
             );
 
             routes.MapRoute(
-                name: "Default",
-                url: "{controller}/{action}/{id}",
-                defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
-            );
+               name: "Default",
+               url: "{controller}/{action}/{id}",
+               defaults: new { controller = "Home", action = "Index", id = UrlParameter.Optional }
+           );
         }
     }
 }
