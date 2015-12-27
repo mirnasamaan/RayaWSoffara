@@ -160,6 +160,12 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>RWS_DevelopmentEntities.edmx</DependentUpon>
     </Compile>
+    <Compile Include="Context\sp_helpdiagramdefinition_Result.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Context\sp_helpdiagrams_Result.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Context\sysdiagram.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>

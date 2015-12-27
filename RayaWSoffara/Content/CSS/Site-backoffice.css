@@ -52,7 +52,7 @@
     cursor: pointer;
 }
 
-.pageheader h2 span {
+.pageheader h2 span, .pageheader .breadcrumb li, .capitalize {
     text-transform: capitalize;
 }
 

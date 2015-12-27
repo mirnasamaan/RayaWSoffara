@@ -583,5 +583,16 @@ namespace RWSDataLayer.Repositories
             }
         }
         #endregion
+
+        #region Engagements
+        /// <summary>
+        /// Gets all engagement types with engagement weight more than 0
+        /// </summary>
+        /// <returns></returns>
+        public IQueryable<EngagementType> GetAllEngagementTypesWithWeight()
+        {
+            return Context.EngagementTypes.Where(i => i.EngWeight > 0);
+        }
+        #endregion
     }
 }

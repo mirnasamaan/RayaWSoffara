@@ -96,6 +96,12 @@ namespace RayaWSoffara.Controllers
             return RedirectToAction("Signin", "Admin");
         }
 
+        public ActionResult GetUserImage(string username)
+        {
+            string imgPath = _userRepo.GetUserByUsername(username).ProfileImagePath;
+            return Json(imgPath, JsonRequestBehavior.AllowGet);
+        }
+
         #region Users
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult Users()
@@ -2425,8 +2431,8 @@ namespace RayaWSoffara.Controllers
             IQueryable<EngagementType> eng_items = _postRepo.GetEngagementTypes(start, length);
             foreach (var item in eng_items)
             {
-                //string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
-                string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a>";
+                string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
+                //string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a>";
                 string savebtn = "<button class='btn btn-primary btn-sm' onclick='Save(this)'>Save</button>";
                 posts.Add(new DataItem { ItemName = item.EngType, articlesCount = item.EngWeight.Value, Actions = actions, Status = savebtn, DT_RowId = item.EngTypeId.ToString() });
             }
@@ -2439,9 +2445,10 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "Admin")]
         [ValidateInput(false)]
-        public ActionResult AddEngagementType(string EngagementType, double EngagementWeight)
+        public ActionResult AddEngagementType(int EngagementTypeId, string EngagementType, double EngagementWeight)
         {
             EngagementType EngType = new EngagementType();
+            EngType.EngTypeId = EngagementTypeId;
             EngType.EngType = EngagementType;
             EngType.EngWeight = EngagementWeight;
             EngType = _postRepo.AddEngagementType(EngType);
@@ -2465,12 +2472,14 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "Admin")]
         [ValidateInput(false)]
-        public ActionResult EditEngagementType(int EngagementTypeId, string EngagementType, double EngagementWeight)
+        public ActionResult EditEngagementType(int EngagementTypeId, string EngagementType, double EngagementWeight, int EngagementTypeNewId)
         {
-            EngagementType EngType = _postRepo.GetEngagementTypeById(EngagementTypeId);
-            EngType.EngType = EngagementType;
-            EngType.EngWeight = EngagementWeight;
-            EngType = _postRepo.UpdateEngagementType(EngType);
+            //EngagementType EngType = _postRepo.GetEngagementTypeById(EngagementTypeId);
+            //EngType.EngTypeId = EngagementTypeNewId;
+            //EngType.EngType = EngagementType;
+            //EngType.EngWeight = EngagementWeight;
+            //EngType = _postRepo.UpdateEngagementType(EngType);
+            EngagementType EngType = _postRepo.UpdateEngagementType(EngagementTypeId, EngagementType, EngagementWeight, EngagementTypeNewId);
             dynamic data = new System.Dynamic.ExpandoObject();
             data.EngType = EngType.EngType;
             data.EngWeight = EngType.EngWeight;

@@ -17,6 +17,7 @@ namespace RWSDataLayer.Context
         public EngagementType()
         {
             this.Engagements = new HashSet<Engagement>();
+            //this.Engagements1 = new HashSet<Engagement>();
         }
     
         public int EngTypeId { get; set; }
@@ -24,7 +25,6 @@ namespace RWSDataLayer.Context
         public Nullable<double> EngWeight { get; set; }
     
         public virtual ICollection<Engagement> Engagements { get; set; }
-        public virtual EngagementType EngagementType1 { get; set; }
-        public virtual EngagementType EngagementType2 { get; set; }
+        //public virtual ICollection<Engagement> Engagements1 { get; set; }
     }
 }

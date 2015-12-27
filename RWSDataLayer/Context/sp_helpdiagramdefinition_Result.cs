@@ -10,17 +10,10 @@
 namespace RWSDataLayer.Context
 {
     using System;
-    using System.Collections.Generic;
     
-    public partial class Engagement
+    public partial class sp_helpdiagramdefinition_Result
     {
-        public int EngId { get; set; }
-        public Nullable<System.DateTime> EngTimestamp { get; set; }
-        public Nullable<int> PostId { get; set; }
-        public Nullable<int> EngTypeId { get; set; }
-    
-        public virtual Post Post { get; set; }
-        public virtual EngagementType EngagementType { get; set; }
-        public virtual EngagementType EngagementType1 { get; set; }
+        public Nullable<int> version { get; set; }
+        public byte[] definition { get; set; }
     }
 }

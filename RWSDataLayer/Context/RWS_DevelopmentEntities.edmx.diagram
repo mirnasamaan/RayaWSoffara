@@ -4,23 +4,25 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="ea894dee52a640edabd52fda42449032" Name="Diagram1" ZoomLevel="64">
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.ArticleTopX" Width="1.5" PointX="10.5" PointY="7.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Comment" Width="1.5" PointX="5.25" PointY="6.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Competition" Width="1.5" PointX="3" PointY="0.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Image" Width="1.5" PointX="11.25" PointY="10.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Player" Width="1.5" PointX="3" PointY="13.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Post" Width="1.5" PointX="8.25" PointY="5.875" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.PostType" Width="1.5" PointX="6" PointY="9.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Region" Width="1.5" PointX="0.75" PointY="1.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.RWSProviderUser" Width="1.5" PointX="5.25" PointY="15" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.RWSRole" Width="1.5" PointX="0.75" PointY="7.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.RWSUser" Width="1.5" PointX="3" PointY="5.125" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.sysdiagram" Width="1.5" PointX="7.75" PointY="0.75" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Tag" Width="1.5" PointX="13.5" PointY="7.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Team" Width="1.5" PointX="5.25" PointY="1" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.Engagement" Width="1.5" PointX="13.5" PointY="4.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.EngagementType" Width="1.5" PointX="11.25" PointY="3.5" IsExpanded="true" />
+      <Diagram DiagramId="21d1ea79cae94e30a4add400582da69e" Name="Diagram1">
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.ArticleTopX" Width="1.5" PointX="10.5" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Comment" Width="1.5" PointX="5.25" PointY="6.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Competition" Width="1.5" PointX="15" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Image" Width="1.5" PointX="11.25" PointY="11.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Player" Width="1.5" PointX="15" PointY="4.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Post" Width="1.5" PointX="8.25" PointY="6.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.PostType" Width="1.5" PointX="6" PointY="10.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Region" Width="1.5" PointX="12.75" PointY="1.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.RWSProviderUser" Width="1.5" PointX="5.25" PointY="15.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.RWSRole" Width="1.5" PointX="0.75" PointY="8.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.RWSUser" Width="1.5" PointX="3" PointY="5.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.sysdiagram" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Tag" Width="1.5" PointX="13.5" PointY="7.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Team" Width="1.5" PointX="17.25" PointY="1" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Engagement" Width="1.5" PointX="10.5" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.EngagementType" Width="1.5" PointX="8.25" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.TagType" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.UserPointsView" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
         <AssociationConnector Association="RWS_DevelopmentModel.FK_ArticleTopX_Article" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.FK_Comment_RWSUser" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.FK_Competition_Region" ManuallyRouted="false" />
@@ -34,9 +36,6 @@
         <AssociationConnector Association="RWS_DevelopmentModel.PostTag" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.RWSUserRole" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.TeamPlayer" ManuallyRouted="false" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.UserPointsView" Width="1.5" PointX="6.8998709297272711" PointY="26.411745292326316" />
-        <AssociationConnector Association="RWS_DevelopmentModel.FK_EngagementType_EngagementType" />
-        <EntityTypeShape EntityType="RWS_DevelopmentModel.TagType" Width="1.5" PointX="3.9112987089489115" PointY="20.659023473346153" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

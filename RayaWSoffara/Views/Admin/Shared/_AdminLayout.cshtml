@@ -39,13 +39,13 @@
     </div><!-- logopanel -->
         
     <div class="leftpanelinner">    
-        
+        <input type="hidden" id="username" value="@User.Identity.Name" />
         <!-- This is only visible to small devices -->
         <div class="visible-xs hidden-sm hidden-md hidden-lg">   
             <div class="media userlogged">
-                <img alt="" src="../images/photos/loggeduser.png" class="media-object">
+                <img alt="" src="../images/photos/loggeduser.png" class="media-object userImagePath">
                 <div class="media-body">
-                    <h4>John Doe</h4>
+                    <h4 class="capitalize">@User.Identity.Name</h4>
                     <span>"Life is so..."</span>
                 </div>
             </div>
@@ -53,8 +53,6 @@
             <h5 class="sidebartitle actitle">Account</h5>
             <ul class="nav nav-pills nav-stacked nav-bracket mb30">
               <li><a href="profile.html"><i class="fa fa-user"></i> <span>Profile</span></a></li>
-              <li><a href=""><i class="fa fa-cog"></i> <span>Account Settings</span></a></li>
-              <li><a href=""><i class="fa fa-question-circle"></i> <span>Help</span></a></li>
               <li><a href="signout.html"><i class="fa fa-sign-out"></i> <span>Sign Out</span></a></li>
             </ul>
         </div>
@@ -113,9 +111,9 @@
         <ul class="headermenu">
           <li>
             <div class="btn-group">
-              <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">
-                <img src="../images/photos/loggeduser.png" alt="" />
-                John Doe
+              <button type="button" class="btn btn-default dropdown-toggle capitalize" data-toggle="dropdown">
+                <img class="userImagePath" src="../images/photos/loggeduser.png" alt="" />
+                @User.Identity.Name
                 <span class="caret"></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-usermenu">
@@ -143,8 +141,8 @@
       <div class="breadcrumb-wrapper">
         <span class="label">You are here:</span>
         <ol class="breadcrumb">
-          <li><a href="index.html">Bracket</a></li>
-          <li class="active">Dashboard</li>
+          <li>@ViewBag.Pageheader</li>
+          <li class="active">@ViewBag.SubSidebarItem</li>
         </ol>
       </div>
     </div>
@@ -181,6 +179,17 @@
 <script type="text/javascript" src="~/Content/Scripts/jquery.Jcrop.min.js"></script>
 <script src="~/Content/Scripts/script-backoffice.js"></script>
 @*<script src="~/Content/Scripts/dashboard.js"></script>*@
+
+    <script>
+        $.ajax({
+            type: "POST",
+            data: { username: $("#username").val() },
+            url: "/Admin/GetUserImage",
+            success: function (imagePath) {
+                $(".userImagePath").attr("src", imagePath+"?w=50&h=50&mode=crop");
+            }
+        });
+    </script>
 
 </body>
 </html>

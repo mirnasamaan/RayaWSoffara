@@ -421,6 +421,19 @@ namespace RWSDataLayer.Repositories
             return EngType;
         }
 
+        public EngagementType UpdateEngagementType(int EngTypeId, string EngName, double EngWeight, int EngNewId)
+        {
+            EngagementType EngType = Context.EngagementTypes.FirstOrDefault(i => i.EngTypeId == EngTypeId);
+            DeleteEngagementType(EngType);
+            EngType = new EngagementType();
+            EngType.EngTypeId = EngNewId;
+            EngType.EngType = EngName;
+            EngType.EngWeight = EngWeight;
+            Context.EngagementTypes.Add(EngType);
+            Context.SaveChanges();
+            return EngType;
+        }
+
         public void DeleteEngagementType(EngagementType EngType)
         {
             Context.EngagementTypes.Remove(EngType);

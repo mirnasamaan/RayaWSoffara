@@ -51,15 +51,6 @@ namespace RayaWSoffara.Controllers
             return (email);
         }
 
-        //[HttpPost]
-        //[AllowAnonymous]
-        //public JsonResult DoesUserNameExist(string UserName)
-        //{
-        //    var user = Membership.GetUser(UserName);
-        //    JsonResult result = Json(user == null);
-        //    return result;
-        //}
-
         [HttpPost]
         [AllowAnonymous]
         public bool DoesUserNameExist(string UserName)
@@ -453,6 +444,8 @@ namespace RayaWSoffara.Controllers
         [HttpGet]
         public ActionResult Points(string Username, int MonthId, int YearId)
         {
+            ArticleRepository _articleRepo = new ArticleRepository();
+            CompetitionRepository _compRepo = new CompetitionRepository();
             UserProfileVM userProfile = new UserProfileVM();
 
             RWSUser user = _userRepo.GetUserByUsername(Username);
@@ -464,8 +457,6 @@ namespace RayaWSoffara.Controllers
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
 
-            ArticleRepository _articleRepo = new ArticleRepository();
-            //userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
             userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
 
             UserPointsDetailsVM points = new UserPointsDetailsVM();
@@ -512,6 +503,7 @@ namespace RayaWSoffara.Controllers
             }
 
             ViewBag.PointsDetails = points;
+            ViewBag.EngagementTypes = _compRepo.GetAllEngagementTypesWithWeight();
 
             return View(userProfile);
         }
@@ -529,6 +521,8 @@ namespace RayaWSoffara.Controllers
             return (long)(time.Ticks / 10000);
         }
 
+        [AllowAnonymous]
+        [HttpPost]
         public ActionResult GetGraphPoints(int userId)
         {
             int currMonth = DateTime.Now.Month;
@@ -601,91 +595,6 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
-        //
-        // GET: /Account/Manage
-
-        //public ActionResult Manage(ManageMessageId? message)
-        //{
-        //    ViewBag.StatusMessage =
-        //        message == ManageMessageId.ChangePasswordSuccess ? "Your password has been changed."
-        //        : message == ManageMessageId.SetPasswordSuccess ? "Your password has been set."
-        //        : message == ManageMessageId.RemoveLoginSuccess ? "The external login was removed."
-        //        : "";
-        //    try
-        //    {
-        //        ViewBag.HasLocalPassword = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
-        //        ViewBag.ReturnUrl = Url.Action("Manage");
-        //    }
-        //    catch (Exception ex) { }
-        //    return View();
-        //}
-
-        ////
-        //// POST: /Account/Manage
-
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult Manage(LocalPasswordModel model)
-        //{
-        //    bool hasLocalAccount = OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
-        //    ViewBag.HasLocalPassword = hasLocalAccount;
-        //    ViewBag.ReturnUrl = Url.Action("Manage");
-        //    if (hasLocalAccount)
-        //    {
-        //        if (ModelState.IsValid)
-        //        {
-        //            // ChangePassword will throw an exception rather than return false in certain failure scenarios.
-        //            bool changePasswordSucceeded;
-        //            try
-        //            {
-        //                changePasswordSucceeded = WebSecurity.ChangePassword(User.Identity.Name, model.OldPassword, model.NewPassword);
-        //            }
-        //            catch (Exception)
-        //            {
-        //                changePasswordSucceeded = false;
-        //            }
-
-        //            if (changePasswordSucceeded)
-        //            {
-        //                return RedirectToAction("Manage", new { Message = ManageMessageId.ChangePasswordSuccess });
-        //            }
-        //            else
-        //            {
-        //                ModelState.AddModelError("", "The current password is incorrect or the new password is invalid.");
-        //            }
-        //        }
-        //    }
-        //    else
-        //    {
-        //        // User does not have a local password so remove any validation errors caused by a missing
-        //        // OldPassword field
-        //        ModelState state = ModelState["OldPassword"];
-        //        if (state != null)
-        //        {
-        //            state.Errors.Clear();
-        //        }
-
-        //        if (ModelState.IsValid)
-        //        {
-        //            try
-        //            {
-        //                WebSecurity.CreateAccount(User.Identity.Name, model.NewPassword);
-        //                return RedirectToAction("Manage", new { Message = ManageMessageId.SetPasswordSuccess });
-        //            }
-        //            catch (Exception e)
-        //            {
-        //                ModelState.AddModelError("", e);
-        //            }
-        //        }
-        //    }
-
-        //    // If we got this far, something failed, redisplay form
-        //    return View(model);
-        //}
-
-        //
-        // POST: /Account/ExternalLogin
-
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -693,9 +602,6 @@ namespace RayaWSoffara.Controllers
         {
             return new ExternalLoginResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
         }
-
-        //
-        // GET: /Account/ExternalLoginCallback
 
         [HttpPost]
         public ActionResult UpdateProfileImg(string UserName, HttpPostedFileBase localPath)
@@ -838,82 +744,6 @@ namespace RayaWSoffara.Controllers
             }
         }
 
-        //
-        // POST: /Account/ExternalLoginConfirmation
-
-        //[HttpPost]
-        //[AllowAnonymous]
-        //[ValidateAntiForgeryToken]
-        //public ActionResult ExternalLoginConfirmation(RegisterExternalLoginModel model, string returnUrl)
-        //{
-        //    string provider = null;
-        //    string providerUserId = null;
-
-        //    if (User.Identity.IsAuthenticated || !OAuthWebSecurity.TryDeserializeProviderUserId(model.ExternalLoginData, out provider, out providerUserId))
-        //    {
-        //        return RedirectToAction("Manage");
-        //    }
-
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Insert a new user into the database
-        //        using (UsersContext db = new UsersContext())
-        //        {
-        //            UserProfile user = db.UserProfiles.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
-        //            // Check if user already exists
-        //            if (user == null)
-        //            {
-        //                var client = new Facebook.FacebookClient(Session["facebooktoken"].ToString());
-        //                dynamic response = client.Get("me", new
-        //                {
-        //                    fields = "first_name, last_name, email, location"
-        //                });
-        //                model.FirstName = response["first_name"];
-        //                model.LastName = response["last_name"];
-        //                model.Email = response["email"];
-        //                model.Country = response["location"];
-
-        //                // Insert name into the profile table
-        //                UserProfile newUser = db.UserProfiles.Add(new UserProfile { UserName = model.UserName, FirstName = model.FirstName, LastName = model.LastName, Email = model.Email, Country = model.Country  });
-        //                db.SaveChanges();
-
-        //                //db.ExternalUsers.Add(new ExternalUserInformation
-        //                //{
-        //                //    UserId = newUser.UserId,
-        //                //    FullName = model.FullName,
-        //                //    Link = model.Link
-        //                //});
-        //                //db.SaveChanges();
-
-        //                OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
-        //                OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
-
-        //                return RedirectToLocal(returnUrl);
-        //                // Insert name into the profile table
-        //                //db.UserProfiles.Add(new UserProfile { UserName = model.UserName });
-        //                //db.SaveChanges();
-
-        //                //OAuthWebSecurity.CreateOrUpdateAccount(provider, providerUserId, model.UserName);
-        //                //OAuthWebSecurity.Login(provider, providerUserId, createPersistentCookie: false);
-
-        //                //return RedirectToLocal(returnUrl);
-        //            }
-        //            else
-        //            {
-        //                ModelState.AddModelError("UserName", "User name already exists. Please enter a different user name.");
-        //            }
-        //        }
-        //    }
-
-        //    ViewBag.ProviderDisplayName = OAuthWebSecurity.GetOAuthClientData(provider).DisplayName;
-        //    ViewBag.ReturnUrl = returnUrl;
-        //    return RedirectToAction("Register", "Account");
-        //    //return View(model);
-        //}
-
-        //
-        // GET: /Account/ExternalLoginFailure
-
         [AllowAnonymous]
         public ActionResult ExternalLoginFailure()
         {
@@ -977,27 +807,6 @@ namespace RayaWSoffara.Controllers
                 OAuthWebSecurity.RequestAuthentication(Provider, ReturnUrl);
             }
         }
-
-        //public static string GetPictureUrl(string faceBookId)
-        //{
-        //    WebResponse response = null;
-        //    string pictureUrl = string.Empty;
-        //    try
-        //    {
-        //        WebRequest request = WebRequest.Create(string.Format("https://graph.facebook.com/{0}/picture", faceBookId));
-        //        response = request.GetResponse();
-        //        pictureUrl = response.ResponseUri.ToString();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        //? handle
-        //    }
-        //    finally
-        //    {
-        //        if (response != null) response.Close();
-        //    }
-        //    return pictureUrl;
-        //}
 
         private static string ErrorCodeToString(MembershipCreateStatus createStatus)
         {

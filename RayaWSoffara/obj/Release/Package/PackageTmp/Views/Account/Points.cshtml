@@ -1,7 +1,7 @@
 ﻿@model RayaWSoffara.Models.UserProfileVM
 @using RayaWSoffara.Helpers
 @{
-    ViewBag.Title = "";
+    ViewBag.Title = "نقاط الكاتب";
 }
 
 <div class="clear-fix"></div>
@@ -95,30 +95,36 @@
                     <div class="clear-fix"></div>
 
                     <div class="achievements">
+                        @foreach(var type in ViewBag.EngagementTypes){
                         <div class="achievement-item pull-left col-lg-2">
-                            <div class="month-value">@item.PostViewsCount</div>
-                            <div class="icon"><i class="fa fa-eye"></i></div>
-                            <div class="points-value">
-                                <div>@item.PostViewsValue</div>
-                                <div>نقطة</div>
-                            </div>
+                            @if(type.EngTypeId == 3){
+                                <div class="month-value">@item.PostViewsCount</div>
+                                <div class="icon"><i class="fa fa-eye"></i></div>
+                                <div class="points-value">
+                                    <div>@item.PostViewsValue</div>
+                                    <div>نقطة</div>
+                                </div>
+                            }
+                            else if (type.EngTypeId == 2)
+                            {
+                                <div class="month-value">@item.PostLikesCount</div>
+                                <div class="icon"><i class="fa fa-thumbs-up"></i></div>
+                                <div class="points-value">
+                                    <div>@item.PostLikesValue</div>
+                                    <div>نقطة</div>
+                                </div>
+                            }
+                            else if (type.EngTypeId == 1)
+                            {
+                                <div class="month-value">@item.PostSharesCount</div>
+                                <div class="icon"><i class="fa fa-share"></i></div>
+                                <div class="points-value">
+                                    <div>@item.PostSharesValue</div>
+                                    <div>نقطة</div>
+                                </div>
+                            }
                         </div>
-                        <div class="achievement-item pull-left col-lg-2">
-                            <div class="month-value">@item.PostLikesCount</div>
-                            <div class="icon"><i class="fa fa-thumbs-up"></i></div>
-                            <div class="points-value">
-                                <div>@item.PostLikesValue</div>
-                                <div>نقطة</div>
-                            </div>
-                        </div>
-                        <div class="achievement-item pull-left col-lg-2">
-                            <div class="month-value">@item.PostSharesCount</div>
-                            <div class="icon"><i class="fa fa-share"></i></div>
-                            <div class="points-value">
-                                <div>@item.PostSharesValue</div>
-                                <div>نقطة</div>
-                            </div>
-                        </div>
+                        }
                     </div>
                 </div>
             </div>

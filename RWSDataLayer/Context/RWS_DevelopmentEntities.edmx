@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-    <Schema Namespace="RWS_DevelopmentModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+      <Schema Namespace="RWS_DevelopmentModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="RWS_DevelopmentModelStoreContainer">
           <EntitySet Name="ArticleTopX" EntityType="RWS_DevelopmentModel.Store.ArticleTopX" store:Type="Tables" Schema="dbo" />
           <EntitySet Name="Comment" EntityType="RWS_DevelopmentModel.Store.Comment" store:Type="Tables" Schema="dbo" />
@@ -82,7 +82,7 @@
           </AssociationSet>
           <AssociationSet Name="FK_EngagementType_EngagementType" Association="RWS_DevelopmentModel.Store.FK_EngagementType_EngagementType">
             <End Role="EngagementType" EntitySet="EngagementType" />
-            <End Role="EngagementType1" EntitySet="EngagementType" />
+            <End Role="Engagement" EntitySet="Engagement" />
           </AssociationSet>
           <AssociationSet Name="FK_ImageTag_Image" Association="RWS_DevelopmentModel.Store.FK_ImageTag_Image">
             <End Role="Image" EntitySet="Image" />
@@ -329,7 +329,7 @@
           <Key>
             <PropertyRef Name="EngTypeId" />
           </Key>
-          <Property Name="EngTypeId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="EngTypeId" Type="int" Nullable="false" />
           <Property Name="EngType" Type="nvarchar" MaxLength="50" />
           <Property Name="EngWeight" Type="float" />
         </EntityType>
@@ -490,7 +490,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Engagement_Post">
-          <End Role="Post" Type="RWS_DevelopmentModel.Store.Post" Multiplicity="0..1" />
+          <End Role="Post" Type="RWS_DevelopmentModel.Store.Post" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Engagement" Type="RWS_DevelopmentModel.Store.Engagement" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Post">
@@ -502,13 +504,15 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_EngagementType_EngagementType">
-          <End Role="EngagementType" Type="RWS_DevelopmentModel.Store.EngagementType" Multiplicity="1" />
-          <End Role="EngagementType1" Type="RWS_DevelopmentModel.Store.EngagementType" Multiplicity="0..1" />
+          <End Role="EngagementType" Type="RWS_DevelopmentModel.Store.EngagementType" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Engagement" Type="RWS_DevelopmentModel.Store.Engagement" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="EngagementType">
               <PropertyRef Name="EngTypeId" />
             </Principal>
-            <Dependent Role="EngagementType1">
+            <Dependent Role="Engagement">
               <PropertyRef Name="EngTypeId" />
             </Dependent>
           </ReferentialConstraint>
@@ -611,7 +615,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
-      </Schema></edmx:StorageModels>
+        <Function Name="fn_diagramobjects" ReturnType="int" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="true" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+        <Function Name="sp_alterdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="version" Type="int" Mode="In" />
+          <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+        </Function>
+        <Function Name="sp_creatediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="version" Type="int" Mode="In" />
+          <Parameter Name="definition" Type="varbinary(max)" Mode="In" />
+        </Function>
+        <Function Name="sp_dropdiagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_helpdiagramdefinition" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_helpdiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+        </Function>
+        <Function Name="sp_renamediagram" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="diagramname" Type="nvarchar" Mode="In" />
+          <Parameter Name="owner_id" Type="int" Mode="In" />
+          <Parameter Name="new_diagramname" Type="nvarchar" Mode="In" />
+        </Function>
+        <Function Name="sp_upgraddiagrams" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo" />
+      </Schema>
+    </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="RWS_DevelopmentModel" Alias="Self" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
@@ -632,6 +668,8 @@
           <EntitySet Name="Teams" EntityType="RWS_DevelopmentModel.Team" />
           <EntitySet Name="Engagements" EntityType="RWS_DevelopmentModel.Engagement" />
           <EntitySet Name="EngagementTypes" EntityType="RWS_DevelopmentModel.EngagementType" />
+          <EntitySet Name="TagTypes" EntityType="RWS_DevelopmentModel.TagType" />
+          <EntitySet Name="UserPointsViews" EntityType="RWS_DevelopmentModel.UserPointsView" />
           <AssociationSet Name="FK_ArticleTopX_Article" Association="RWS_DevelopmentModel.FK_ArticleTopX_Article">
             <End Role="Post" EntitySet="Posts" />
             <End Role="ArticleTopX" EntitySet="ArticleTopXes" />
@@ -684,12 +722,36 @@
             <End Role="Player" EntitySet="Players" />
             <End Role="Team" EntitySet="Teams" />
           </AssociationSet>
-          <EntitySet Name="UserPointsViews" EntityType="RWS_DevelopmentModel.UserPointsView" />
-          <AssociationSet Name="FK_EngagementType_EngagementType" Association="RWS_DevelopmentModel.FK_EngagementType_EngagementType">
-            <End Role="EngagementType" EntitySet="EngagementTypes" />
-            <End Role="EngagementType1" EntitySet="EngagementTypes" />
-          </AssociationSet>
-          <EntitySet Name="TagTypes" EntityType="RWS_DevelopmentModel.TagType" />
+          <FunctionImport Name="sp_alterdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_creatediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="version" Mode="In" Type="Int32" />
+            <Parameter Name="definition" Mode="In" Type="Binary" />
+          </FunctionImport>
+          <FunctionImport Name="sp_dropdiagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagramdefinition" ReturnType="Collection(RWS_DevelopmentModel.sp_helpdiagramdefinition_Result)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_helpdiagrams" ReturnType="Collection(RWS_DevelopmentModel.sp_helpdiagrams_Result)">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+          </FunctionImport>
+          <FunctionImport Name="sp_renamediagram">
+            <Parameter Name="diagramname" Mode="In" Type="String" />
+            <Parameter Name="owner_id" Mode="In" Type="Int32" />
+            <Parameter Name="new_diagramname" Mode="In" Type="String" />
+          </FunctionImport>
+          <FunctionImport Name="sp_upgraddiagrams" />
         </EntityContainer>
         <EntityType Name="ArticleTopX">
           <Key>
@@ -722,10 +784,10 @@
           <Property Name="CompetitionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="CompetitionName" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
           <Property Name="RegionId" Type="Int32" />
+          <Property Name="CompetitionIcon" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="isActive" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Region" Relationship="RWS_DevelopmentModel.FK_Competition_Region" FromRole="Competition" ToRole="Region" />
           <NavigationProperty Name="Teams" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Competition" ToRole="Team" />
-          <Property Type="String" Name="CompetitionIcon" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Type="Boolean" Name="isActive" Nullable="false" />
         </EntityType>
         <EntityType Name="Image">
           <Key>
@@ -741,9 +803,9 @@
           </Key>
           <Property Name="PlayerId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="PlayerName" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="isActive" Type="Boolean" Nullable="false" />
+          <Property Name="PlayerIcon" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
           <NavigationProperty Name="Teams" Relationship="RWS_DevelopmentModel.TeamPlayer" FromRole="Player" ToRole="Team" />
-          <Property Type="Boolean" Name="isActive" Nullable="false" />
-          <Property Type="String" Name="PlayerIcon" MaxLength="100" FixedLength="false" Unicode="true" />
         </EntityType>
         <EntityType Name="Post">
           <Key>
@@ -786,9 +848,9 @@
           </Key>
           <Property Name="RegionId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="RegionName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
+          <Property Name="RegionIcon" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="IsActive" Type="Boolean" />
           <NavigationProperty Name="Competitions" Relationship="RWS_DevelopmentModel.FK_Competition_Region" FromRole="Region" ToRole="Competition" />
-          <Property Type="String" Name="RegionIcon" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Type="Boolean" Name="IsActive" />
         </EntityType>
         <EntityType Name="RWSProviderUser">
           <Key>
@@ -860,11 +922,11 @@
           <Property Name="TagId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TagName" Type="String" MaxLength="500" Unicode="true" FixedLength="false" />
           <Property Name="isFeatured" Type="Boolean" Nullable="false" />
+          <Property Name="TagType" Type="Int32" />
+          <Property Name="isActive" Type="Boolean" />
+          <Property Name="TagTypeId" Type="Int32" />
           <NavigationProperty Name="Images" Relationship="RWS_DevelopmentModel.ImageTag" FromRole="Tag" ToRole="Image" />
           <NavigationProperty Name="Posts" Relationship="RWS_DevelopmentModel.PostTag" FromRole="Tag" ToRole="Post" />
-          <Property Type="Int32" Name="TagType" />
-          <Property Type="Boolean" Name="isActive" />
-          <Property Type="Int32" Name="TagTypeId" />
         </EntityType>
         <EntityType Name="Team">
           <Key>
@@ -872,10 +934,10 @@
           </Key>
           <Property Name="TeamId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="TeamName" Type="String" MaxLength="Max" Unicode="true" FixedLength="false" />
+          <Property Name="TeamIcon" Type="String" MaxLength="100" Unicode="true" FixedLength="false" />
+          <Property Name="isActive" Type="Boolean" Nullable="false" />
           <NavigationProperty Name="Competitions" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Team" ToRole="Competition" />
           <NavigationProperty Name="Players" Relationship="RWS_DevelopmentModel.TeamPlayer" FromRole="Team" ToRole="Player" />
-          <Property Type="String" Name="TeamIcon" MaxLength="100" FixedLength="false" Unicode="true" />
-          <Property Type="Boolean" Name="isActive" Nullable="false" />
         </EntityType>
         <EntityType Name="Engagement">
           <Key>
@@ -892,13 +954,28 @@
           <Key>
             <PropertyRef Name="EngTypeId" />
           </Key>
-          <Property Name="EngTypeId" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="EngTypeId" Type="Int32" Nullable="false" />
           <Property Name="EngType" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
           <Property Name="EngWeight" Type="Double" />
           <NavigationProperty Name="Engagements" Relationship="RWS_DevelopmentModel.FK_Engagement_EngagementType" FromRole="EngagementType" ToRole="Engagement" />
-          <NavigationProperty Name="EngagementType1" Relationship="RWS_DevelopmentModel.FK_EngagementType_EngagementType" FromRole="EngagementType" ToRole="EngagementType1" />
-          <NavigationProperty Name="EngagementType2" Relationship="RWS_DevelopmentModel.FK_EngagementType_EngagementType" FromRole="EngagementType1" ToRole="EngagementType" />
-          </EntityType>
+        </EntityType>
+        <EntityType Name="TagType">
+          <Key>
+            <PropertyRef Name="TagType1" />
+          </Key>
+          <Property Name="TagType1" Type="Int32" Nullable="false" />
+          <Property Name="TagName" Type="String" MaxLength="255" Unicode="true" FixedLength="false" />
+        </EntityType>
+        <EntityType Name="UserPointsView">
+          <Key>
+            <PropertyRef Name="UserId" />
+            <PropertyRef Name="PostId" />
+          </Key>
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="PostId" Type="Int32" Nullable="false" />
+          <Property Name="EngWeight" Type="Double" />
+          <Property Name="EngTimestamp" Type="DateTime" Precision="3" />
+        </EntityType>
         <Association Name="FK_ArticleTopX_Article">
           <End Role="Post" Type="RWS_DevelopmentModel.Post" Multiplicity="0..1">
             <OnDelete Action="Cascade" />
@@ -914,9 +991,7 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Comment_RWSUser">
-          <End Role="RWSUser" Type="RWS_DevelopmentModel.RWSUser" Multiplicity="0..1">
-            <OnDelete Action="Cascade" />
-          </End>
+          <End Role="RWSUser" Type="RWS_DevelopmentModel.RWSUser" Multiplicity="0..1" />
           <End Role="Comment" Type="RWS_DevelopmentModel.Comment" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="RWSUser">
@@ -970,7 +1045,9 @@
           </ReferentialConstraint>
         </Association>
         <Association Name="FK_Engagement_Post">
-          <End Role="Post" Type="RWS_DevelopmentModel.Post" Multiplicity="0..1" />
+          <End Role="Post" Type="RWS_DevelopmentModel.Post" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
           <End Role="Engagement" Type="RWS_DevelopmentModel.Engagement" Multiplicity="*" />
           <ReferentialConstraint>
             <Principal Role="Post">
@@ -1027,35 +1104,17 @@
           <End Role="Player" Type="RWS_DevelopmentModel.Player" Multiplicity="*" />
           <End Role="Team" Type="RWS_DevelopmentModel.Team" Multiplicity="*" />
         </Association>
-        <EntityType Name="UserPointsView">
-          <Key>
-            <PropertyRef Name="UserId" />
-            <PropertyRef Name="PostId" />
-          </Key>
-          <Property Type="Int32" Name="UserId" Nullable="false" />
-          <Property Type="Int32" Name="PostId" Nullable="false" />
-          <Property Type="Double" Name="EngWeight" />
-          <Property Type="DateTime" Name="EngTimestamp" Precision="3" />
-        </EntityType>
-        <Association Name="FK_EngagementType_EngagementType">
-          <End Type="RWS_DevelopmentModel.EngagementType" Role="EngagementType" Multiplicity="1" />
-          <End Type="RWS_DevelopmentModel.EngagementType" Role="EngagementType1" Multiplicity="0..1" />
-          <ReferentialConstraint>
-            <Principal Role="EngagementType">
-              <PropertyRef Name="EngTypeId" />
-            </Principal>
-            <Dependent Role="EngagementType1">
-              <PropertyRef Name="EngTypeId" />
-            </Dependent>
-          </ReferentialConstraint>
-        </Association>
-        <EntityType Name="TagType">
-          <Key>
-            <PropertyRef Name="TagType1" />
-          </Key>
-          <Property Type="Int32" Name="TagType1" Nullable="false" />
-          <Property Type="String" Name="TagName" MaxLength="255" FixedLength="false" Unicode="true" />
-        </EntityType>
+        <ComplexType Name="sp_helpdiagramdefinition_Result">
+          <Property Type="Int32" Name="version" Nullable="true" />
+          <Property Type="Binary" Name="definition" Nullable="true" />
+        </ComplexType>
+        <ComplexType Name="sp_helpdiagrams_Result">
+          <Property Type="String" Name="Database" Nullable="true" MaxLength="128" />
+          <Property Type="String" Name="Name" Nullable="false" MaxLength="128" />
+          <Property Type="Int32" Name="ID" Nullable="false" />
+          <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
+          <Property Type="Int32" Name="OwnerID" Nullable="false" />
+        </ComplexType>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -1089,11 +1148,11 @@
           <EntitySetMapping Name="Competitions">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.Competition">
               <MappingFragment StoreEntitySet="Competition">
-                <ScalarProperty Name="isActive" ColumnName="isActive" />
-                <ScalarProperty Name="CompetitionIcon" ColumnName="CompetitionIcon" />
                 <ScalarProperty Name="CompetitionId" ColumnName="CompetitionId" />
                 <ScalarProperty Name="CompetitionName" ColumnName="CompetitionName" />
                 <ScalarProperty Name="RegionId" ColumnName="RegionId" />
+                <ScalarProperty Name="CompetitionIcon" ColumnName="CompetitionIcon" />
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1108,10 +1167,10 @@
           <EntitySetMapping Name="Players">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.Player">
               <MappingFragment StoreEntitySet="Player">
-                <ScalarProperty Name="PlayerIcon" ColumnName="PlayerIcon" />
-                <ScalarProperty Name="isActive" ColumnName="isActive" />
                 <ScalarProperty Name="PlayerId" ColumnName="PlayerId" />
                 <ScalarProperty Name="PlayerName" ColumnName="PlayerName" />
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="PlayerIcon" ColumnName="PlayerIcon" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1149,10 +1208,10 @@
           <EntitySetMapping Name="Regions">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.Region">
               <MappingFragment StoreEntitySet="Region">
-                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
-                <ScalarProperty Name="RegionIcon" ColumnName="RegionIcon" />
                 <ScalarProperty Name="RegionId" ColumnName="RegionId" />
                 <ScalarProperty Name="RegionName" ColumnName="RegionName" />
+                <ScalarProperty Name="RegionIcon" ColumnName="RegionIcon" />
+                <ScalarProperty Name="IsActive" ColumnName="IsActive" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1220,22 +1279,22 @@
           <EntitySetMapping Name="Tags">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.Tag">
               <MappingFragment StoreEntitySet="Tag">
-                <ScalarProperty Name="TagTypeId" ColumnName="TagTypeId" />
-                <ScalarProperty Name="isActive" ColumnName="isActive" />
-                <ScalarProperty Name="TagType" ColumnName="TagType" />
                 <ScalarProperty Name="TagId" ColumnName="TagId" />
                 <ScalarProperty Name="TagName" ColumnName="TagName" />
                 <ScalarProperty Name="isFeatured" ColumnName="isFeatured" />
+                <ScalarProperty Name="TagType" ColumnName="TagType" />
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
+                <ScalarProperty Name="TagTypeId" ColumnName="TagTypeId" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
           <EntitySetMapping Name="Teams">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.Team">
               <MappingFragment StoreEntitySet="Team">
-                <ScalarProperty Name="isActive" ColumnName="isActive" />
-                <ScalarProperty Name="TeamIcon" ColumnName="TeamIcon" />
                 <ScalarProperty Name="TeamId" ColumnName="TeamId" />
                 <ScalarProperty Name="TeamName" ColumnName="TeamName" />
+                <ScalarProperty Name="TeamIcon" ColumnName="TeamIcon" />
+                <ScalarProperty Name="isActive" ColumnName="isActive" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1255,6 +1314,24 @@
                 <ScalarProperty Name="EngTypeId" ColumnName="EngTypeId" />
                 <ScalarProperty Name="EngType" ColumnName="EngType" />
                 <ScalarProperty Name="EngWeight" ColumnName="EngWeight" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="TagTypes">
+            <EntityTypeMapping TypeName="RWS_DevelopmentModel.TagType">
+              <MappingFragment StoreEntitySet="TagType">
+                <ScalarProperty Name="TagType1" ColumnName="TagType" />
+                <ScalarProperty Name="TagName" ColumnName="TagName" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="UserPointsViews">
+            <EntityTypeMapping TypeName="RWS_DevelopmentModel.UserPointsView">
+              <MappingFragment StoreEntitySet="UserPointsView">
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="PostId" ColumnName="PostId" />
+                <ScalarProperty Name="EngWeight" ColumnName="EngWeight" />
+                <ScalarProperty Name="EngTimestamp" ColumnName="EngTimestamp" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -1298,24 +1375,30 @@
               <ScalarProperty Name="TeamId" ColumnName="TeamId" />
             </EndProperty>
           </AssociationSetMapping>
-          <EntitySetMapping Name="UserPointsViews">
-            <EntityTypeMapping TypeName="RWS_DevelopmentModel.UserPointsView">
-              <MappingFragment StoreEntitySet="UserPointsView">
-                <ScalarProperty Name="EngTimestamp" ColumnName="EngTimestamp" />
-                <ScalarProperty Name="EngWeight" ColumnName="EngWeight" />
-                <ScalarProperty Name="PostId" ColumnName="PostId" />
-                <ScalarProperty Name="UserId" ColumnName="UserId" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
-          <EntitySetMapping Name="TagTypes">
-            <EntityTypeMapping TypeName="RWS_DevelopmentModel.TagType">
-              <MappingFragment StoreEntitySet="TagType">
-                <ScalarProperty Name="TagName" ColumnName="TagName" />
-                <ScalarProperty Name="TagType1" ColumnName="TagType" />
-              </MappingFragment>
-            </EntityTypeMapping>
-          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="sp_alterdiagram" FunctionName="RWS_DevelopmentModel.Store.sp_alterdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_creatediagram" FunctionName="RWS_DevelopmentModel.Store.sp_creatediagram" />
+          <FunctionImportMapping FunctionImportName="sp_dropdiagram" FunctionName="RWS_DevelopmentModel.Store.sp_dropdiagram" />
+          <FunctionImportMapping FunctionImportName="sp_helpdiagramdefinition" FunctionName="RWS_DevelopmentModel.Store.sp_helpdiagramdefinition">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="RWS_DevelopmentModel.sp_helpdiagramdefinition_Result">
+                <ScalarProperty Name="version" ColumnName="version" />
+                <ScalarProperty Name="definition" ColumnName="definition" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_helpdiagrams" FunctionName="RWS_DevelopmentModel.Store.sp_helpdiagrams">
+            <ResultMapping>
+              <ComplexTypeMapping TypeName="RWS_DevelopmentModel.sp_helpdiagrams_Result">
+                <ScalarProperty Name="Database" ColumnName="Database" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="ID" ColumnName="ID" />
+                <ScalarProperty Name="Owner" ColumnName="Owner" />
+                <ScalarProperty Name="OwnerID" ColumnName="OwnerID" />
+              </ComplexTypeMapping>
+            </ResultMapping>
+          </FunctionImportMapping>
+          <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="RWS_DevelopmentModel.Store.sp_renamediagram" />
+          <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="RWS_DevelopmentModel.Store.sp_upgraddiagrams" />
         </EntityContainerMapping>
       </Mapping>
     </edmx:Mappings>
