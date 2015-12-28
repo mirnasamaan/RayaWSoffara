@@ -52,7 +52,7 @@
                                 }
                             </div>
                             <div class="clear-fix"></div>
-                            <a href="/Profile?Username=@item.PostAuthorUsername" class="author-name">@item.PostAuthorUsername</a>
+                            <a href="/Profile?Username=@item.PostAuthorUsername&Page=1" class="author-name">@item.PostAuthorUsername</a>
                             <div class="post-content">
                                 @{ string text2 = @Html.Raw(item.PostContent).ToString(); }
                                 @TrimTextHelper.TrimText(@text2, 100)

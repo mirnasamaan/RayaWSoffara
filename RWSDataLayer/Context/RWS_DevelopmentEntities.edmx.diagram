@@ -4,7 +4,7 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="21d1ea79cae94e30a4add400582da69e" Name="Diagram1">
+      <Diagram DiagramId="f5c9769747734c038c536a83c1b1f174" Name="Diagram1">
         <EntityTypeShape EntityType="RWS_DevelopmentModel.ArticleTopX" Width="1.5" PointX="10.5" PointY="7.625" IsExpanded="true" />
         <EntityTypeShape EntityType="RWS_DevelopmentModel.Comment" Width="1.5" PointX="5.25" PointY="6.375" IsExpanded="true" />
         <EntityTypeShape EntityType="RWS_DevelopmentModel.Competition" Width="1.5" PointX="15" PointY="1" IsExpanded="true" />
@@ -31,6 +31,7 @@
         <AssociationConnector Association="RWS_DevelopmentModel.FK_Engagement_Post" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.FK_RWSProviderUser_RWSUser" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.FK_Engagement_EngagementType" ManuallyRouted="false" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_EngagementType_EngagementType" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.CompetitionTeam" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.ImageTag" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.PostTag" ManuallyRouted="false" />

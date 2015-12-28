@@ -1,0 +1,15 @@
+﻿@foreach (var item in ViewBag.TotalPoints)
+{
+    <a href="/Points?Username=@Model.UserName&MonthId=@item.MonthId&YearId=@item.YearId">
+        <div class="achievement-item pull-left col-lg-2">
+            <div class="month-value">@item.MonthName @item.YearId</div>
+            <div class="icon">
+                <img src="/Content/Images/medal.png" />
+            </div>
+            <div class="points-value">
+                <div>@item.PointsValue</div>
+                <div>نقطة</div>
+            </div>
+        </div>
+    </a>
+}

@@ -2471,7 +2471,7 @@ input[name="Email"] {
 }
 
 .nav-tabs li {
-    width: 50%;
+    width: 100%;
 }
 
 .nav-tabs li a {
@@ -2726,6 +2726,19 @@ input[name="Email"] {
     font-size: 13px;
     color: #444;
     padding: 5px;
+    max-width: 100%;
+}
+.article_display_content img {
+    max-width: 100%;
+    height: auto !important;
+}
+.image-choices .tab-content {
+    height: 500px;
+    overflow-y: scroll;
+    border: 2px solid #348DB9;
+}
+.image-choices .tab-content .tab-pane {
+    padding: 10px 0;
 }
 .comment-hidden-div {
     display: none;
@@ -2788,7 +2801,7 @@ input[name="Email"] {
     border: 2px solid #b4b4b4;
     padding: 10px 0px;
 }*/
-#createArticle_container .tab-pane, #display_post_container .tab-pane {
+#display_post_container .tab-pane {
     border: 2px solid #348DB9;
 }
 

@@ -361,6 +361,6 @@ C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\bin\Debug\WebMatrix.WebD
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\bin\Debug\Org.Mentalis.Security.Cryptography.xml
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\bin\Debug\Mono.Math.xml
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.csproj.App.config
-C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.csprojResolveAssemblyReference.cache
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.dll
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.pdb
+C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.csprojResolveAssemblyReference.cache

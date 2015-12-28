@@ -12,12 +12,12 @@ public class CustomAuthorize : AuthorizeAttribute
         }
         else
         {
-            //var data = filterContext.HttpContext.Request.Url;
+            var data = filterContext.HttpContext.Request.Url;
             // Otherwise redirect to your specific authorized area
-            //filterContext.Result = new RedirectResult("/Admin/Signin?RedirectUrl=" + data);
+            filterContext.Result = new RedirectResult("/Admin/Signin?RedirectUrl=" + data);
             //filterContext.Result = new HttpUnauthorizedResult();
             filterContext.Controller.TempData.Add("RedirectReason", "You are not authorized to access this page.");
-            filterContext.Result = new RedirectResult("~/Admin/Signin");
+            //filterContext.Result = new RedirectResult("~/Admin/Signin");
         }
     }
 }

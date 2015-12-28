@@ -56,7 +56,16 @@ namespace RayaWSoffara.Controllers
         }
 
         [Authorize]
-        public ActionResult Media()
+        public ActionResult Image()
+        {
+            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+            ViewBag.tags = articlesTags.ToList();
+            UserArticleVM model = new UserArticleVM();
+            return View(model);
+        }
+
+        [Authorize]
+        public ActionResult Video()
         {
             IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
             ViewBag.tags = articlesTags.ToList();
@@ -242,7 +251,75 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [Authorize]
         [ValidateInput(false)]
-        public ActionResult Media(UserArticleVM article, string article_picture_path, string video_url)
+        public ActionResult Image(UserArticleVM article, string article_picture_path, string video_url)
+        {
+            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+            ViewBag.tags = articlesTags.ToList();
+            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+            article.newArticle.CreatedBy = currentUser.UserId;
+            article.newArticle.CreationDate = DateTime.Now;
+            article.newArticle.MetaTags = "";
+            if (article.newArticle.Content == null)
+            {
+                article.newArticle.Content = "";
+            }
+            List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+            HttpPostedFileBase picture = Request.Files[0];
+            if (picture.FileName != "" || article_picture_path != "")
+            {
+                if (article_picture_path != "")
+                {
+                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                    if (System.IO.File.Exists(path))
+                    {
+                        string[] separator = new string[] { "Temp/" };
+                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        article.newArticle.FeaturedImage = imgName;
+                        article.newArticle.PostTypeId = 4;
+                    }
+                }
+                else if (picture.FileName != "")
+                {
+                    string picName = System.IO.Path.GetFileName(picture.FileName);
+                    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                    picture.SaveAs(path);
+                    article.newArticle.FeaturedImage = picName;
+                    article.newArticle.PostTypeId = 4;
+                }
+
+                article.newArticle.HasImage = true;
+            }
+            else if (video_url != null || video_url != string.Empty)
+            {
+                article.newArticle.HasImage = false;
+                article.newArticle.FeaturedVideo = video_url;
+                article.newArticle.PostTypeId = 5;
+            }
+
+            article.newArticle.Tags = null;
+            article.newArticle.MetaTags = "";
+            article.newArticle.ViewsCount = 0;
+            article.newArticle.SharesCount = 0;
+            Post addedArticle = _articleRepo.AddPost(article.newArticle);
+            _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+            if (addedArticle != null)
+            {
+                ViewBag.ErrorMsg = 0;
+                return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
+            }
+            else
+            {
+                ViewBag.ErrorMsg = 1;
+                return View();
+            }
+        }
+
+        [HttpPost]
+        [Authorize]
+        [ValidateInput(false)]
+        public ActionResult Video(UserArticleVM article, string article_picture_path, string video_url)
         {
             IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
             ViewBag.tags = articlesTags.ToList();

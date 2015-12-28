@@ -61,15 +61,22 @@ namespace RayaWSoffara.Controllers
         }
 
         [AllowAnonymous]
-        public ActionResult Login(string returnUrl)
+        public ActionResult Login(string RedirectUrl)
         {
             if (User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index", "Home");
+                if (RedirectUrl == "")
+                {
+                    return RedirectToAction("Index", "Home");
+                }
+                else
+                {
+                    return Redirect(RedirectUrl);
+                }
             }
             else
             {
-                ViewBag.ReturnUrl = returnUrl;
+                ViewBag.ReturnUrl = RedirectUrl;
                 return View();
             }
         }
@@ -77,7 +84,7 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(LoginModel model, string returnUrl)
+        public ActionResult Login(LoginModel model, string RedirectUrl)
         {
             if (ModelState.IsValid)
             {
@@ -90,10 +97,11 @@ namespace RayaWSoffara.Controllers
                         return View(model);
                     }
                     FormsService.SignIn(model.UserName, model.RememberMe);
-                    if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
-                        && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
+                    //if (Url.IsLocalUrl(returnUrl) && returnUrl.Length > 1 && returnUrl.StartsWith("/")
+                    //    && !returnUrl.StartsWith("//") && !returnUrl.StartsWith("/\\"))
+                    if(RedirectUrl != "")
                     {
-                        return Redirect(returnUrl);
+                        return Redirect(RedirectUrl);
                     }
                     return RedirectToAction("Index", "Home");
                 }
@@ -377,7 +385,7 @@ namespace RayaWSoffara.Controllers
 
         [AllowAnonymous]
         [HttpGet]
-        public ActionResult Profile(string Username)
+        public ActionResult Profile(string Username, int Page)
         {
             UserProfileVM userProfile = new UserProfileVM();
 
@@ -394,19 +402,40 @@ namespace RayaWSoffara.Controllers
             userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
             userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
 
+            List<UserPointsVM> Points = new List<UserPointsVM>();
+            Points = GetUserAchievements(user.UserId, Page);
+            ViewBag.TotalPoints = Points; 
+            
             int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.Now.Year * 12 + DateTime.Now.Month)) + 1;
-            //int membershipMonthCount = (((DateTime.Now.Year-1) - (user.ConfirmationDate.Value.Year+1))*12) + (12-user.ConfirmationDate.Value.Month+1) + (DateTime.Now.Month);
-            List<UserPointsVM> totalPoints = new List<UserPointsVM>();
-            int monthId = DateTime.Now.Month;
-            int yearId = DateTime.Now.Year;
-            for (int i = 0; i < membershipMonthCount; i++)
+            ViewBag.AllPointsCount = membershipMonthCount;
+
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_AchievementsPartial", userProfile);
+            }
+
+            return View(userProfile);
+        }
+
+        public List<UserPointsVM> GetUserAchievements(int UserId, int Page)
+        {
+            RWSUser user = _userRepo.GetUserByUserId(UserId);
+            //int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.Now.Year * 12 + DateTime.Now.Month)) + 1;
+
+            List<UserPointsVM> Points = new List<UserPointsVM>();
+            DateTime startDate = DateTime.Now.AddMonths(-(Page-1)*6);
+            //int monthId = DateTime.Now.Month;
+            //int yearId = DateTime.Now.Year;
+            int monthId = startDate.Month;
+            int yearId = startDate.Year;
+            for (int i = 0; i < 6; i++)
             {
                 UserPointsVM points = new UserPointsVM();
-                points.UserId = userProfile.UserId;
-                points.UserName = Username;
-                points.ViewsCount = _userRepo.GetUserViewsByMonthId(userProfile.UserId, monthId, yearId);
-                points.LikesCount = _userRepo.GetUserLikesByMonthId(userProfile.UserId, monthId, yearId);
-                points.SharesCount = _userRepo.GetUserSharesByMonthId(userProfile.UserId, monthId, yearId);
+                points.UserId = UserId;
+                points.UserName = user.UserName;
+                points.ViewsCount = _userRepo.GetUserViewsByMonthId(UserId, monthId, yearId);
+                points.LikesCount = _userRepo.GetUserLikesByMonthId(UserId, monthId, yearId);
+                points.SharesCount = _userRepo.GetUserSharesByMonthId(UserId, monthId, yearId);
                 points.MonthId = monthId;
                 switch (monthId)
                 {
@@ -425,19 +454,20 @@ namespace RayaWSoffara.Controllers
                     default: points.MonthName = ""; break;
                 }
                 points.YearId = yearId;
-                points.PointsValue = _userRepo.GetUserPointsByMonthId(userProfile.UserId, monthId, yearId);
-                totalPoints.Add(points);
+                points.PointsValue = _userRepo.GetUserPointsByMonthId(UserId, monthId, yearId);
+                Points.Add(points);
 
+                DateTime currentDate = new DateTime(yearId, monthId, 1);
+                if (currentDate <= user.ConfirmationDate.Value) break;
                 monthId--;
                 if (monthId == 0)
                 {
                     monthId = 12;
                     yearId--;
                 }
-            }
-            ViewBag.TotalPoints = totalPoints;
 
-            return View(userProfile);
+            }
+            return Points;
         }
 
         [AllowAnonymous]
@@ -556,10 +586,20 @@ namespace RayaWSoffara.Controllers
             return Json(points, JsonRequestBehavior.AllowGet);
         }
 
-        [Authorize]
+        [AllowAnonymous]
         [HttpGet]
         public ActionResult Settings(string Username)
         {
+            if (User.Identity.Name == "")
+            {
+                return Redirect("/Login?RedirectUrl=/Settings?Username=" + Username);
+            }
+            else if (User.Identity.Name != Username)
+            {
+                ViewBag.ErrorCode = 1;
+                ViewBag.ErrorMsg = "أنت غير مفوض لدخول هذه الصفحة.";
+                return View("Login");
+            }
             UserProfileVM userProfile = new UserProfileVM();
             CompetitionRepository _compRepo = new CompetitionRepository();
 
@@ -568,7 +608,7 @@ namespace RayaWSoffara.Controllers
             userProfile.UserName = user.UserName;
             userProfile.FirstName = user.FirstName;
             userProfile.LastName = user.LastName;
-            userProfile.articlesCount = user.Posts.Where(i => i.IsActive == true).Count();
+            //userProfile.articlesCount = user.Posts.Where(i => i.IsActive == true).Count();
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
             userProfile.Google = user.Google;
@@ -585,9 +625,9 @@ namespace RayaWSoffara.Controllers
                 userProfile.FavCompName = _compRepo.GetCompetetionById(user.FavComp.Value).CompetitionName;
             }
 
-            ArticleRepository _articleRepo = new ArticleRepository();
-            userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
-            userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
+            //ArticleRepository _articleRepo = new ArticleRepository();
+            //userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
+            //userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
 
             ViewBag.userProfile = userProfile;
             ViewBag.loggedInUser = User.Identity.Name;

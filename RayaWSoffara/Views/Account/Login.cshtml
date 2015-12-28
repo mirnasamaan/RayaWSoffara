@@ -13,11 +13,17 @@
 
     <div class="clear-fix"></div>
 
+    @if (@ViewBag.ErrorCode == 1)
+    {
+        <div class="ErrorMsg">@ViewBag.ErrorMsg</div>
+    }
+
     @using (Html.BeginForm("Login", "Account", null, FormMethod.Post, new { @id = "form", @name = "form" }))
     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary(true)
 
+        <input id="RedirectUrl" name="RedirectUrl" type="hidden" />
         <div id="account">
             <div class="form-group">
                 @Html.LabelFor(m => m.UserName, new { @class = "pull-left" })
@@ -58,6 +64,14 @@
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
 <script>
+    function getParameterByName(name) {
+        name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+        var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+            results = regex.exec(location.search);
+        return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+    }
+    $("#RedirectUrl").val(getParameterByName('RedirectUrl'));
+
     $("#form").validate({
         rules: {
             UserName: "required",

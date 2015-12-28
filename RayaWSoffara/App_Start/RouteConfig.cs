@@ -522,9 +522,15 @@ namespace RayaWSoffara
             );
 
             routes.MapRoute(
-                name: "Media",
-                url: "Media",
-                defaults: new { controller = "Article", action = "Media", id = UrlParameter.Optional }
+                name: "Image",
+                url: "Image",
+                defaults: new { controller = "Article", action = "Image", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "Video",
+                url: "Video",
+                defaults: new { controller = "Article", action = "Video", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(

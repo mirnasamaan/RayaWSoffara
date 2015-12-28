@@ -1232,7 +1232,7 @@
     <Content Include="Views\Article\Copy of WriteTopX.cshtml" />
     <Content Include="Views\Home\_PostPartial.cshtml" />
     <Content Include="Views\Article\Opinion.cshtml" />
-    <Content Include="Views\Article\Media.cshtml" />
+    <Content Include="Views\Article\Image.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ConfirmationEmailSent.cshtml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
@@ -1253,6 +1253,7 @@
     </None>
     <Content Include="Views\Admin\_ImagesPartial.cshtml" />
     <Content Include="Views\Admin\_UploadsPartial.cshtml" />
+    <Content Include="Views\Article\Video.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

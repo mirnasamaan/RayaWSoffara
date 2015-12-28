@@ -80,21 +80,23 @@ function OnDrop(e) {
         $(".jcrop-holder").remove();
     }
 
-    if ($("#video_embed_txt").val().indexOf('youtube') > -1) {
-        $("#" + media_id + " .media_img").attr("src", $("#video_viewport img").attr("src"));
-        $("#" + media_id + " .media_img").css("display", "block");
-        $("#" + media_id + " .media_dropbox").css("display", "none");
-        $(".close").click();
-        if ($("#" + media_id).find("img").length > 0) {
-            //alert($("#" + media_id + " .media_img").attr("src"));
-            if ($("#" + media_id + " .media_img").attr("src") != "") {
-                $("#" + media_id).hover(
-                    function () {
-                        $("#" + media_id + " .controls").fadeIn('fast');
-                    },
-                    function () {
-                        $("#" + media_id + " .controls").fadeOut('fast');
-                    });
+    if ($("#video_embed_txt").length > 0) {
+        if ($("#video_embed_txt").val().indexOf('youtube') > -1) {
+            $("#" + media_id + " .media_img").attr("src", $("#video_viewport img").attr("src"));
+            $("#" + media_id + " .media_img").css("display", "block");
+            $("#" + media_id + " .media_dropbox").css("display", "none");
+            $(".close").click();
+            if ($("#" + media_id).find("img").length > 0) {
+                //alert($("#" + media_id + " .media_img").attr("src"));
+                if ($("#" + media_id + " .media_img").attr("src") != "") {
+                    $("#" + media_id).hover(
+                        function () {
+                            $("#" + media_id + " .controls").fadeIn('fast');
+                        },
+                        function () {
+                            $("#" + media_id + " .controls").fadeOut('fast');
+                        });
+                }
             }
         }
     } else {

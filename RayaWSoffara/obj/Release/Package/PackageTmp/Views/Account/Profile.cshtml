@@ -7,6 +7,7 @@
 <div class="clear-fix"></div>
 <div class="container" id="profile_container">
     <input id="userId" type="hidden"  value="@Model.UserId"/>
+    <input id="userName" type="hidden"  value="@Model.UserName"/>
     <div class="profile-title profile-title2 col-md-4 col-xs-12">
         <div class="user-data-title">
             <span>@Model.FirstName @Model.LastName</span>
@@ -76,26 +77,15 @@
             <div class="pointsgraph">
                 <div id="basicflot" style="width: 100%; height: 300px"></div>
             </div>
+
             <div class="achievements">
-                @foreach (var item in ViewBag.TotalPoints)
-                {
-                    <a href="/Points?Username=@Model.UserName&MonthId=@item.MonthId&YearId=@item.YearId">
-                        <div class="achievement-item pull-left col-lg-2">
-                            <div class="month-value">@item.MonthName @item.YearId</div>
-                            <div class="icon">
-                                <img src="/Content/Images/medal.png" /></div>
-                            <div class="points-value">
-                                <div>@item.PointsValue</div>
-                                <div>نقطة</div>
-                            </div>
-                        </div>
-                    </a>
-                }
+                @Html.Partial("_AchievementsPartial")
             </div>
+            
+            <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
         </div>
         <div class="clear-fix"></div>
         <div class="recents">
-            @*<div class="title pull-left">مقالات الكاتب</div>*@
             <div class="profile-sub-title">مقالات الكاتب</div>
             <div class="clear-fix"></div>
             @if (@Model.articlesCount == 0)
@@ -137,105 +127,157 @@
     </div>
 </div>
 
+<input name="Page" value="1" type="hidden" />
+<input id="AllPointsCount" type="hidden" value="@ViewBag.AllPointsCount" />
+
+<div class="viewMoreButton">
+    <div class="loading hidden">
+        <div>
+            <div class="sk-fading-circle">
+                <div class="sk-circle1 sk-circle"></div>
+                <div class="sk-circle2 sk-circle"></div>
+                <div class="sk-circle3 sk-circle"></div>
+                <div class="sk-circle4 sk-circle"></div>
+                <div class="sk-circle5 sk-circle"></div>
+                <div class="sk-circle6 sk-circle"></div>
+                <div class="sk-circle7 sk-circle"></div>
+                <div class="sk-circle8 sk-circle"></div>
+                <div class="sk-circle9 sk-circle"></div>
+                <div class="sk-circle10 sk-circle"></div>
+                <div class="sk-circle11 sk-circle"></div>
+                <div class="sk-circle12 sk-circle"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="~/Content/Scripts/flot/jquery.flot.min.js"></script>
 <script src="~/Content/Scripts/flot/jquery.flot.resize.min.js"></script>
 <script src="~/Content/Scripts/flot/jquery.flot.time.min.js"></script>
 <script>
-    //var d = [[1262304000000, 6], [1264982400000, 3057], [1267401600000, 20434], [1270080000000, 31982], [1272672000000, 26602], [1275350400000, 27826], [1277942400000, 24302], [1280620800000, 24237], [1283299200000, 21004], [1285891200000, 12144], [1288569600000, 10577], [1291161600000, 10295]];
+    //start of show/hide view button //
+    var page = 2;
+    var displayed_points_count = parseInt($(".achievement-item").length);
+    var all_points_count = parseInt($("#AllPointsCount").val());
+    if (displayed_points_count >= all_points_count) {
+        $("#viewMore").addClass("hidden");
+    }
+    //end of show/hide view button //
 
-    //$(document).ready(function () {
+    function viewMore(e) {
+        var username = $("#userName").val();
         $.ajax({
-            url: "/Account/GetGraphPoints",
-            type: 'POST',
-            data: { userId: $("#userId").val()},
+            url: "/Profile?Username="+username+"&Page="+page,
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
             success: function (points) {
-                var dataSet = [
-                    { label: "النقاط", data: points, points: { fillColor: "#4572A7", size: 5 }, color: '#4572A7' }
-                ];
-
-                $.plot($("#basicflot"), dataSet, {
-                    xaxis: {
-                        mode: "time",
-                        tickSize: [1, "month"],
-                        timeformat: "%b %Y",
-                        tickLength: 0,
-                        axisLabel: 'Month',
-                        axisLabelUseCanvas: true,
-                        axisLabelFontSizePixels: 12,
-                        axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
-                        axisLabelPadding: 5
-                    },
-                    yaxis: {
-                        axisLabel: 'Points',
-                        axisLabelUseCanvas: true,
-                        axisLabelFontSizePixels: 12,
-                        axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
-                        axisLabelPadding: 5
-                    },
-                    series: {
-                        lines: {
-                            show: true,
-                            fill: true
-                        },
-                        points: {
-                            radius: 3,
-                            show: true,
-                            fill: true
-                        },
-                    },
-                    grid: {
-                        borderWidth: 1,
-                        hoverable: true
-                    }
-                });
-
-                function showTooltip(x, y, contents, z) {
-                    $('<div id="flot-tooltip">' + contents + '</div>').css({
-                        top: y - 210,
-                        left: x - 120,
-                        'border-color': z,
-                    }).appendTo(".pointsgraph").fadeIn(200);
+                page++;
+                //$points = $(points);
+                //alert(JSON.stringify(points));
+                $(".loading").addClass("hidden");
+                $('.achievements').append(points);
+                var displayed_points_count = parseInt($(".achievement-item").length);
+                var all_points_count = parseInt($("#AllPointsCount").val());
+                if (displayed_points_count >= all_points_count) {
+                    $("#viewMore").addClass("hidden");
                 }
-
-                function getMonthName(numericMonth) {
-                    var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                    var alphaMonth = monthArray[numericMonth];
-
-                    return alphaMonth;
-                }
-
-                function convertToDate(timestamp) {
-                    var newDate = new Date(timestamp);
-                    var dateString = newDate.getMonth();
-                    var monthName = getMonthName(dateString);
-
-                    return monthName;
-                }
-
-                var previousPoint = null;
-                $("#basicflot").bind("plothover", function (event, pos, item) {
-                    if (item) {
-                        if ((previousPoint != item.dataIndex) || (previousLabel != item.series.label)) {
-                            previousPoint = item.dataIndex;
-                            previousLabel = item.series.label;
-
-                            $("#flot-tooltip").remove();
-
-                            var x = convertToDate(item.datapoint[0]),
-                            y = item.datapoint[1];
-                            z = item.series.color;
-
-                            showTooltip(item.pageX, item.pageY,
-                                "<b>" + item.series.label + "</b><br /> " + x + " = " + y,
-                                z);
-                        }
-                    } else {
-                        $("#flot-tooltip").remove();
-                        previousPoint = null;
-                    }
-                });
             }
         });
-   
-    //});
+
+        return false;
+    }
+
+    $.ajax({
+        url: "/Account/GetGraphPoints",
+        type: 'POST',
+        data: { userId: $("#userId").val() },
+        success: function (points) {
+            var dataSet = [
+                { label: "النقاط", data: points, points: { fillColor: "#4572A7", size: 5 }, color: '#4572A7' }
+            ];
+
+            $.plot($("#basicflot"), dataSet, {
+                xaxis: {
+                    mode: "time",
+                    tickSize: [1, "month"],
+                    timeformat: "%b %Y",
+                    tickLength: 0,
+                    axisLabel: 'Month',
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                    axisLabelPadding: 5
+                },
+                yaxis: {
+                    axisLabel: 'Points',
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                    axisLabelPadding: 5
+                },
+                series: {
+                    lines: {
+                        show: true,
+                        fill: true
+                    },
+                    points: {
+                        radius: 3,
+                        show: true,
+                        fill: true
+                    },
+                },
+                grid: {
+                    borderWidth: 1,
+                    hoverable: true
+                }
+            });
+
+            function showTooltip(x, y, contents, z) {
+                $('<div id="flot-tooltip">' + contents + '</div>').css({
+                    top: y - 210,
+                    left: x - 120,
+                    'border-color': z,
+                }).appendTo(".pointsgraph").fadeIn(200);
+            }
+
+            function getMonthName(numericMonth) {
+                var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var alphaMonth = monthArray[numericMonth];
+
+                return alphaMonth;
+            }
+
+            function convertToDate(timestamp) {
+                var newDate = new Date(timestamp);
+                var dateString = newDate.getMonth();
+                var monthName = getMonthName(dateString);
+
+                return monthName;
+            }
+
+            var previousPoint = null;
+            $("#basicflot").bind("plothover", function (event, pos, item) {
+                if (item) {
+                    if ((previousPoint != item.dataIndex) || (previousLabel != item.series.label)) {
+                        previousPoint = item.dataIndex;
+                        previousLabel = item.series.label;
+
+                        $("#flot-tooltip").remove();
+
+                        var x = convertToDate(item.datapoint[0]),
+                        y = item.datapoint[1];
+                        z = item.series.color;
+
+                        showTooltip(item.pageX, item.pageY,
+                            "<b>" + item.series.label + "</b><br /> " + x + " = " + y,
+                            z);
+                    }
+                } else {
+                    $("#flot-tooltip").remove();
+                    previousPoint = null;
+                }
+            });
+        }
+    });
 </script>

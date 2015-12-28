@@ -51,6 +51,10 @@
       <End Role="EngagementType" EntitySet="EngagementTypes" />
       <End Role="Engagement" EntitySet="Engagements" />
     </AssociationSet>
+    <AssociationSet Name="FK_EngagementType_EngagementType" Association="RWS_DevelopmentModel.FK_EngagementType_EngagementType">
+      <End Role="EngagementType" EntitySet="EngagementTypes" />
+      <End Role="Engagement" EntitySet="Engagements" />
+    </AssociationSet>
     <AssociationSet Name="CompetitionTeam" Association="RWS_DevelopmentModel.CompetitionTeam">
       <End Role="Competition" EntitySet="Competitions" />
       <End Role="Team" EntitySet="Teams" />
@@ -298,6 +302,7 @@
     <Property Name="EngTypeId" Type="Int32" />
     <NavigationProperty Name="Post" Relationship="RWS_DevelopmentModel.FK_Engagement_Post" FromRole="Engagement" ToRole="Post" />
     <NavigationProperty Name="EngagementType" Relationship="RWS_DevelopmentModel.FK_Engagement_EngagementType" FromRole="Engagement" ToRole="EngagementType" />
+    <NavigationProperty Name="EngagementType1" Relationship="RWS_DevelopmentModel.FK_EngagementType_EngagementType" FromRole="Engagement" ToRole="EngagementType" />
   </EntityType>
   <EntityType Name="EngagementType">
     <Key>
@@ -307,6 +312,7 @@
     <Property Name="EngType" Type="String" MaxLength="50" Unicode="true" FixedLength="false" />
     <Property Name="EngWeight" Type="Double" />
     <NavigationProperty Name="Engagements" Relationship="RWS_DevelopmentModel.FK_Engagement_EngagementType" FromRole="EngagementType" ToRole="Engagement" />
+    <NavigationProperty Name="Engagements1" Relationship="RWS_DevelopmentModel.FK_EngagementType_EngagementType" FromRole="EngagementType" ToRole="Engagement" />
   </EntityType>
   <EntityType Name="TagType">
     <Key>
@@ -423,6 +429,20 @@
   </Association>
   <Association Name="FK_Engagement_EngagementType">
     <End Role="EngagementType" Type="RWS_DevelopmentModel.EngagementType" Multiplicity="0..1" />
+    <End Role="Engagement" Type="RWS_DevelopmentModel.Engagement" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="EngagementType">
+        <PropertyRef Name="EngTypeId" />
+      </Principal>
+      <Dependent Role="Engagement">
+        <PropertyRef Name="EngTypeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_EngagementType_EngagementType">
+    <End Role="EngagementType" Type="RWS_DevelopmentModel.EngagementType" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
     <End Role="Engagement" Type="RWS_DevelopmentModel.Engagement" Multiplicity="*" />
     <ReferentialConstraint>
       <Principal Role="EngagementType">
