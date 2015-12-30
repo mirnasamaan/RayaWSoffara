@@ -270,8 +270,8 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         public ActionResult AddRegion(Region region, HttpPostedFileBase path)
         {
+            region.IsActive = true;
             Region reg = _compRepo.AddRegion(region);
-            reg.IsActive = true;
             Tag tag = new Tag();
             tag.TagName = region.RegionName;
             tag.TagType = 1;
@@ -429,11 +429,15 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         public ActionResult AddCompetition(Competition competition, HttpPostedFileBase path, string teams)
         {
-            string[] teamIds = teams.Split(',');
-            foreach (var item in teamIds)
+            if (teams != "")
             {
-                competition.Teams.Add(_compRepo.GetTeamById(Int32.Parse(item)));
+                string[] teamIds = teams.Split(',');
+                foreach (var item in teamIds)
+                {
+                    competition.Teams.Add(_compRepo.GetTeamById(Int32.Parse(item)));
+                }
             }
+            competition.isActive = true;
             Competition comp = _compRepo.AddCompetition(competition);
             comp.isActive = true;
             Tag tag = new Tag();
@@ -1162,6 +1166,7 @@ namespace RayaWSoffara.Controllers
         public ActionResult DeactivateTag(int TagId)
         {
             _postRepo.DeactivateTag(TagId);
+            _postRepo.RemoveTagAsFeatured(TagId);
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 

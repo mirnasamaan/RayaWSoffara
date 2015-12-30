@@ -58,7 +58,12 @@
                 </div>
                 <div class="form-group">
                     <label class="pull-left">البلد</label>
-                    @Html.TextBoxFor(m => m.Country, new { @class = "form-control" })
+                    <select name="country" class="form-control">
+                    @foreach (var item in ViewBag.Countries)
+                    {
+                        <option value="@item">@item</option>
+                    }
+                    </select>
                     @Html.ValidationMessageFor(model => model.Country)
                 </div>
                 @Html.HiddenFor(m => m.PicturePath)

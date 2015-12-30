@@ -254,7 +254,14 @@ namespace RWSDataLayer.Repositories
         /// <returns></returns>
         public int GetViewsCountByUserId(int id)
         {
-            return Context.Posts.Where(i => i.CreatedBy == id).Where(i => i.IsActive == true).Select(i => i.ViewsCount).Sum();
+            try
+            {
+                return Context.Posts.Where(i => i.CreatedBy == id).Where(i => i.IsActive == true).Select(i => i.ViewsCount).Sum();
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
         }
 
         /// <summary>
