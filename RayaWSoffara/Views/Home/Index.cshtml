@@ -120,6 +120,7 @@
                 <a href="http://www.livescore.in/" title="Livescore.in" target="_blank">Livescore.in</a>
                 <iframe id="inscore-xdc-413348" src="http://www.livescore.in/free/413348/" width="624" height="500" frameborder="0" scrolling="no"></iframe>
 
+
                 <ul class="nav leader-nav-tabs">
                     <li class="col-xs-4"><a href="#yesterday" data-toggle="tab">أمس</a></li>
                     <li class="col-xs-4 active"><a href="#today" data-toggle="tab">اليوم</a></li>
@@ -342,8 +343,6 @@
         var elemTop = $elem.offset().top;
         var elemBottom = elemTop + $elem.height();
 
-        //alert(elemBottom);
-        //alert(docViewBottom);
         return ((elemBottom <= docViewBottom));
     }
 
@@ -356,8 +355,6 @@
         var elemTop = $elem.offset().top;
         var elemBottom = elemTop + $elem.height();
 
-        //alert(elemBottom);
-        //alert(docViewBottom);
         return ((elemTop >= docViewTop));
     }
 
@@ -368,12 +365,6 @@
         return Math.max(0, t > 0 ? Math.min(elH, H - t) : (b < H ? b : H));
     }
 
-    //var timer;
-    //$(window).bind('scroll', function () {
-    //    clearTimeout(timer);
-    //    timer = setTimeout(refresh, 500);
-    //});
-    //var refresh = function () {
     $(window).scroll(function () {
         var header_top = $(".content-wrapper.duplicate ").css("top");
         if (parseInt(header_top) < 0) {
@@ -398,19 +389,7 @@
             $(".sidebar").css({
                 top: sidebar_topscroll
             });
-            //alert("in");
-            //$(".sidebar").css('position', 'absolute').css('top', 'auto').animate({
-            //    bottom: 0
-            //}, 1000);
         }
-        //else if (!isScrolledIntoView($(".sidebar div:first-child"))) {
-        //    alert("in2");
-        //    var boundries_topscroll = parseInt($(window).scrollTop() - 60);
-        //    (boundries_topscroll < 0) ? boundries_topscroll = 0 : boundries_topscroll = boundries_topscroll;
-        //    $(".sidebar").animate({
-        //        top: 0
-        //    }, 1000);
-        //}
     });
 
     //end of sidebar animation //
@@ -435,7 +414,7 @@
         });
     });
 
-    //livescore //
+    ////livescore //
     /*<![CDATA[*/try { function inscore_413348_xdc() { this.elm = null; this.hash = null; var times_resized = 0; var times_not_resized = 0; this.resize = function () { times_resized == 1023 && (times_resized = 0); times_not_resized == 1023 && (times_not_resized = 0); if (this.getElm() && location.hash && location.hash != this.hash) { this.hash = location.hash; var reggg = new RegExp(".*inscore_ifheight_xdc_([0-9]{2,5}).*"); if (result = reggg.exec(location.hash)) { this.getElm().style.height = (typeof result[1] == "undefined" ? "10000" : (result[1] > 500 && result[1] <= 30000 ? parseInt(result[1]) : 500)) + "px"; times_resized++; } } else if (location.hash && location.hash == this.hash) times_not_resized++; else return resize_later(75); resize_later(250); }; var resize_later = function (time) { setTimeout(function () { inscore_413348_xdc_run.resize(); }, time); }; this.getElm = function () { try { (typeof this.elm == "undefined" || this.elm === null || !this.elm) && (this.elm = document.getElementById("inscore-xdc-413348")); } catch (e) { this.elm = null; } return this.elm; }; var show_links = function () { if ((times_resized >= 1 || times_not_resized >= 2) && (obj = document.getElementById("freescore_links_413348"))) { obj.style.visibility = "visible"; obj.style.display = "block"; } else show_links_later(); }; var show_links_later = function () { setTimeout(function () { show_links(); }, 100); }; if (typeof window.postMessage == "undefined") { show_links_later(); resize_later(); } else { var ev = function (event) { try { var data = JSON.parse(event.data); } catch (e) { return; } if (data instanceof Array && data[0] == 413348 && typeof data[1] != "undefined") { eval(data[1]); } }; if (window.addEventListener) { window.addEventListener("message", ev); } else if (window.attachEvent) { window.attachEvent("onmessage", ev); } setTimeout(function () { document.getElementById("inscore-xdc-413348").contentWindow.postMessage(JSON.stringify(["413348", "run"]), "*"); }, 2000); show_links_later(); resize_later(); } }; var inscore_413348_xdc_run = new inscore_413348_xdc(); } catch (e) { document.getElementById("inscore-xdc-413348").style.height = "10000px"; }
     /*]]>*/
 </script>

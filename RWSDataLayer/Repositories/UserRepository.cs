@@ -63,6 +63,14 @@ namespace RWSDataLayer.Repositories
             return Context.RWSUsers.OrderBy(i => i.UserName).Skip(noOfItems).Take(size);
         }
 
+        public IQueryable<RWSUser> GetUsersBySearchTerm(int startIndex, int count, string term)
+        {
+            if (startIndex > Context.RWSUsers.Count())
+                return null;
+            else
+                return Context.RWSUsers.Where(i => i.UserName.Contains(term)).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
+        }
+
         /// <summary>
         /// Get all active users
         /// </summary>
@@ -105,6 +113,7 @@ namespace RWSDataLayer.Repositories
         {
             RWSUser user = Context.RWSUsers.Where(i => i.UserName == username).FirstOrDefault();
             user.IsConfirmed = true;
+            user.ConfirmationDate = DateTime.Now;
             Context.SaveChanges();
         }
 

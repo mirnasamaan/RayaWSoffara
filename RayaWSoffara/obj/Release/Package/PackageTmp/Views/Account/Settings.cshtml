@@ -56,7 +56,7 @@
             <div class="sub-title">
                 <div>معلومات شخصية</div>
             </div>
-            @using (Html.BeginForm("Profile", "Account", FormMethod.Post, new { enctype = "multipart/form-data", Username = User.Identity.Name }))
+            @using (Html.BeginForm("Profile", "Account", FormMethod.Post, new { enctype = "multipart/form-data", Username = User.Identity.Name, Page = 1 }))
             {
                 <input type="hidden" name="Username" value="@ViewBag.userProfile.UserName" />
                 if (@ViewBag.loggedInUser == @ViewBag.userProfile.UserName)
@@ -89,47 +89,13 @@
                     <label class="pull-left">حساب جوجل بلس</label>
                     <input type="text" class="form-control" id="google" name="Google" value="@ViewBag.userProfile.Google" />
                 </div>
-                }
-                else
-                {
-@*<div class="form-group">
-                    <label>Competitions</label>
-                    <input class="form-control input-lg" value="@ViewBag.userProfile.FavCompName" disabled />
-                </div>
-                <div class="form-group">
-                    <label>Teams</label>
-                    <input class="form-control input-lg" value="@ViewBag.userProfile.FavTeamName" disabled />
-                </div>
-                <div class="form-group">
-                    <label>Display Name</label>
-                    <input type="text" class="form-control input-lg" name="DisplayName" value="@ViewBag.userProfile.DisplayName" disabled />
-                </div>
-                <div>
-                    <label>About @ViewBag.userProfile.FirstName</label>
-                    <textarea class="form-control input-lg" name="AboutYou" disabled>@ViewBag.userProfile.AboutYou</textarea>
-                </div>
-                <div class="form-group">
-                    <label>Twitter Link</label>
-                    <input type="text" class="form-control input-lg" name="Twitter" value="@ViewBag.userProfile.Twitter" disabled />
-                </div>
-                <div class="form-group">
-                    <label>Google+ Link</label>
-                    <input type="text" class="form-control input-lg" name="Google" value="@ViewBag.userProfile.Google" disabled />
-                </div>*@
+                <button type="submit" class="btn btn-primary">تعديل</button>
                 }
             }
 
-            @*</form>*@
         </div>
 
-        @*<div id="notifications" class="">
-            <div class="sub-title">
-                <div>اشعارات</div>
-            </div>
-        </div>*@
 
-
-        <button type="submit" class="btn btn-primary">تعديل</button>
     </div>
 
 

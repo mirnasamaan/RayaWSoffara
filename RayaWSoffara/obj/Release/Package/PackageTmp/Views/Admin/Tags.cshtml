@@ -109,6 +109,7 @@
                 url: "/Admin/DeactivateTag",
                 success: function (data) {
                     $(e).html("Inactive").attr("onclick", "Activate(this)").removeClass("label-success").addClass("label-danger");
+                    $("#" + tag_id + " td:last span").html("Not Featured").attr("onclick", "SetFeatured(this)").removeClass("label-warning").addClass("label-default");
                     jQuery.gritter.add({
                         title: 'Tag Deactivated!',
                         sticky: false,
@@ -165,6 +166,7 @@
                 url: "/Admin/SetTagAsFeatured",
                 success: function (data) {
                     $(e).html("Featured").attr("onclick", "RemoveFeature(this)").removeClass("label-default").addClass("label-warning");
+                    $("#" + tag_id + " td:nth-last-child(2) span").html("Active").attr("onclick", "Deactivate(this)").removeClass("label-danger").addClass("label-success");
                 }
             });
         }

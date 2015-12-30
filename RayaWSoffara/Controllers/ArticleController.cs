@@ -219,7 +219,7 @@ namespace RayaWSoffara.Controllers
 
                 article.newArticle.HasImage = true;
             }
-            else if (video_url != null || video_url != string.Empty)
+            else if (video_url != null && video_url != "")
             {
                 article.newArticle.HasImage = false;
                 article.newArticle.FeaturedVideo = video_url;

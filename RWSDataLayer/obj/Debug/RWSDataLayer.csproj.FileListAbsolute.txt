@@ -363,4 +363,3 @@ C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\bin\Debug\Mono.Math.xml
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.csproj.App.config
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.dll
 C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.pdb
-C:\Users\ODH\Documents\GitHub\RayaWSoffara\RWSDataLayer\obj\Debug\RWSDataLayer.csprojResolveAssemblyReference.cache

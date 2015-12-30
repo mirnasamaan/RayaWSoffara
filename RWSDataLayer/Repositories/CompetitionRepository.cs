@@ -47,6 +47,14 @@ namespace RWSDataLayer.Repositories
                 return Context.Regions.OrderByDescending(i => i.RegionName).Skip(startIndex).Take(count);
         }
 
+        public IQueryable<Region> GetRegionsBySearchTerm(int startIndex, int count, string term)
+        {
+            if (startIndex > Context.Regions.Count())
+                return null;
+            else
+                return Context.Regions.Where(i => i.RegionName.Contains(term)).OrderByDescending(i => i.RegionName).Skip(startIndex).Take(count);
+        }
+
         /// <summary>
         /// Gets a region by ID
         /// </summary>
@@ -208,6 +216,14 @@ namespace RWSDataLayer.Repositories
                 return Context.Competitions.OrderByDescending(i => i.CompetitionName).Skip(startIndex).Take(count);
         }
 
+        public IQueryable<Competition> GetCompetitionsBySearchTerm(int startIndex, int count, string term)
+        {
+            if (startIndex > Context.Competitions.Count())
+                return null;
+            else
+                return Context.Competitions.Where(i => i.CompetitionName.Contains(term)).OrderByDescending(i => i.CompetitionName).Skip(startIndex).Take(count);
+        }
+
         /// <summary>
         /// Get a competition by id
         /// </summary>
@@ -331,6 +347,14 @@ namespace RWSDataLayer.Repositories
                 return null;
             else
                 return Context.Teams.OrderByDescending(i => i.TeamName).Skip(startIndex).Take(count);
+        }
+
+        public IQueryable<Team> GetTeamsBySearchTerm(int startIndex, int count, string term)
+        {
+            if (startIndex > Context.Teams.Count())
+                return null;
+            else
+                return Context.Teams.Where(i => i.TeamName.Contains(term)).OrderByDescending(i => i.TeamName).Skip(startIndex).Take(count);
         }
 
         /// <summary>
@@ -468,6 +492,14 @@ namespace RWSDataLayer.Repositories
                 return null;
             else
                 return Context.Players.OrderByDescending(i => i.PlayerName).Skip(startIndex).Take(count);
+        }
+
+        public IQueryable<Player> GetPlayersBySearchTerm(int startIndex, int count, string term)
+        {
+            if (startIndex > Context.Players.Count())
+                return null;
+            else
+                return Context.Players.Where(i => i .PlayerName.Contains(term)).OrderByDescending(i => i.PlayerName).Skip(startIndex).Take(count);
         }
 
         public void DeleteAllTeamsForPlayer(int PlayerId)

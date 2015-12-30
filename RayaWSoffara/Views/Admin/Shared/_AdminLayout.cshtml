@@ -186,7 +186,7 @@
             data: { username: $("#username").val() },
             url: "/Admin/GetUserImage",
             success: function (imagePath) {
-                $(".userImagePath").attr("src", "/"+imagePath+"?w=50&h=50&mode=crop");
+                $(".userImagePath").attr("src", imagePath+"?w=50&h=50&mode=crop");
             }
         });
     </script>

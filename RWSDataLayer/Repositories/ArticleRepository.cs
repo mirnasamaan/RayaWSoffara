@@ -209,6 +209,7 @@ namespace RWSDataLayer.Repositories
             {
                 Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
                 post.IsActive = true;
+                post.ActivationDate = DateTime.Now;
                 Context.SaveChanges();
                 return true;
             }
@@ -602,6 +603,13 @@ namespace RWSDataLayer.Repositories
                 return Context.Tags.OrderByDescending(i => i.TagName).Skip(startIndex).Take(count);
         }
 
+        public IQueryable<Tag> GetTagsBySearchTerm(int startIndex, int count, string term)
+        {
+            if (startIndex > Context.Tags.Count())
+                return null;
+            else
+                return Context.Tags.Where(i => i.TagName.Contains(term)).OrderByDescending(i => i.TagName).Skip(startIndex).Take(count);
+        }
 
         public bool DeactivateTag(int TagId)
         {

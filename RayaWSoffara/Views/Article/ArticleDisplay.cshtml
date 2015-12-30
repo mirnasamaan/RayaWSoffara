@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="article_display_row">
                     <div class="pull-left user-data">
-                        <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName">@Model.newArticle.RWSUser.UserName</a></span></div>
+                        <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName&Page=1">@Model.newArticle.RWSUser.UserName</a></span></div>
                         <div class="border pull-left"></div>
                         <div class="pull-left"><span class="date">@ArabicTimeStampHelper.ArabicTimeStamp(Convert.ToDateTime(Model.newArticle.ActivationDate))</span></div>
                     </div>
@@ -59,7 +59,7 @@
                         </div>
                         <div class="border pull-left"></div>
                         <div class="pull-left comments">
-                            <div class="count">@Model.newArticle.RWSUser.Comments.Where(i=>i.CommentPostId==Model.newArticle.PostId).Count()</div>
+                            <div class="count">@ViewBag.AllCommentsCount</div>
                             <div>تعليق</div>
                         </div>
                         <div class="border pull-left"></div>
@@ -149,13 +149,13 @@
                     {
                         <div class="row">
                             <div class="article_display_row">
-                                @if (@item.TopXImage != null)
-                                {
-                                    <img src="~/Content/Article_Images/@item.TopXImage?w=725&h=410&mode=crop" /> 
-                                }
-                                else if (@item.TopXVideo != null)
+                                @if (@item.TopXVideo != null)
                                 {
                                     <iframe width="755" height="566" src="https://www.youtube.com/embed/@item.TopXVideo" frameborder="0" allowfullscreen></iframe>
+                                }
+                                else if (@item.TopXImage != null)
+                                {
+                                    <img src="~/Content/Article_Images/@item.TopXImage?w=725&h=410&mode=crop" /> 
                                 }
                             </div>
                         </div>

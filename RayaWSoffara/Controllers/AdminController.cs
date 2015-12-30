@@ -117,10 +117,7 @@ namespace RayaWSoffara.Controllers
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            var watch = Stopwatch.StartNew();
             int total_rows = _userRepo.GetAllUsers().Count();
-            watch.Stop();
-            var elapsedMs1 = watch.ElapsedMilliseconds;
             if (length == -1)
             {
                 length = total_rows;
@@ -142,11 +139,16 @@ namespace RayaWSoffara.Controllers
             int recordsFiltered = total_rows;
             int displayedNum;
             List<DataItem> userprofiles = new List<DataItem>();
-            watch = Stopwatch.StartNew();
             int pageNum = start / length;
-            IQueryable<RWSUser> users = _userRepo.GetAllUsers(pageNum, length, out displayedNum);
-            watch.Stop();
-            var elapsedMS2 = watch.ElapsedMilliseconds;
+            IQueryable<RWSUser> users = null;
+            if (search == "")
+            {
+                users = _userRepo.GetAllUsers(pageNum, length, out displayedNum);
+            }
+            else
+            {
+                users = _userRepo.GetUsersBySearchTerm(start, length, search);
+            }
             foreach (var item in users)
             {
                 string status;
@@ -296,10 +298,7 @@ namespace RayaWSoffara.Controllers
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            var watch = Stopwatch.StartNew();
             int total_rows = _compRepo.GetAllRegions().Count();
-            watch.Stop();
-            var elapsedMs1 = watch.ElapsedMilliseconds;
             if (length == -1)
             {
                 length = total_rows;
@@ -320,10 +319,15 @@ namespace RayaWSoffara.Controllers
             dataTableData.recordsTotal = total_rows;
             int recordsFiltered = total_rows;
             List<DataItem> regionprofiles = new List<DataItem>();
-            watch = Stopwatch.StartNew();
-            IQueryable<Region> regions = _compRepo.GetAllRegions(start, length);
-            watch.Stop();
-            var elapsedMS2 = watch.ElapsedMilliseconds;
+            IQueryable<Region> regions = null;
+            if (search == "")
+            {
+                regions = _compRepo.GetAllRegions(start, length);
+            }
+            else
+            {
+                regions = _compRepo.GetRegionsBySearchTerm(start, length, search);
+            }
             foreach (var item in regions)
             {
                 string status;
@@ -502,7 +506,15 @@ namespace RayaWSoffara.Controllers
             int recordsFiltered = total_rows;
             List<DataItem> competitionprofiles = new List<DataItem>();
             watch = Stopwatch.StartNew();
-            IQueryable<Competition> competitions = _compRepo.GetAllCompetetions(start, length);
+            IQueryable<Competition> competitions = null;
+            if (search == "")
+            {
+                competitions = _compRepo.GetAllCompetetions(start, length);
+            }
+            else
+            {
+                competitions = _compRepo.GetCompetitionsBySearchTerm(start, length, search);
+            }
             watch.Stop();
             var elapsedMS2 = watch.ElapsedMilliseconds;
             foreach (var item in competitions)
@@ -690,7 +702,15 @@ namespace RayaWSoffara.Controllers
             int recordsFiltered = total_rows;
             List<DataItem> teamprofiles = new List<DataItem>();
             watch = Stopwatch.StartNew();
-            IQueryable<Team> teams = _compRepo.GetAllTeams(start, length);
+            IQueryable<Team> teams = null;
+            if (search == "")
+            {
+                teams = _compRepo.GetAllTeams(start, length);
+            }
+            else
+            {
+                teams = _compRepo.GetTeamsBySearchTerm(start, length, search);
+            }
             watch.Stop();
             var elapsedMS2 = watch.ElapsedMilliseconds;
             foreach (var item in teams)
@@ -876,10 +896,7 @@ namespace RayaWSoffara.Controllers
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            var watch = Stopwatch.StartNew();
             int total_rows = _compRepo.GetAllPlayers().Count();
-            watch.Stop();
-            var elapsedMs1 = watch.ElapsedMilliseconds;
             if (length == -1)
             {
                 length = total_rows;
@@ -900,10 +917,15 @@ namespace RayaWSoffara.Controllers
             dataTableData.recordsTotal = total_rows;
             int recordsFiltered = total_rows;
             List<DataItem> playerplrofiles = new List<DataItem>();
-            watch = Stopwatch.StartNew();
-            IQueryable<Player> players = _compRepo.GetAllPlayers(start, length);
-            watch.Stop();
-            var elapsedMS2 = watch.ElapsedMilliseconds;
+            IQueryable<Player> players = null;
+            if (search == "")
+            {
+                players = _compRepo.GetAllPlayers(start, length);
+            }
+            else
+            {
+                players = _compRepo.GetPlayersBySearchTerm(start, length, search);
+            }
             foreach (var item in players)
             {
                 string status;
@@ -1045,7 +1067,15 @@ namespace RayaWSoffara.Controllers
             int recordsFiltered = total_rows;
             List<DataItem> tagprofiles = new List<DataItem>();
             watch = Stopwatch.StartNew();
-            IQueryable<Tag> tags = _postRepo.GetAllTags(start, length);
+            IQueryable<Tag> tags = null;
+            if (search == "")
+            {
+                tags = _postRepo.GetAllTags(start, length);
+            }
+            else
+            {
+                tags = _postRepo.GetTagsBySearchTerm(start, length, search);
+            }
             watch.Stop();
             var elapsedMS2 = watch.ElapsedMilliseconds;
             foreach (var item in tags)
@@ -1392,6 +1422,7 @@ namespace RayaWSoffara.Controllers
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
             article.newArticle.CreationDate = DateTime.Now;
+            article.newArticle.ActivationDate = DateTime.Now;
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
             HttpPostedFileBase picture = Request.Files[0];
@@ -1624,6 +1655,7 @@ namespace RayaWSoffara.Controllers
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
             article.newArticle.CreationDate = DateTime.Now;
+            article.newArticle.ActivationDate = DateTime.Now;
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
             HttpPostedFileBase picture = Request.Files[0];
@@ -1872,6 +1904,7 @@ namespace RayaWSoffara.Controllers
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
             article.newArticle.CreationDate = DateTime.Now;
+            article.newArticle.ActivationDate = DateTime.Now;
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
             HttpPostedFileBase picture = Request.Files[0];
@@ -2070,6 +2103,7 @@ namespace RayaWSoffara.Controllers
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
             article.newArticle.CreationDate = DateTime.Now;
+            article.newArticle.ActivationDate = DateTime.Now;
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
             HttpPostedFileBase picture = Request.Files[0];
@@ -2271,6 +2305,7 @@ namespace RayaWSoffara.Controllers
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
             article.newArticle.CreationDate = DateTime.Now;
+            article.newArticle.ActivationDate = DateTime.Now;
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
             HttpPostedFileBase picture = Request.Files[0];

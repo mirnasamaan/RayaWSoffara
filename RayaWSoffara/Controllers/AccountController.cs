@@ -219,7 +219,7 @@ namespace RayaWSoffara.Controllers
                     user.ConfirmationToken = Guid.NewGuid().ToString();
                     user.IsConfirmed = false;
                     user.PasswordVerificationToken = Guid.NewGuid().ToString();
-                    user.RWSRoles.Add(_userRepo.GetRoleByName("Admin"));
+                    user.RWSRoles.Add(_userRepo.GetRoleByName("User"));
                     _userRepo.UpdateUserDetails(user);
                     dynamic email = new Email("RegEmail");
                     email.To = model.Email;
@@ -290,7 +290,7 @@ namespace RayaWSoffara.Controllers
                         user.PasswordVerificationToken = Guid.NewGuid().ToString();
                         user.IsConfirmed = true;
                         user.ConfirmationDate = DateTime.Now;
-                        user.ProfileImagePath = model.PicturePath;
+                        user.ProfileImagePath = "/" + model.PicturePath;
                         _userRepo.UpdateUserDetails(user);
 
                         string FacebookPictureUrl = GetFacebookPictureUrl(providerUserId);
@@ -380,13 +380,14 @@ namespace RayaWSoffara.Controllers
         {
             _userRepo.UpdateUserDetails(rws_user);
             //return Profile(rws_user.UserName);
-            return RedirectToAction("Profile", new { Username = rws_user.UserName });
+            return RedirectToAction("Profile", new { Username = rws_user.UserName, Page = 1 });
         }
 
         [AllowAnonymous]
         [HttpGet]
         public ActionResult Profile(string Username, int Page)
         {
+            CompetitionRepository _compRepo = new CompetitionRepository();
             UserProfileVM userProfile = new UserProfileVM();
 
             RWSUser user = _userRepo.GetUserByUsername(Username);
@@ -397,6 +398,15 @@ namespace RayaWSoffara.Controllers
             userProfile.articlesCount = _userRepo.GetUserActivePosts(user.UserId).Count(); //user.Posts.Where(i => i.IsActive == true).Count();
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
+            if(user.FavComp != null){
+                userProfile.FavCompId = user.FavComp.Value;
+                userProfile.FavCompName = _compRepo.GetCompetetionById(user.FavComp.Value).CompetitionName;
+            }
+            if (user.FavTeam != null)
+            {
+                userProfile.FavTeamId = user.FavTeam.Value;
+                userProfile.FavTeamName = _compRepo.GetTeamById(user.FavTeam.Value).TeamName;
+            }
 
             ArticleRepository _articleRepo = new ArticleRepository();
             userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
