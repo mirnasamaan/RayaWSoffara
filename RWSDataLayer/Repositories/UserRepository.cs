@@ -71,6 +71,30 @@ namespace RWSDataLayer.Repositories
                 return Context.RWSUsers.Where(i => i.UserName.Contains(term)).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
         }
 
+        public IQueryable<RWSUser> GetUsersByActivationDate(DateTime day)
+        {
+            try
+            {
+                return Context.RWSUsers.Where(i => i.ConfirmationDate == day);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public IQueryable<RWSUser> GetUsersByActivationDate(int month, int year)
+        {
+            try
+            {
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true).Where(i => i.ConfirmationDate.Value.Month == month && i.ConfirmationDate.Value.Year == year);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         /// <summary>
         /// Get all active users
         /// </summary>
@@ -78,6 +102,17 @@ namespace RWSDataLayer.Repositories
         public IQueryable<RWSUser> GetAllActiveUsers()
         {
             return Context.RWSUsers.Where(i => i.IsConfirmed == true);
+        }
+
+        public IQueryable<RWSUser> GetInactiveUsers(){
+            try
+            {
+                return Context.RWSUsers.Where(i => i.IsConfirmed == false);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
         }
 
         /// <summary>

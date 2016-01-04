@@ -26,10 +26,10 @@ namespace RayaWSoffara
             facebookPermissions.Add("scope", "email,location, user_photos");
 
             //local fb key
-            //OAuthWebSecurity.RegisterFacebookClient("1464980217131308", "d6d6618eab9e67f73bc973deb0792bc3", "facebook", facebookPermissions);
+            OAuthWebSecurity.RegisterFacebookClient("1464980217131308", "d6d6618eab9e67f73bc973deb0792bc3", "facebook", facebookPermissions);
            
             //staging fb key
-            OAuthWebSecurity.RegisterFacebookClient("1490040901291906", "46315ba0c7b2820b11e1c2a151c19f02", "facebook", facebookPermissions);
+            //OAuthWebSecurity.RegisterFacebookClient("1490040901291906", "46315ba0c7b2820b11e1c2a151c19f02", "facebook", facebookPermissions);
 
             //OAuthWebSecurity.RegisterGoogleClient();
         }

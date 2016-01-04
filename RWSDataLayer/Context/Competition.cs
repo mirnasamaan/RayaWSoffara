@@ -17,6 +17,7 @@ namespace RWSDataLayer.Context
         public Competition()
         {
             this.Teams = new HashSet<Team>();
+            this.RWSUsers = new HashSet<RWSUser>();
         }
     
         public int CompetitionId { get; set; }
@@ -27,5 +28,6 @@ namespace RWSDataLayer.Context
     
         public virtual Region Region { get; set; }
         public virtual ICollection<Team> Teams { get; set; }
+        public virtual ICollection<RWSUser> RWSUsers { get; set; }
     }
 }

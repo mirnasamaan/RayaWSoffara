@@ -80,8 +80,7 @@ function OnDrop(e) {
         $(".jcrop-holder").remove();
     }
 
-    if ($("#video_embed_txt").length > 0) {
-        if ($("#video_embed_txt").val().indexOf('youtube') > -1) {
+        if ($("#video_embed_txt").length > 0 && $("#video_embed_txt").val().indexOf('youtube') > -1) {
             $("#" + media_id + " .media_img").attr("src", $("#video_viewport img").attr("src"));
             $("#" + media_id + " .media_img").css("display", "block");
             $("#" + media_id + " .media_dropbox").css("display", "none");
@@ -98,7 +97,7 @@ function OnDrop(e) {
                         });
                 }
             }
-        }
+        
     } else {
         $("#edit_modal_body").prepend(data);
         $('#edit_modal_body').prepend('<img id="my-cropped-image" src="#" style="display:none;" />');

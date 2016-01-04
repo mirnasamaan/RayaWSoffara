@@ -1,0 +1,495 @@
+﻿@model RWSDataLayer.Context.RWSUser
+@{
+    ViewBag.Title = "Home";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+
+
+<div class="row">
+
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-success panel-stat">
+            <div class="panel-heading">
+
+                <div class="stat">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <img src="/Content/Images/is-user.png" alt="" />
+                        </div>
+                        <div class="col-xs-8">
+                            <small class="stat-label">Registered Users</small>
+                            <h1>@ViewBag.TotalUsers</h1>
+                        </div>
+                    </div>
+                    <!-- row -->
+
+                    <div class="mb15"></div>
+
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <small class="stat-label">This Month</small>
+                            <h4>@ViewBag.UsersThisMonth</h4>
+                        </div>
+
+                        <div class="col-xs-6">
+                            <small class="stat-label">Today</small>
+                            <h4>@ViewBag.UsersToday</h4>
+                        </div>
+                    </div>
+                    <!-- row -->
+                </div>
+                <!-- stat -->
+
+            </div>
+            <!-- panel-heading -->
+        </div>
+        <!-- panel -->
+    </div>
+    <!-- col-sm-6 -->
+
+    <div class="col-sm-6 col-md-3">
+        <div class="panel panel-danger panel-stat">
+            <div class="panel-heading">
+
+                <div class="stat">
+                    <div class="row">
+                        <div class="col-xs-4">
+                            <img src="/Content/Images/is-user.png" alt="" />
+                        </div>
+                        <div class="col-xs-8">
+                            <small class="stat-label">Inactive Users</small>
+                            <h1>@ViewBag.InactiveUsers</h1>
+                        </div>
+                    </div>
+                    <!-- row -->
+
+                    <div class="mb15"></div>
+
+                </div>
+                <!-- stat -->
+
+            </div>
+            <!-- panel-heading -->
+        </div>
+        <!-- panel -->
+    </div>
+    <!-- col-sm-6 -->
+</div>
+<!-- row -->
+
+<div class="row">
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="row">
+                    <div class="pointsgraph">
+                        <div id="basicflot" style="width: 100%; height: 300px"></div>
+                    </div>
+                </div>
+                <!-- row -->
+            </div>
+            <!-- panel-body -->
+        </div>
+        <!-- panel -->
+    </div>
+    <!-- col-sm-9 -->
+
+</div>
+<!-- row -->
+
+<div class="row">
+
+    <div class="col-sm-6">
+
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <h5 class="subtitle">Donut Chart</h5>
+                <p>A donut chart, or doughnut chart, functions precisely like a pie chart. The only difference is that the center is blank.</p>
+                <div id="donut-chart" class="body-chart" style="width: 100%; height: 300px"></div>
+            </div>
+            <!-- panel-body -->
+        </div>
+        <!-- panel -->
+
+    </div>
+</div>
+
+<div class="row">
+
+    <div class="col-sm-7">
+
+        <div class="table-responsive">
+            <table class="table table-bordered mb30">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>First Name</th>
+                        <th>Last Name</th>
+                        <th>Username</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>mdo</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>fat</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                        <td>twitter</td>
+                    </tr>
+                    <tr>
+                        <td>4</td>
+                        <td>Mark</td>
+                        <td>Otto</td>
+                        <td>mdo</td>
+                    </tr>
+                    <tr>
+                        <td>5</td>
+                        <td>Jacob</td>
+                        <td>Thornton</td>
+                        <td>fat</td>
+                    </tr>
+                    <tr>
+                        <td>6</td>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                        <td>twitter</td>
+                    </tr>
+                    <tr>
+                        <td>7</td>
+                        <td>Larry</td>
+                        <td>the Bird</td>
+                        <td>twitter</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <!-- table-responsive -->
+
+    </div>
+    <!-- col-sm-7 -->
+
+    <div class="col-sm-5">
+
+        <div class="panel panel-success">
+            <div class="panel-heading padding5">
+                <div id="line-chart" class="ex-line-chart"></div>
+            </div>
+            <div class="panel-body">
+                <div class="tinystat pull-left">
+                    <div id="sparkline" class="chart mt5"></div>
+                    <div class="datainfo">
+                        <span class="text-muted">Average Sales</span>
+                        <h4>$630,201</h4>
+                    </div>
+                </div>
+                <!-- tinystat -->
+                <div class="tinystat pull-right">
+                    <div id="sparkline2" class="chart mt5"></div>
+                    <div class="datainfo">
+                        <span class="text-muted">Total Sales</span>
+                        <h4>$139,201</h4>
+                    </div>
+                </div>
+                <!-- tinystat -->
+            </div>
+        </div>
+        <!-- panel -->
+
+    </div>
+    <!-- col-sm-6 -->
+</div>
+<!-- row -->
+
+<div class="row">
+    <div class="col-sm-6 col-md-4">
+        <div class="panel panel-default widget-photoday">
+            <div class="panel-body">
+                <a href="" class="photoday">
+                    <img src="images/photos/photo1.png" alt="" /></a>
+                <div class="photo-details">
+                    <h4 class="photo-title">Strawhat In The Beach</h4>
+                    <small class="text-muted"><i class="fa fa-map-marker"></i>San Franciso, California, USA</small>
+                    <small>By: <a href="">ThemePixels</a></small>
+                </div>
+                <!-- photo-details -->
+                <ul class="photo-meta">
+                    <li><span><i class="fa fa-eye"></i>32,102</span></li>
+                    <li><a href="#"><i class="fa fa-heart"></i>1,003</a></li>
+                    <li><a href="#"><i class="fa fa-comments"></i>52</a></li>
+                </ul>
+            </div>
+            <!-- panel-body -->
+        </div>
+        <!-- panel -->
+    </div>
+    <!-- col-sm-6 -->
+
+    <div class="col-sm-6 col-md-4">
+        <div class="panel panel-default panel-alt widget-messaging">
+            <div class="panel-heading">
+                <div class="panel-btns">
+                    <a href="" class="panel-edit"><i class="fa fa-edit"></i></a>
+                </div>
+                <!-- panel-btns -->
+                <h3 class="panel-title">Messaging</h3>
+            </div>
+            <div class="panel-body">
+                <ul>
+                    <li>
+                        <small class="pull-right">Dec 10</small>
+                        <h4 class="sender">Jennier Lawrence</h4>
+                        <small>Lorem ipsum dolor sit amet...</small>
+                    </li>
+                    <li>
+                        <small class="pull-right">Dec 9</small>
+                        <h4 class="sender">Marsha Mellow</h4>
+                        <small>Lorem ipsum dolor sit amet...</small>
+                    </li>
+                    <li>
+                        <small class="pull-right">Dec 9</small>
+                        <h4 class="sender">Holly Golightly</h4>
+                        <small>Lorem ipsum dolor sit amet...</small>
+                    </li>
+                    <li>
+                        <small class="pull-right">Dec 10</small>
+                        <h4 class="sender">Jennier Lawrence</h4>
+                        <small>Lorem ipsum dolor sit amet...</small>
+                    </li>
+                    <li>
+                        <small class="pull-right">Dec 9</small>
+                        <h4 class="sender">Marsha Mellow</h4>
+                        <small>Lorem ipsum dolor sit amet...</small>
+                    </li>
+                </ul>
+            </div>
+            <!-- panel-body -->
+        </div>
+        <!-- panel -->
+    </div>
+    <!-- col-sm-6 -->
+
+    <div class="col-sm-6 col-md-4">
+        <div class="panel panel-dark panel-alt widget-quick-status-post">
+            <div class="panel-heading">
+                <div class="panel-btns">
+                    <a href="" class="panel-close">&times;</a>
+                    <a href="" class="minimize">&minus;</a>
+                </div>
+                <!-- panel-btns -->
+                <h3 class="panel-title">Quick Status Post</h3>
+            </div>
+            <div class="panel-body">
+                <ul class="nav nav-tabs nav-justified">
+                    <li class="active"><a href="#post-status" data-toggle="tab"><i class="fa fa-pencil"></i><strong>Status</strong></a></li>
+                    <li><a href="#post-photo" data-toggle="tab"><i class="fa fa-picture-o"></i><strong>Photo</strong></a></li>
+                    <li><a href="#post-checkin" data-toggle="tab"><i class="fa fa-map-marker"></i><strong>Check-In</strong></a></li>
+                </ul>
+                <div class="tab-content">
+                    <div id="post-status" class="tab-pane active">
+                        <input type="text" class="form-control" placeholder="What's your status?" />
+                    </div>
+                    <div id="post-photo" class="tab-pane">
+                        <input type="text" class="form-control" placeholder="Choose photo" />
+                    </div>
+                    <div id="post-checkin" class="tab-pane">
+                        <input type="text" class="form-control" placeholder="Search location" />
+                    </div>
+                    <button class="btn btn-primary btn-block mt10">Submit Post</button>
+                </div>
+                <!-- tab-content -->
+
+            </div>
+            <!-- panel-body -->
+        </div>
+        <!-- panel -->
+
+        <div class="mb20"></div>
+
+        <div class="row">
+            <div class="col-xs-6">
+                <div class="panel panel-warning panel-alt widget-today">
+                    <div class="panel-heading text-center">
+                        <i class="fa fa-calendar-o"></i>
+                    </div>
+                    <div class="panel-body text-center">
+                        <h3 class="today">Fri, Dec 13</h3>
+                    </div>
+                    <!-- panel-body -->
+                </div>
+                <!-- panel -->
+            </div>
+
+            <div class="col-xs-6">
+                <div class="panel panel-danger panel-alt widget-time">
+                    <div class="panel-heading text-center">
+                        <i class="glyphicon glyphicon-time"></i>
+                    </div>
+                    <div class="panel-body text-center">
+                        <h3 class="today">4:50AM PST</h3>
+                    </div>
+                    <!-- panel-body -->
+                </div>
+                <!-- panel -->
+            </div>
+        </div>
+    </div>
+    <!-- col-sm-6 -->
+
+</div>
+
+
+<script>
+    $.ajax({
+        url: "/Admin/GetUsersGraphPoints",
+        type: 'GET',
+        success: function (users) {
+            var active = users;
+            //var inactive = users[1];
+            var dataSet = [
+                { label: "Active", data: active, points: { fillColor: "#4572A7", size: 5 }, color: '#4572A7' }
+                //{ label: "Inactive", data: points, points: { fillColor: "#0062FF", size: 5 }, color: '#0062FF' }
+            ];
+
+            $.plot($("#basicflot"), dataSet, {
+                xaxis: {
+                    mode: "time",
+                    tickSize: [1, "month"],
+                    timeformat: "%b %Y",
+                    tickLength: 0,
+                    axisLabel: 'Month',
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                    axisLabelPadding: 5
+                },
+                yaxis: {
+                    axisLabel: 'Users',
+                    axisLabelUseCanvas: true,
+                    axisLabelFontSizePixels: 12,
+                    axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
+                    axisLabelPadding: 5
+                },
+                series: {
+                    lines: {
+                        show: true,
+                        fill: true
+                    },
+                    points: {
+                        radius: 3,
+                        show: true,
+                        fill: true
+                    },
+                },
+                grid: {
+                    borderWidth: 1,
+                    hoverable: true
+                }
+            });
+
+            function showTooltip(x, y, contents, z) {
+                $('<div id="flot-tooltip">' + contents + '</div>').css({
+                    top: y - 280,
+                    left: x - 280,
+                    'border-color': z,
+                }).appendTo(".pointsgraph").fadeIn(200);
+            }
+
+            function getMonthName(numericMonth) {
+                var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+                var alphaMonth = monthArray[numericMonth];
+
+                return alphaMonth;
+            }
+
+            function convertToDate(timestamp) {
+                var newDate = new Date(timestamp);
+                var dateString = newDate.getMonth();
+                var monthName = getMonthName(dateString);
+
+                return monthName;
+            }
+
+            var previousPoint = null;
+            $("#basicflot").bind("plothover", function (event, pos, item) {
+                if (item) {
+                    if ((previousPoint != item.dataIndex) || (previousLabel != item.series.label)) {
+                        previousPoint = item.dataIndex;
+                        previousLabel = item.series.label;
+
+                        $("#flot-tooltip").remove();
+
+                        var x = convertToDate(item.datapoint[0]),
+                        y = item.datapoint[1];
+                        z = item.series.color;
+
+                        showTooltip(item.pageX, item.pageY,
+                            "<b>" + item.series.label + "</b><br /> " + x + " = " + y,
+                            z);
+                    }
+                } else {
+                    $("#flot-tooltip").remove();
+                    previousPoint = null;
+                }
+            });
+        }
+    });
+
+    $.ajax({
+        url: "/Admin/GetUsersGraphPoints",
+        type: 'GET',
+        success: function (users) {
+            var dataSet = [
+                { label: "Asia", data: 4119630000, color: "#005CDE" },
+                { label: "Latin America", data: 590950000, color: "#00A36A" },
+                { label: "Africa", data: 1012960000, color: "#7D0096" },
+                { label: "Oceania", data: 35100000, color: "#992B00" },
+                { label: "Europe", data: 727080000, color: "#DE000F" },
+                { label: "North America", data: 344120000, color: "#ED7B00" }
+            ];
+            
+            $.plot($("#donut-chart"), dataSet, {
+                series: {
+                    pie: {
+                        show: true,
+                        innerRadius: 0.5
+                    }
+                }
+            });
+
+            //$.fn.showMemo = function () {
+            //    $(this).bind("plothover", function (event, pos, item) {
+            //        if (!item) { return; }
+
+            //        var html = [];
+            //        var percent = parseFloat(item.series.percent).toFixed(2);
+
+            //        html.push("<div style=\"border:1px solid grey;background-color:",
+            //             item.series.color,
+            //             "\">",
+            //             "<span style=\"color:white\">",
+            //             item.series.label,
+            //             " : ",
+            //             $.formatNumber(item.series.data[0][1], { format: "#,###", locale: "us" }),
+            //             " (", percent, "%)",
+            //             "</span>",
+            //             "</div>");
+            //        $("#flot-memo").html(html.join(''));
+            //    });
+            //}
+
+
+            //$("#donut-chart").showMemo();
+        }
+    });
+</script>

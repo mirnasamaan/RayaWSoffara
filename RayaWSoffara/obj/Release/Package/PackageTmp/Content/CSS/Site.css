@@ -3516,6 +3516,11 @@ input {
     margin-top: 20px;
 }
 
+.achievement-content {
+    margin: 30px 0;
+    color: black;
+}
+
 .achievements .achievement-item {
     margin: 0 13px;
     padding: 0 !important;

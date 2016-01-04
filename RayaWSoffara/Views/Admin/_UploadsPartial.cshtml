@@ -106,6 +106,8 @@
                 for (i = 0; i < data.Tags.length; i++) {
                     $('#' + imageId+ ' .imageTags').tagit("createTag", data.Tags[i].ItemName);
                 }
+
+                $("#" + image_id).hide(1000);
             }
         });
     }

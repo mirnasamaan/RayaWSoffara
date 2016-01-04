@@ -13,6 +13,7 @@ namespace RayaWSoffara.Models
         public string PostTitle { get; set; }
         public string PostFeaturedImage { get; set; }
         public string PostFeaturedVideo { get; set; }
+        public string PostContent { get; set; }
 
         public int PostSharesCount { get; set; }
         public int PostLikesCount { get; set; }

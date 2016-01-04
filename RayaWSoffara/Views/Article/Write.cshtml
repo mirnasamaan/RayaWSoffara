@@ -126,10 +126,27 @@
     @*}*@
 </form>
 
+<form id="frmDef" method="post">
+<img id="captcha" src="JpegImage.aspx?rnd=<%=_rand.Next(10).ToString() %>" alt="Captcha Image" /><br />
+<span>Click Image to Geneate a new captcha</span>
+<p>
+<strong>Enter the code shown above:</strong><br />
+<input ID="CodeNumberTextBox"></input>
+<button ID="SubmitButton">Submit</button><br />
+</p>
+<p>
+<em class="notice">(Note: If you cannot read the numbers in the above<br />
+image, Click the Image to generate a new one.)</em>
+</p>
+<p>
+<label ID="MessageLabel"></label></p>
+</form>
+
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
 <script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src=”http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221; type=”text/javascript”></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script>
     function funcNum() {
@@ -137,6 +154,15 @@
     }
 
     $(document).ready(function () {
+        // refresh captcha
+        $('img#captcha').click(function() {
+            change_captcha();
+        });
+
+        function change_captcha()
+        {
+            document.getElementById('captcha').src="JpegImage.aspx?rnd=" + Math.random();
+        }
 
         $('#image_edit').on('hidden.bs.modal', function () {
             //$.getScript("script.js", function () {

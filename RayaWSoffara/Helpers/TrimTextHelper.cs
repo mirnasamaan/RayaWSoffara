@@ -10,13 +10,15 @@ namespace RayaWSoffara.Helpers
     {
         public static string TrimText(string text, int charCount)
         {
-            string trimmed_text = Regex.Replace(text, "<.*?>", String.Empty); ;
-
-        
-
-            if (charCount < trimmed_text.Length)
+            string trimmed_text = "";
+            if (text != null)
             {
-                trimmed_text = trimmed_text.Substring(0, charCount) + " ...";
+                trimmed_text = Regex.Replace(text, "<.*?>", String.Empty); ;
+
+                if (charCount < trimmed_text.Length)
+                {
+                    trimmed_text = trimmed_text.Substring(0, charCount) + " ...";
+                }
             }
             return trimmed_text;
         }

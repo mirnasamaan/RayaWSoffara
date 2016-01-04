@@ -102,6 +102,61 @@ namespace RayaWSoffara.Controllers
             return Json(imgPath, JsonRequestBehavior.AllowGet);
         }
 
+        #region Dashboard
+        public ActionResult Dashboard()
+        {
+            ViewBag.SidebarItem = "dashboard";
+            ViewBag.PageHeader = "Dashboard";
+            ViewBag.SubSidebarItem = "dashboard";
+            ViewBag.TotalUsers = _userRepo.GetAllActiveUsers().Count();
+            ViewBag.UsersThisMonth = _userRepo.GetUsersByActivationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
+            ViewBag.UsersToday = _userRepo.GetUsersByActivationDate(DateTime.Now).Count();
+            ViewBag.InactiveUsers = _userRepo.GetInactiveUsers().Count();
+            return View();
+        }
+
+        public static long GetJavascriptTimestamp(DateTime input)
+        {
+            TimeSpan span = new System.TimeSpan(DateTime.Parse("1/1/1970").Ticks);
+            DateTime time = input.Subtract(span);
+            return (long)(time.Ticks / 10000);
+
+        }
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult GetUsersGraphPoints()
+        {
+            int currMonth = DateTime.Now.Month;
+            int currYear = DateTime.Now.Year;
+            int beginMonth, beginYear;
+
+            beginMonth = currMonth - 6 + 1;
+            beginYear = currYear;
+            if (beginMonth < 1)
+            {
+                beginMonth += 12;
+                beginYear--;
+            }
+
+            double[][] active = new double[6][];
+            for (int i = 0; i < 6; i++)
+            {
+                int month = beginMonth + i;
+                int year = beginYear;
+                if (month > 12)
+                {
+                    month -= 12;
+                    year = beginYear + 1;
+                }
+
+                active[i] = new double[2];
+                active[i][0] = GetJavascriptTimestamp(new DateTime(year, month, 1));
+                active[i][1] = _userRepo.GetUsersByActivationDate(month, year).Count();
+            }
+
+            return Json(active, JsonRequestBehavior.AllowGet);
+        }
+        #endregion
+
         #region Users
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult Users()

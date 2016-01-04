@@ -59,14 +59,14 @@
       
       <h5 class="sidebartitle">Navigation</h5>
       <ul class="nav nav-pills nav-stacked nav-bracket">
-        <li class=""><a href="index.html"><i class="fa fa-home"></i> <span>Dashboard</span></a></li>
-        <li class="users-management @(ViewBag.SidebarItem == "users-management"?"active nav-active":"")">
+        <li class="@(ViewBag.SidebarItem == "dashboard"?"active":"")"><a href="/Admin/Dashboard"><i class="fa fa-home"></i> <span>Dashboard</span></a></li>
+        <li class="users-management @(ViewBag.SidebarItem == "users-management"?"active":"")">
             <a href="/Admin/Users">
                 <span class="pull-right badge badge-success"></span>
                 <i class="fa fa-users"></i> <span>Users Management</span>
             </a>
         </li>
-        <li class="@(ViewBag.SidebarItem == "images-management"?"active nav-active":"")">
+        <li class="@(ViewBag.SidebarItem == "images-management"?"active":"")">
             <a href="/Admin/Images">
                 <i class="fa fa-picture-o"></i><span>Images Management</span>
             </a>
@@ -171,6 +171,8 @@
 <script src="~/Content/Scripts/flot/jquery.flot.min.js"></script>
 <script src="~/Content/Scripts/flot/jquery.flot.resize.min.js"></script>
 <script src="~/Content/Scripts/flot/jquery.flot.spline.min.js"></script>
+<script src="~/Content/Scripts/flot/jquery.flot.time.min.js"></script>
+<script src="~/Content/Scripts/flot/jquery.flot.pie.min.js"></script>
 <script src="~/Content/Scripts/morris.min.js"></script>
 <script src="~/Content/Scripts/raphael-2.1.0.min.js"></script>
 

@@ -53,5 +53,7 @@ namespace RWSDataLayer.Context
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<RWSProviderUser> RWSProviderUsers { get; set; }
         public virtual ICollection<RWSRole> RWSRoles { get; set; }
+        public virtual Competition Competition { get; set; }
+        public virtual Team Team { get; set; }
     }
 }

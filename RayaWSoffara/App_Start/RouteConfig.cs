@@ -31,6 +31,12 @@ namespace RayaWSoffara
                 defaults: new { controller = "Admin", action = "Signout", id = UrlParameter.Optional }
             );
 
+            routes.MapRoute(
+                name: "Admin/Dashboard",
+                url: "Admin/Dashboard",
+                defaults: new { controller = "Admin", action = "Dashboard", id = UrlParameter.Optional }
+            );
+
             #region User
             routes.MapRoute(
                 name: "Admin/Users",

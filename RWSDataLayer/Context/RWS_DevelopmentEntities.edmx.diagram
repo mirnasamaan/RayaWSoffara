@@ -37,6 +37,8 @@
         <AssociationConnector Association="RWS_DevelopmentModel.PostTag" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.RWSUserRole" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.TeamPlayer" ManuallyRouted="false" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_RWSUser_Competition" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_RWSUser_Team" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

@@ -105,6 +105,14 @@
       <Parameter Name="new_diagramname" Mode="In" Type="String" />
     </FunctionImport>
     <FunctionImport Name="sp_upgraddiagrams" />
+    <AssociationSet Name="FK_RWSUser_Competition" Association="RWS_DevelopmentModel.FK_RWSUser_Competition">
+      <End Role="Competition" EntitySet="Competitions" />
+      <End Role="RWSUser" EntitySet="RWSUsers" />
+    </AssociationSet>
+    <AssociationSet Name="FK_RWSUser_Team" Association="RWS_DevelopmentModel.FK_RWSUser_Team">
+      <End Role="Team" EntitySet="Teams" />
+      <End Role="RWSUser" EntitySet="RWSUsers" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="ArticleTopX">
     <Key>
@@ -141,6 +149,7 @@
     <Property Name="isActive" Type="Boolean" Nullable="false" />
     <NavigationProperty Name="Region" Relationship="RWS_DevelopmentModel.FK_Competition_Region" FromRole="Competition" ToRole="Region" />
     <NavigationProperty Name="Teams" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Competition" ToRole="Team" />
+    <NavigationProperty Name="RWSUsers" Relationship="RWS_DevelopmentModel.FK_RWSUser_Competition" FromRole="Competition" ToRole="RWSUser" />
   </EntityType>
   <EntityType Name="Image">
     <Key>
@@ -257,6 +266,8 @@
     <NavigationProperty Name="Posts" Relationship="RWS_DevelopmentModel.FK_Article_RWSUser" FromRole="RWSUser" ToRole="Post" />
     <NavigationProperty Name="RWSProviderUsers" Relationship="RWS_DevelopmentModel.FK_RWSProviderUser_RWSUser" FromRole="RWSUser" ToRole="RWSProviderUser" />
     <NavigationProperty Name="RWSRoles" Relationship="RWS_DevelopmentModel.RWSUserRole" FromRole="RWSUser" ToRole="RWSRole" />
+    <NavigationProperty Name="Competition" Relationship="RWS_DevelopmentModel.FK_RWSUser_Competition" FromRole="RWSUser" ToRole="Competition" />
+    <NavigationProperty Name="Team" Relationship="RWS_DevelopmentModel.FK_RWSUser_Team" FromRole="RWSUser" ToRole="Team" />
   </EntityType>
   <EntityType Name="sysdiagram">
     <Key>
@@ -291,6 +302,7 @@
     <Property Name="isActive" Type="Boolean" Nullable="false" />
     <NavigationProperty Name="Competitions" Relationship="RWS_DevelopmentModel.CompetitionTeam" FromRole="Team" ToRole="Competition" />
     <NavigationProperty Name="Players" Relationship="RWS_DevelopmentModel.TeamPlayer" FromRole="Team" ToRole="Player" />
+    <NavigationProperty Name="RWSUsers" Relationship="RWS_DevelopmentModel.FK_RWSUser_Team" FromRole="Team" ToRole="RWSUser" />
   </EntityType>
   <EntityType Name="Engagement">
     <Key>
@@ -484,4 +496,28 @@
     <Property Type="String" Name="Owner" Nullable="true" MaxLength="128" />
     <Property Type="Int32" Name="OwnerID" Nullable="false" />
   </ComplexType>
+  <Association Name="FK_RWSUser_Competition">
+    <End Type="RWS_DevelopmentModel.Competition" Role="Competition" Multiplicity="0..1" />
+    <End Type="RWS_DevelopmentModel.RWSUser" Role="RWSUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Competition">
+        <PropertyRef Name="CompetitionId" />
+      </Principal>
+      <Dependent Role="RWSUser">
+        <PropertyRef Name="FavComp" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_RWSUser_Team">
+    <End Type="RWS_DevelopmentModel.Team" Role="Team" Multiplicity="0..1" />
+    <End Type="RWS_DevelopmentModel.RWSUser" Role="RWSUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Team">
+        <PropertyRef Name="TeamId" />
+      </Principal>
+      <Dependent Role="RWSUser">
+        <PropertyRef Name="FavTeam" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
 </Schema>

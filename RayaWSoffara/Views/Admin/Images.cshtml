@@ -81,6 +81,7 @@
 
     //start of view button click function //
     function viewMore(e) {
+        page++;
         $.ajax({
             type: "POST",
             data: { page: page },
@@ -89,7 +90,6 @@
                 $(".loading").removeClass("hidden");
             },
             success: function (images) {
-                page++;
                 $images = $(images);
                 $(".loading").addClass("hidden");
                 $('.grid').imagesLoaded(function () {

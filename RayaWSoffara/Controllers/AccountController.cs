@@ -532,6 +532,7 @@ namespace RayaWSoffara.Controllers
                 post_points.PostTitle = item.Title;
                 post_points.PostFeaturedImage = item.FeaturedImage;
                 post_points.PostFeaturedVideo = item.FeaturedVideo;
+                post_points.PostContent = item.Content;
 
                 post_points.PostSharesCount = _userRepo.GetPostSharesByMonthId(item.PostId, MonthId, YearId);
                 post_points.PostSharesValue = post_points.PostSharesCount * _articleRepo.GetEngagementTypeWeight(1);
