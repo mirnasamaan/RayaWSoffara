@@ -206,6 +206,7 @@
           <Property Name="UpdateDate" Type="datetime" />
           <Property Name="PostTypeId" Type="int" />
           <Property Name="SharesCount" Type="int" Nullable="false" />
+          <Property Name="LikesCount" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="PostTag">
           <Key>
@@ -332,6 +333,7 @@
           <Property Name="EngTimestamp" Type="datetime" />
           <Property Name="PostId" Type="int" />
           <Property Name="EngTypeId" Type="int" />
+          <Property Name="EngUserId" Type="int" />
         </EntityType>
         <EntityType Name="EngagementType">
           <Key>
@@ -877,6 +879,7 @@
           <NavigationProperty Name="RWSUser" Relationship="RWS_DevelopmentModel.FK_Article_RWSUser" FromRole="Post" ToRole="RWSUser" />
           <NavigationProperty Name="Engagements" Relationship="RWS_DevelopmentModel.FK_Engagement_Post" FromRole="Post" ToRole="Engagement" />
           <NavigationProperty Name="Tags" Relationship="RWS_DevelopmentModel.PostTag" FromRole="Post" ToRole="Tag" />
+          <Property Type="Int32" Name="LikesCount" Nullable="false" />
         </EntityType>
         <EntityType Name="PostType">
           <Key>
@@ -997,6 +1000,7 @@
           <NavigationProperty Name="Post" Relationship="RWS_DevelopmentModel.FK_Engagement_Post" FromRole="Engagement" ToRole="Post" />
           <NavigationProperty Name="EngagementType" Relationship="RWS_DevelopmentModel.FK_Engagement_EngagementType" FromRole="Engagement" ToRole="EngagementType" />
           <NavigationProperty Name="EngagementType1" Relationship="RWS_DevelopmentModel.FK_EngagementType_EngagementType" FromRole="Engagement" ToRole="EngagementType" />
+          <Property Type="Int32" Name="EngUserId" />
         </EntityType>
         <EntityType Name="EngagementType">
           <Key>
@@ -1264,6 +1268,7 @@
           <EntitySetMapping Name="Posts">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.Post">
               <MappingFragment StoreEntitySet="Post">
+                <ScalarProperty Name="LikesCount" ColumnName="LikesCount" />
                 <ScalarProperty Name="PostId" ColumnName="PostId" />
                 <ScalarProperty Name="Title" ColumnName="Title" />
                 <ScalarProperty Name="Content" ColumnName="Content" />
@@ -1388,6 +1393,7 @@
           <EntitySetMapping Name="Engagements">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.Engagement">
               <MappingFragment StoreEntitySet="Engagement">
+                <ScalarProperty Name="EngUserId" ColumnName="EngUserId" />
                 <ScalarProperty Name="EngId" ColumnName="EngId" />
                 <ScalarProperty Name="EngTimestamp" ColumnName="EngTimestamp" />
                 <ScalarProperty Name="PostId" ColumnName="PostId" />

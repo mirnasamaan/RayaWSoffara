@@ -79,7 +79,7 @@ namespace RayaWSoffara.Controllers
                     }
                     if (name == "توب")
                     {
-                        name = "مقالة توب X";
+                        name = "قوائم";
                     }
                     postIds.Add(_articleRepo.GetPostTypeByName(name).PostTypeId);
                 }

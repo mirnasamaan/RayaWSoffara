@@ -37,6 +37,13 @@
             </div>
         </div>
         <div class="col-lg-3 col-xs-12 custom-row sidebar">
+            @if (!Request.IsAuthenticated)
+            {
+                <div class="callToAction">
+                    <a href="/Article" class="pull-left article_anchor"><span>إكــــتــب</span><i class="fa fa-pencil-square-o pull-right article-write"></i>
+                    </a>
+                </div>
+            }
             <div class="reward-promo"></div>
             <div class="statistics">
                 <div class="profile-sub-title no-margin">احصائيات</div>

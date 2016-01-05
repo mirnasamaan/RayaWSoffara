@@ -195,6 +195,7 @@
     <NavigationProperty Name="RWSUser" Relationship="RWS_DevelopmentModel.FK_Article_RWSUser" FromRole="Post" ToRole="RWSUser" />
     <NavigationProperty Name="Engagements" Relationship="RWS_DevelopmentModel.FK_Engagement_Post" FromRole="Post" ToRole="Engagement" />
     <NavigationProperty Name="Tags" Relationship="RWS_DevelopmentModel.PostTag" FromRole="Post" ToRole="Tag" />
+    <Property Type="Int32" Name="LikesCount" Nullable="false" />
   </EntityType>
   <EntityType Name="PostType">
     <Key>
@@ -315,6 +316,7 @@
     <NavigationProperty Name="Post" Relationship="RWS_DevelopmentModel.FK_Engagement_Post" FromRole="Engagement" ToRole="Post" />
     <NavigationProperty Name="EngagementType" Relationship="RWS_DevelopmentModel.FK_Engagement_EngagementType" FromRole="Engagement" ToRole="EngagementType" />
     <NavigationProperty Name="EngagementType1" Relationship="RWS_DevelopmentModel.FK_EngagementType_EngagementType" FromRole="Engagement" ToRole="EngagementType" />
+    <Property Type="Int32" Name="EngUserId" />
   </EntityType>
   <EntityType Name="EngagementType">
     <Key>

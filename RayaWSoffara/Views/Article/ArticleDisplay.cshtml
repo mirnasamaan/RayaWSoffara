@@ -67,6 +67,16 @@
                             <div class="count">@Model.newArticle.ViewsCount</div>
                             <div>مشاهدة</div>
                         </div>
+                        <div class="border pull-left"></div>
+                        <div class="pull-left likes">
+                            <div class="count">@Model.newArticle.LikesCount</div>
+                            <div>اعجابات</div>
+                        </div>
+                    </div>
+                    <div class="pull-left social-media-icons">
+                        <div class="pull-left like-btn">
+                            <a href="javascript:void(0)" class="" onclick="like(this)"><i class="fa fa-thumbs-up"></i></a>
+                        </div>
                     </div>
                     <div class="pull-right">
                         @{ int id = Model.newArticle.PostTypeId.Value;
@@ -316,6 +326,23 @@
         }
     });
     //end of view more button display //
+
+    //start of isPostLikedByUser //
+    var post_id = $("#PostId").val();
+    $.ajax({
+        type: "POST",
+        data: { PostId: post_id },
+        url: "/Article/isPostLikedByUser",
+        success: function (data) {
+            if (data == "liked") {
+                $(".like-btn i").css("color", "#22629f").css("background", "#F2F2F2").css("cursor", "default");
+                $(".like-btn a").attr("onclick", "");
+            } else if (data == "not a member") {
+                $(".like-btn").parent().css("display", "none");
+            }
+        }
+    });
+    //end of isPostLikedByUser //
     
     // start of adding a new comment //
     function addComment() {
@@ -396,6 +423,24 @@
         this.style.height = (1 + this.scrollHeight) + "px";
     });
     // end of comment textarea auto-resize function //
+
+    // start of like function //
+    function like(e) {
+        var post_id = $("#PostId").val();
+        $.ajax({
+            type: "POST",
+            data: { PostId: post_id },
+            url: "/Article/AddLikeCount",
+            success: function () {
+                $(e).children("i").css("color", "#22629f").css("background", "#F2F2F2").css("cursor", "default");
+                var likes_count = $(".likes .count").text();
+                likes_count = parseInt(likes_count) + 1;
+                $(".likes .count").text(likes_count);
+                $(e).attr("onclick", "");
+            }
+        });
+    }
+    // end of like function //
 
     // start of facebook share function //
     function facebookshare() {

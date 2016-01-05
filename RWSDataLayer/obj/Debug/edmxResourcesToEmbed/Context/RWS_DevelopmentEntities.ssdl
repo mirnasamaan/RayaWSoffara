@@ -201,6 +201,7 @@
     <Property Name="UpdateDate" Type="datetime" />
     <Property Name="PostTypeId" Type="int" />
     <Property Name="SharesCount" Type="int" Nullable="false" />
+    <Property Name="LikesCount" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="PostTag">
     <Key>
@@ -327,6 +328,7 @@
     <Property Name="EngTimestamp" Type="datetime" />
     <Property Name="PostId" Type="int" />
     <Property Name="EngTypeId" Type="int" />
+    <Property Name="EngUserId" Type="int" />
   </EntityType>
   <EntityType Name="EngagementType">
     <Key>

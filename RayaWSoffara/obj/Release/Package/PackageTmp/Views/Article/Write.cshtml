@@ -10,12 +10,15 @@
     @if (@ViewBag.ErrorMsg == 1)
     {
         <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
+    } else if (@ViewBag.ErrorMsg == 2)
+    {
+        <div class="ErrorMsg">Error: captcha is not valid.</div>
     }
     <div class="container full_width" id="createArticle_container">
         <div class="row">
             <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
                 <div class="input-group full_width input_margin"> 
-                    @Html.TextBoxFor(m => m.newArticle.Title, new{@class = "form-control dark_border", placeholder = "أضف عنوان"})
+                    @Html.TextBoxFor(m => m.newArticle.Title, new { @class = "form-control dark_border", placeholder = "أضف عنوان" })
                     <input type="hidden" name="article_picture_path" id="article_picture_path_0" />
                     <input type="hidden" name="video_url" id="video_url_0" value="" />
                 </div>
@@ -37,7 +40,7 @@
                     </div>
                 </div>
                 <div class="input-group full_width input_margin">
-                    @Html.TextAreaFor(m => m.newArticle.Content, new{ id="article_content"})
+                    @Html.TextAreaFor(m => m.newArticle.Content, new { id = "article_content" })
                 </div>
 
                 <div class="input-group full_width input_margin">
@@ -46,6 +49,7 @@
                         <ul id="articleTags"></ul>
                     </div>
                 </div>
+                <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
                 <div id="submit-btn">
                     <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
                 </div>
@@ -130,14 +134,12 @@
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
 <script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src=”http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221; type=”text/javascript”></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script>
-    function funcNum() {
-        alert("here");
-    }
 
     $(document).ready(function () {
-
         $('#image_edit').on('hidden.bs.modal', function () {
             //$.getScript("script.js", function () {
 
@@ -212,7 +214,7 @@
     });
 
     $.validator.addMethod("minChars", function (value, element) {
-        return $(value).length > 300;
+        return value.length > 300;
     });
 
     $.validator.addMethod("ImageOrVideo", function (value, element) {

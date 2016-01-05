@@ -18,6 +18,7 @@ namespace RWSDataLayer.Context
         public Nullable<System.DateTime> EngTimestamp { get; set; }
         public Nullable<int> PostId { get; set; }
         public Nullable<int> EngTypeId { get; set; }
+        public Nullable<int> EngUserId { get; set; }
     
         public virtual Post Post { get; set; }
         public virtual EngagementType EngagementType { get; set; }

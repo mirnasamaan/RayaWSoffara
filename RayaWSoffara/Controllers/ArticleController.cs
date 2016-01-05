@@ -17,6 +17,7 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Data;
+using RayaWSoffara.Helpers;  
 
 namespace RayaWSoffara.Controllers
 {
@@ -115,71 +116,70 @@ namespace RayaWSoffara.Controllers
         [ValidateInput(false)]
         public ActionResult Write(UserArticleVM article, string article_picture_path, string video_url)
         {
-            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
-            ViewBag.tags = articlesTags.ToList();
-            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
-            article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.MetaTags = "";
-            List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-            HttpPostedFileBase picture = Request.Files[0];
-            if (picture.FileName != "" || article_picture_path != "")
+            string remoteip = Request.UserHostAddress;
+            string recaptcha = Request.Form["g-recaptcha-response"];
+            bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
+            if (valid)
             {
-                if (article_picture_path != "")
+                IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+                ViewBag.tags = articlesTags.ToList();
+                RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+                article.newArticle.CreatedBy = currentUser.UserId;
+                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.MetaTags = "";
+                List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                HttpPostedFileBase picture = Request.Files[0];
+                if (picture.FileName != "" || article_picture_path != "")
                 {
-                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                    if (System.IO.File.Exists(path))
+                    if (article_picture_path != "")
                     {
-                        string[] separator = new string[] { "Temp/" };
-                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                        article.newArticle.FeaturedImage = imgName;
+                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                        if (System.IO.File.Exists(path))
+                        {
+                            string[] separator = new string[] { "Temp/" };
+                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                            article.newArticle.FeaturedImage = imgName;
+                        }
                     }
+                    else if (picture.FileName != "")
+                    {
+                        string picName = System.IO.Path.GetFileName(picture.FileName);
+                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                        picture.SaveAs(path);
+                        article.newArticle.FeaturedImage = picName;
+                    }
+
+                    article.newArticle.HasImage = true;
                 }
-                else if (picture.FileName != "")
+                else
+                    if (video_url != null || video_url != string.Empty)
+                    {
+                        article.newArticle.HasImage = false;
+                        article.newArticle.FeaturedVideo = video_url;
+                    }
+
+
+                article.newArticle.Tags = null;
+                article.newArticle.MetaTags = "";
+                article.newArticle.ViewsCount = 0;
+                article.newArticle.SharesCount = 0;
+                article.newArticle.PostTypeId = 1;
+                Post addedArticle = _articleRepo.AddPost(article.newArticle);
+                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+                if (addedArticle != null)
                 {
-                    string picName = System.IO.Path.GetFileName(picture.FileName);
-                    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                    picture.SaveAs(path);
-                    article.newArticle.FeaturedImage = picName;
+                    ViewBag.ErrorMsg = 0;
+                    return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
                 }
-
-                article.newArticle.HasImage = true;
-            }
-            else
-                if (video_url != null || video_url != string.Empty)
+                else
                 {
-                    article.newArticle.HasImage = false;
-                    article.newArticle.FeaturedVideo = video_url;
+                    ViewBag.ErrorMsg = 1;
+                    return View();
                 }
-
-            //if (article_picture_path != "" && video_url != "")
-            //{
-            //    article.newArticle.HasImage = false;
-            //    article.newArticle.FeaturedVideo = video_url;
-            //    article.newArticle.FeaturedImage = article_picture_path;
-            //}
-
-
-            article.newArticle.Tags = null;
-            article.newArticle.MetaTags = "";
-            article.newArticle.ViewsCount = 0;
-            article.newArticle.SharesCount = 0;
-            article.newArticle.PostTypeId = 1;
-            Post addedArticle = _articleRepo.AddPost(article.newArticle);
-            _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
-            if (addedArticle != null)
-            {
-                //_articleRepo.UpdatedArticleTags(addedArticle.ArticleId, tags);
-                ViewBag.ErrorMsg = 0;
-                return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
             }
-            else
-            {
-                ViewBag.ErrorMsg = 1;
-                return View();
-            }
+            return View();
         }
 
         [HttpPost]
@@ -187,65 +187,72 @@ namespace RayaWSoffara.Controllers
         [ValidateInput(false)]
         public ActionResult Opinion(UserArticleVM article, string article_picture_path, string video_url)
         {
-            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
-            ViewBag.tags = articlesTags.ToList();
-            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
-            article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.MetaTags = "";
-            List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-            HttpPostedFileBase picture = Request.Files[0];
-            if (picture.FileName != "" || article_picture_path != "")
+            string remoteip = Request.UserHostAddress;
+            string recaptcha = Request.Form["g-recaptcha-response"];
+            bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
+            if (valid)
             {
-                if (article_picture_path != "")
+                IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+                ViewBag.tags = articlesTags.ToList();
+                RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+                article.newArticle.CreatedBy = currentUser.UserId;
+                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.MetaTags = "";
+                List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                HttpPostedFileBase picture = Request.Files[0];
+                if (picture.FileName != "" || article_picture_path != "")
                 {
-                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                    if (System.IO.File.Exists(path))
+                    if (article_picture_path != "")
                     {
-                        string[] separator = new string[] { "Temp/" };
-                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                        article.newArticle.FeaturedImage = imgName;
+                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                        if (System.IO.File.Exists(path))
+                        {
+                            string[] separator = new string[] { "Temp/" };
+                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                            article.newArticle.FeaturedImage = imgName;
+                        }
                     }
+                    else if (picture.FileName != "")
+                    {
+                        string picName = System.IO.Path.GetFileName(picture.FileName);
+                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                        picture.SaveAs(path);
+                        article.newArticle.FeaturedImage = picName;
+                    }
+
+                    article.newArticle.HasImage = true;
                 }
-                else if (picture.FileName != "")
+                else if (video_url != null && video_url != "")
                 {
-                    string picName = System.IO.Path.GetFileName(picture.FileName);
-                    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                    picture.SaveAs(path);
-                    article.newArticle.FeaturedImage = picName;
+                    article.newArticle.HasImage = false;
+                    article.newArticle.FeaturedVideo = video_url;
+                }
+                else
+                {
+                    article.newArticle.HasImage = false;
                 }
 
-                article.newArticle.HasImage = true;
+                article.newArticle.Tags = null;
+                article.newArticle.MetaTags = "";
+                article.newArticle.ViewsCount = 0;
+                article.newArticle.SharesCount = 0;
+                article.newArticle.PostTypeId = 3;
+                Post addedArticle = _articleRepo.AddPost(article.newArticle);
+                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+                if (addedArticle != null)
+                {
+                    ViewBag.ErrorMsg = 0;
+                    return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
+                }
+                else
+                {
+                    ViewBag.ErrorMsg = 1;
+                    return View();
+                }
             }
-            else if (video_url != null && video_url != "")
-            {
-                article.newArticle.HasImage = false;
-                article.newArticle.FeaturedVideo = video_url;
-            }
-            else
-            {
-                article.newArticle.HasImage = false;
-            }
-
-            article.newArticle.Tags = null;
-            article.newArticle.MetaTags = "";
-            article.newArticle.ViewsCount = 0;
-            article.newArticle.SharesCount = 0;
-            article.newArticle.PostTypeId = 3;
-            Post addedArticle = _articleRepo.AddPost(article.newArticle);
-            _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
-            if (addedArticle != null)
-            {
-                ViewBag.ErrorMsg = 0;
-                return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
-            }
-            else
-            {
-                ViewBag.ErrorMsg = 1;
-                return View();
-            }
+            return View();
         }
 
         [HttpPost]
@@ -253,67 +260,74 @@ namespace RayaWSoffara.Controllers
         [ValidateInput(false)]
         public ActionResult Image(UserArticleVM article, string article_picture_path, string video_url)
         {
-            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
-            ViewBag.tags = articlesTags.ToList();
-            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
-            article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.MetaTags = "";
-            if (article.newArticle.Content == null)
+            string remoteip = Request.UserHostAddress;
+            string recaptcha = Request.Form["g-recaptcha-response"];
+            bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
+            if (valid)
             {
-                article.newArticle.Content = "";
-            }
-            List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-            HttpPostedFileBase picture = Request.Files[0];
-            if (picture.FileName != "" || article_picture_path != "")
-            {
-                if (article_picture_path != "")
+                IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+                ViewBag.tags = articlesTags.ToList();
+                RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+                article.newArticle.CreatedBy = currentUser.UserId;
+                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.MetaTags = "";
+                if (article.newArticle.Content == null)
                 {
-                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                    if (System.IO.File.Exists(path))
+                    article.newArticle.Content = "";
+                }
+                List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                HttpPostedFileBase picture = Request.Files[0];
+                if (picture.FileName != "" || article_picture_path != "")
+                {
+                    if (article_picture_path != "")
                     {
-                        string[] separator = new string[] { "Temp/" };
-                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                        article.newArticle.FeaturedImage = imgName;
+                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                        if (System.IO.File.Exists(path))
+                        {
+                            string[] separator = new string[] { "Temp/" };
+                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                            article.newArticle.FeaturedImage = imgName;
+                            article.newArticle.PostTypeId = 4;
+                        }
+                    }
+                    else if (picture.FileName != "")
+                    {
+                        string picName = System.IO.Path.GetFileName(picture.FileName);
+                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                        picture.SaveAs(path);
+                        article.newArticle.FeaturedImage = picName;
                         article.newArticle.PostTypeId = 4;
                     }
+
+                    article.newArticle.HasImage = true;
                 }
-                else if (picture.FileName != "")
+                else if (video_url != null || video_url != string.Empty)
                 {
-                    string picName = System.IO.Path.GetFileName(picture.FileName);
-                    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                    picture.SaveAs(path);
-                    article.newArticle.FeaturedImage = picName;
-                    article.newArticle.PostTypeId = 4;
+                    article.newArticle.HasImage = false;
+                    article.newArticle.FeaturedVideo = video_url;
+                    article.newArticle.PostTypeId = 5;
                 }
 
-                article.newArticle.HasImage = true;
+                article.newArticle.Tags = null;
+                article.newArticle.MetaTags = "";
+                article.newArticle.ViewsCount = 0;
+                article.newArticle.SharesCount = 0;
+                Post addedArticle = _articleRepo.AddPost(article.newArticle);
+                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+                if (addedArticle != null)
+                {
+                    ViewBag.ErrorMsg = 0;
+                    return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
+                }
+                else
+                {
+                    ViewBag.ErrorMsg = 1;
+                    return View();
+                }
             }
-            else if (video_url != null || video_url != string.Empty)
-            {
-                article.newArticle.HasImage = false;
-                article.newArticle.FeaturedVideo = video_url;
-                article.newArticle.PostTypeId = 5;
-            }
-
-            article.newArticle.Tags = null;
-            article.newArticle.MetaTags = "";
-            article.newArticle.ViewsCount = 0;
-            article.newArticle.SharesCount = 0;
-            Post addedArticle = _articleRepo.AddPost(article.newArticle);
-            _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
-            if (addedArticle != null)
-            {
-                ViewBag.ErrorMsg = 0;
-                return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
-            }
-            else
-            {
-                ViewBag.ErrorMsg = 1;
-                return View();
-            }
+            return View();
         }
 
         [HttpPost]
@@ -321,67 +335,74 @@ namespace RayaWSoffara.Controllers
         [ValidateInput(false)]
         public ActionResult Video(UserArticleVM article, string article_picture_path, string video_url)
         {
-            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
-            ViewBag.tags = articlesTags.ToList();
-            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
-            article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.MetaTags = "";
-            if (article.newArticle.Content == null)
+            string remoteip = Request.UserHostAddress;
+            string recaptcha = Request.Form["g-recaptcha-response"];
+            bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
+            if (valid)
             {
-                article.newArticle.Content = "";
-            }
-            List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-            HttpPostedFileBase picture = Request.Files[0];
-            if (picture.FileName != "" || article_picture_path != "")
-            {
-                if (article_picture_path != "")
+                IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+                ViewBag.tags = articlesTags.ToList();
+                RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+                article.newArticle.CreatedBy = currentUser.UserId;
+                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.MetaTags = "";
+                if (article.newArticle.Content == null)
                 {
-                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                    if (System.IO.File.Exists(path))
+                    article.newArticle.Content = "";
+                }
+                List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                HttpPostedFileBase picture = Request.Files[0];
+                if (picture.FileName != "" || article_picture_path != "")
+                {
+                    if (article_picture_path != "")
                     {
-                        string[] separator = new string[] { "Temp/" };
-                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                        article.newArticle.FeaturedImage = imgName;
+                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                        if (System.IO.File.Exists(path))
+                        {
+                            string[] separator = new string[] { "Temp/" };
+                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                            article.newArticle.FeaturedImage = imgName;
+                            article.newArticle.PostTypeId = 4;
+                        }
+                    }
+                    else if (picture.FileName != "")
+                    {
+                        string picName = System.IO.Path.GetFileName(picture.FileName);
+                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                        picture.SaveAs(path);
+                        article.newArticle.FeaturedImage = picName;
                         article.newArticle.PostTypeId = 4;
                     }
+
+                    article.newArticle.HasImage = true;
                 }
-                else if (picture.FileName != "")
+                else if (video_url != null || video_url != string.Empty)
                 {
-                    string picName = System.IO.Path.GetFileName(picture.FileName);
-                    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                    picture.SaveAs(path);
-                    article.newArticle.FeaturedImage = picName;
-                    article.newArticle.PostTypeId = 4;
+                    article.newArticle.HasImage = false;
+                    article.newArticle.FeaturedVideo = video_url;
+                    article.newArticle.PostTypeId = 5;
                 }
 
-                article.newArticle.HasImage = true;
+                article.newArticle.Tags = null;
+                article.newArticle.MetaTags = "";
+                article.newArticle.ViewsCount = 0;
+                article.newArticle.SharesCount = 0;
+                Post addedArticle = _articleRepo.AddPost(article.newArticle);
+                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+                if (addedArticle != null)
+                {
+                    ViewBag.ErrorMsg = 0;
+                    return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
+                }
+                else
+                {
+                    ViewBag.ErrorMsg = 1;
+                    return View();
+                }
             }
-            else if (video_url != null || video_url != string.Empty)
-            {
-                article.newArticle.HasImage = false;
-                article.newArticle.FeaturedVideo = video_url;
-                article.newArticle.PostTypeId = 5;
-            }
-
-            article.newArticle.Tags = null;
-            article.newArticle.MetaTags = "";
-            article.newArticle.ViewsCount = 0;
-            article.newArticle.SharesCount = 0;
-            Post addedArticle = _articleRepo.AddPost(article.newArticle);
-            _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
-            if (addedArticle != null)
-            {
-                ViewBag.ErrorMsg = 0;
-                return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
-            }
-            else
-            {
-                ViewBag.ErrorMsg = 1;
-                return View();
-            }
+            return View();
         }
 
         [HttpPost]
@@ -389,102 +410,109 @@ namespace RayaWSoffara.Controllers
         [ValidateInput(false)]
         public ActionResult WriteTopX(UserArticleVM article, string[] article_picture_path, string[] video_url)
         {
-            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
-            ViewBag.tags = articlesTags.ToList();
-            RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
-            article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.MetaTags = "";
-            List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-
-            int count = 0;
-            foreach (string img_path in article_picture_path)
+            string remoteip = Request.UserHostAddress;
+            string recaptcha = Request.Form["g-recaptcha-response"];
+            bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
+            if (valid)
             {
-                if (count > 0)
+                IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+                ViewBag.tags = articlesTags.ToList();
+                RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
+                article.newArticle.CreatedBy = currentUser.UserId;
+                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.MetaTags = "";
+                List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+
+                int count = 0;
+                foreach (string img_path in article_picture_path)
                 {
-                    HttpPostedFileBase picture = Request.Files[count];
-                    if (picture.FileName != "" || img_path != "")
+                    if (count > 0)
                     {
-                        if (img_path != "")
+                        HttpPostedFileBase picture = Request.Files[count];
+                        if (picture.FileName != "" || img_path != "")
                         {
-                            string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
-                            if (System.IO.File.Exists(path))
+                            if (img_path != "")
                             {
-                                string[] separator = new string[] { "Temp/" };
-                                string[] temp = img_path.Split(separator, StringSplitOptions.None);
-                                string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                                System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                                article.newArticle.ArticleTopXes.ElementAt(count - 1).TopXImage = imgName;
+                                string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
+                                if (System.IO.File.Exists(path))
+                                {
+                                    string[] separator = new string[] { "Temp/" };
+                                    string[] temp = img_path.Split(separator, StringSplitOptions.None);
+                                    string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                                    System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                                    article.newArticle.ArticleTopXes.ElementAt(count - 1).TopXImage = imgName;
+                                }
+                            }
+                            else if (picture.FileName != "")
+                            {
+                                string picName = System.IO.Path.GetFileName(picture.FileName);
+                                // string newName = new Random().ne System.IO.Path.GetExtension(picture.FileName);
+                                string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                                picture.SaveAs(path);
+                                article.newArticle.ArticleTopXes.ElementAt(count).TopXImage = picName;
                             }
                         }
-                        else if (picture.FileName != "")
+                        else if (video_url != null || video_url[count] != string.Empty)
                         {
-                            string picName = System.IO.Path.GetFileName(picture.FileName);
-                            // string newName = new Random().ne System.IO.Path.GetExtension(picture.FileName);
-                            string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                            picture.SaveAs(path);
-                            article.newArticle.ArticleTopXes.ElementAt(count).TopXImage = picName;
+                            article.newArticle.ArticleTopXes.ElementAt(count).TopXVideo = video_url[count];
                         }
                     }
-                    else if (video_url != null || video_url[count] != string.Empty)
+                    else
                     {
-                        article.newArticle.ArticleTopXes.ElementAt(count).TopXVideo = video_url[count];
+                        HttpPostedFileBase picture = Request.Files[0];
+                        if (picture.FileName != "" || img_path != "")
+                        {
+                            if (img_path != "")
+                            {
+                                string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
+                                if (System.IO.File.Exists(path))
+                                {
+                                    string[] separator = new string[] { "Temp/" };
+                                    string[] temp = img_path.Split(separator, StringSplitOptions.None);
+                                    string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                                    System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                                    article.newArticle.FeaturedImage = imgName;
+                                }
+                            }
+                            else if (picture.FileName != "")
+                            {
+                                string picName = System.IO.Path.GetFileName(picture.FileName);
+                                string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                                picture.SaveAs(path);
+                                article.newArticle.FeaturedImage = picName;
+                            }
+
+                            article.newArticle.HasImage = true;
+                        }
+                        else if (video_url != null || video_url[count] != string.Empty)
+                        {
+                            article.newArticle.HasImage = false;
+                            article.newArticle.FeaturedVideo = video_url[count];
+                            article.newArticle.FeaturedImage = img_path;
+                        }
                     }
+                    count++;
+                }
+
+                article.newArticle.Tags = null;
+                article.newArticle.MetaTags = "";
+                article.newArticle.ViewsCount = 0;
+                article.newArticle.PostTypeId = 2;
+                Post addedArticle = _articleRepo.AddPost(article.newArticle);
+                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+                if (addedArticle != null)
+                {
+                    //_articleRepo.UpdatedArticleTags(addedArticle.ArticleId, tags);
+                    ViewBag.ErrorMsg = 0;
+                    return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
                 }
                 else
                 {
-                    HttpPostedFileBase picture = Request.Files[0];
-                    if (picture.FileName != "" || img_path != "")
-                    {
-                        if (img_path != "")
-                        {
-                            string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
-                            if (System.IO.File.Exists(path))
-                            {
-                                string[] separator = new string[] { "Temp/" };
-                                string[] temp = img_path.Split(separator, StringSplitOptions.None);
-                                string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                                System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                                article.newArticle.FeaturedImage = imgName;
-                            }
-                        }
-                        else if (picture.FileName != "")
-                        {
-                            string picName = System.IO.Path.GetFileName(picture.FileName);
-                            string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                            picture.SaveAs(path);
-                            article.newArticle.FeaturedImage = picName;
-                        }
-
-                        article.newArticle.HasImage = true;
-                    }
-                    else if (video_url != null || video_url[count] != string.Empty)
-                    {
-                        article.newArticle.HasImage = false;
-                        article.newArticle.FeaturedVideo = video_url[count];
-                        article.newArticle.FeaturedImage = img_path;
-                    }
+                    ViewBag.ErrorMsg = 1;
+                    return View();
                 }
-                count++;
             }
-
-            article.newArticle.Tags = null;
-            article.newArticle.MetaTags = "";
-            article.newArticle.ViewsCount = 0;
-            article.newArticle.PostTypeId = 2;
-            Post addedArticle = _articleRepo.AddPost(article.newArticle);
-            _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
-            if (addedArticle != null)
-            {
-                //_articleRepo.UpdatedArticleTags(addedArticle.ArticleId, tags);
-                ViewBag.ErrorMsg = 0;
-                return RedirectToAction("ArticleDisplay", new { id = addedArticle.PostId });
-            }
-            else
-            {
-                ViewBag.ErrorMsg = 1;
-                return View();
-            }
+            return View();
         }
 
         private string EncodeTo64(string toEncode)
@@ -615,7 +643,14 @@ namespace RayaWSoffara.Controllers
 
         public void AddShareCount(int PostId)
         {
-            _articleRepo.AddShareCount(PostId);
+            int UserId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
+            _articleRepo.AddShareCount(PostId, UserId);
+        }
+
+        public void AddLikeCount(int PostId)
+        {
+            int UserId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
+            _articleRepo.AddLikeCount(PostId, UserId);
         }
 
         public ActionResult GetComments(int Index, int PostId)
@@ -628,6 +663,24 @@ namespace RayaWSoffara.Controllers
                 return PartialView("_CommentPartial", result);
             }
             return View("ArticleDisplay", comments);
+        }
+
+        public string isPostLikedByUser(int PostId)
+        {
+            if (User.Identity.Name != null && User.Identity.Name != "")
+            {
+                int UserId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
+                bool liked = _articleRepo.isPostLikedByUser(PostId, UserId);
+                if (liked)
+                {
+                    return "liked";
+                }
+                else
+                {
+                    return "not liked";
+                }
+            }
+            return "not a member";
         }
 
         public ActionResult ArticleDisplay(int id)
@@ -643,7 +696,7 @@ namespace RayaWSoffara.Controllers
             // start of checking if the current user is the author of the post //
             if (User.Identity.Name != _articleRepo.GetPostById(id).RWSUser.UserName)
             {
-                _articleRepo.AddViewsCount(id);
+                _articleRepo.AddViewsCount(id, User.Identity.Name);
             }
             // end of checking if the current user is the author of the post //
 

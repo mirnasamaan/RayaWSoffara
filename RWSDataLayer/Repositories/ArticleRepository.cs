@@ -50,7 +50,7 @@ namespace RWSDataLayer.Repositories
         /// </summary>
         /// <param name="PostId">Post Id</param>
         /// <returns></returns>
-        public void AddShareCount(int PostId)
+        public void AddShareCount(int PostId, int UserId)
         {
             Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
             post.SharesCount++;
@@ -59,6 +59,22 @@ namespace RWSDataLayer.Repositories
             eng.EngTypeId = 1;
             eng.EngTimestamp = DateTime.Now;
             eng.PostId = PostId;
+            eng.EngUserId = UserId;
+            Context.Engagements.Add(eng);
+
+            Context.SaveChanges();
+        }
+
+        public void AddLikeCount(int PostId, int UserId)
+        {
+            Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
+            post.LikesCount++;
+
+            Engagement eng = new Engagement();
+            eng.EngTypeId = 2;
+            eng.EngTimestamp = DateTime.Now;
+            eng.PostId = PostId;
+            eng.EngUserId = UserId;
             Context.Engagements.Add(eng);
 
             Context.SaveChanges();
@@ -96,17 +112,35 @@ namespace RWSDataLayer.Repositories
             return posts;
         }
 
+        public bool isPostLikedByUser(int PostId, int UserId){
+            int likes_count = Context.Engagements.Where(i => i.PostId == PostId && i.EngUserId == UserId && i.EngTypeId == 2).Count();
+            if (likes_count > 0)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
         /// <summary>
         /// Add view count
         /// </summary>
         /// <param name="PostId">Post Id</param>
         /// <returns></returns>
-        public void AddViewsCount(int PostId)
+        public void AddViewsCount(int PostId, string UserName)
         {
+            int? userId = null;
+            if (UserName != "")
+            {
+                userId = Context.RWSUsers.FirstOrDefault(i => i.UserName == UserName).UserId;
+            }
             Engagement eng = new Engagement();
             eng.EngTypeId = 3;
             eng.EngTimestamp = DateTime.Now;
             eng.PostId = PostId;
+            eng.EngUserId = userId;
             Context.Engagements.Add(eng);
 
             Context.SaveChanges();

@@ -501,14 +501,18 @@ footer {
 
 .header_divs .logo_div .slogan {
     color: white;
-    width: 120px;
+    width: 96px;
     text-align: center;
-    font-size: 11px;
-    margin-right: 75px;
-    margin-top: -30px;
+    font-size: 9px;
+    margin-right: 90px;
+    line-height: 9px;
+    margin-top: -28px;
+    font-family: GESS_Medium, 'Open Sans' !important;
+    border-top: 1px solid #fff;
+    padding-top: 4px
 }
 
-.header_divs .logo_div a:hover {
+.header_divs .logo_div a:hover, .header_divs .logo_div a:focus {
     text-decoration: none;
 }
 
@@ -2151,6 +2155,9 @@ span.views > img {
 #display_post_container .social-media-icons i.fa-google-plus {
     background: #d11718;
 }
+#display_post_container .social-media-icons i.fa-thumbs-up {
+    background: #22629f;
+}
 #display_post_container .article_stats .count {
     font-size: 25px;
 }
@@ -2193,14 +2200,14 @@ span.views > img {
     padding-left: 20px;
 }
 
-#display_post_container .article_stats .views, #display_post_container .article_stats .comments, #display_post_container .article_stats .shares {
+#display_post_container .article_stats .views, #display_post_container .article_stats .comments, #display_post_container .article_stats .shares, #display_post_container .article_stats .likes {
     padding: 0 20px;
     color: #3589b5;
     font-size: 20px;
     font-family: GESS_Medium, 'Open Sans';
     font-weight: bold;
 }  
-#display_post_container .article_stats .views div, #display_post_container .article_stats .comments div, #display_post_container .article_stats .shares div {
+#display_post_container .article_stats .views div, #display_post_container .article_stats .comments div, #display_post_container .article_stats .shares div, #display_post_container .article_stats .likes div {
     line-height: 20px;
 }
 .ul_list .article_middle_div {

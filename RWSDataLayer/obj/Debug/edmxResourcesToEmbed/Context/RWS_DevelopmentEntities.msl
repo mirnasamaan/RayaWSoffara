@@ -57,6 +57,7 @@
     <EntitySetMapping Name="Posts">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Post">
         <MappingFragment StoreEntitySet="Post">
+          <ScalarProperty Name="LikesCount" ColumnName="LikesCount" />
           <ScalarProperty Name="PostId" ColumnName="PostId" />
           <ScalarProperty Name="Title" ColumnName="Title" />
           <ScalarProperty Name="Content" ColumnName="Content" />
@@ -181,6 +182,7 @@
     <EntitySetMapping Name="Engagements">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Engagement">
         <MappingFragment StoreEntitySet="Engagement">
+          <ScalarProperty Name="EngUserId" ColumnName="EngUserId" />
           <ScalarProperty Name="EngId" ColumnName="EngId" />
           <ScalarProperty Name="EngTimestamp" ColumnName="EngTimestamp" />
           <ScalarProperty Name="PostId" ColumnName="PostId" />

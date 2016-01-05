@@ -499,6 +499,19 @@ footer {
     margin-left: -97px;
 }
 
+.header_divs .logo_div .slogan {
+    color: white;
+    width: 120px;
+    text-align: center;
+    font-size: 11px;
+    margin-right: 75px;
+    margin-top: -30px;
+}
+
+.header_divs .logo_div a:hover, .header_divs .logo_div a:focus {
+    text-decoration: none;
+}
+
     .header_divs .logo_div h1 {
         background-image: url("../Images/logo.png");
         overflow: hidden;
@@ -2621,6 +2634,25 @@ input[name="Email"] {
     top: 0;
     /*-webkit-transition: top 0.1s;
     transition: top 0.1s;*/
+}
+
+.sidebar .callToAction {
+    margin-top: 11px;
+    display: inline-block;
+    width: 100%;
+}
+
+.sidebar .callToAction a {
+    color: white;
+    height: 60px;
+    text-decoration: none;
+    font-family: helveticaArabic !important;
+    font-size: 15px;
+    font-weight: bold;
+    width: 100%;
+    padding: 16px;
+    background: rgb(52, 141, 185);
+    position: relative;
 }
 
 .statistics {

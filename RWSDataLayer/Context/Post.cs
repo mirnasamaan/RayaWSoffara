@@ -38,6 +38,7 @@ namespace RWSDataLayer.Context
         public Nullable<System.DateTime> UpdateDate { get; set; }
         public Nullable<int> PostTypeId { get; set; }
         public int SharesCount { get; set; }
+        public int LikesCount { get; set; }
     
         public virtual ICollection<ArticleTopX> ArticleTopXes { get; set; }
         public virtual PostType PostType { get; set; }

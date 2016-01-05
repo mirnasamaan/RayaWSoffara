@@ -91,6 +91,14 @@
       <End Role="RWSUser" EntitySet="RWSUser" />
       <End Role="RWSProviderUser" EntitySet="RWSProviderUser" />
     </AssociationSet>
+    <AssociationSet Name="FK_RWSUser_Competition" Association="RWS_DevelopmentModel.Store.FK_RWSUser_Competition">
+      <End Role="Competition" EntitySet="Competition" />
+      <End Role="RWSUser" EntitySet="RWSUser" />
+    </AssociationSet>
+    <AssociationSet Name="FK_RWSUser_Team" Association="RWS_DevelopmentModel.Store.FK_RWSUser_Team">
+      <End Role="Team" EntitySet="Team" />
+      <End Role="RWSUser" EntitySet="RWSUser" />
+    </AssociationSet>
     <AssociationSet Name="FK_RWSUserRole_RWSRole" Association="RWS_DevelopmentModel.Store.FK_RWSUserRole_RWSRole">
       <End Role="RWSRole" EntitySet="RWSRole" />
       <End Role="RWSUserRole" EntitySet="RWSUserRole" />
@@ -551,6 +559,30 @@
       </Principal>
       <Dependent Role="RWSProviderUser">
         <PropertyRef Name="UserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_RWSUser_Competition">
+    <End Role="Competition" Type="RWS_DevelopmentModel.Store.Competition" Multiplicity="0..1" />
+    <End Role="RWSUser" Type="RWS_DevelopmentModel.Store.RWSUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Competition">
+        <PropertyRef Name="CompetitionId" />
+      </Principal>
+      <Dependent Role="RWSUser">
+        <PropertyRef Name="FavComp" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_RWSUser_Team">
+    <End Role="Team" Type="RWS_DevelopmentModel.Store.Team" Multiplicity="0..1" />
+    <End Role="RWSUser" Type="RWS_DevelopmentModel.Store.RWSUser" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Team">
+        <PropertyRef Name="TeamId" />
+      </Principal>
+      <Dependent Role="RWSUser">
+        <PropertyRef Name="FavTeam" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
