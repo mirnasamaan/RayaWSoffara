@@ -2490,9 +2490,9 @@ input[name="Email"] {
     border-bottom: 2px solid #348DB9 !important;
 }
 
-.nav-tabs li {
+/*.nav-tabs li {
     width: 100%;
-}
+}*/
 
 .nav-tabs li a {
     border-radius: 0!important;
@@ -4554,6 +4554,15 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
     -webkit-border-radius: 5px;
     -khtml-border-radius: 5px;
     border-radius: 5px;
+}
+
+.image-dropzone {
+    height: 400px !important;
+}
+
+.image-dropzone {
+    position: absolute;
+    direction: ltr;
 }
 /*===========================================================================================================================================*/
 

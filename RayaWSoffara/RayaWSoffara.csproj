@@ -280,6 +280,7 @@
     <Content Include="Content\CSS\font.roboto.css" />
     <Content Include="Content\CSS\fonts\index.html" />
     <Content Include="Content\CSS\fullcalendar.css" />
+    <Content Include="Content\CSS\html5imageupload.css" />
     <Content Include="Content\CSS\index.html" />
     <Content Include="Content\CSS\jquery-jvectormap-1.2.2.css" />
     <Content Include="Content\CSS\jquery-ui-1.10.3.css" />
@@ -1088,6 +1089,7 @@
     <Content Include="Content\Scripts\flot\jquery.flot.threshold.min.js" />
     <Content Include="Content\Scripts\flot\jquery.flot.time.min.js" />
     <Content Include="Content\Scripts\flot\LICENSE.txt" />
+    <Content Include="Content\Scripts\html5imageupload.min.js" />
     <Content Include="Content\Scripts\script-backoffice.js" />
     <Content Include="Content\Scripts\custom.js" />
     <Content Include="Content\Scripts\dashboard.js" />

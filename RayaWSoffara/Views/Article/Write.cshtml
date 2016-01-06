@@ -1,4 +1,5 @@
-﻿@model RayaWSoffara.Models.UserArticleVM
+﻿<link href="~/Content/CSS/html5imageupload.css" rel="stylesheet" />
+@model RayaWSoffara.Models.UserArticleVM
 
 @{
     ViewBag.Title = "إكتب مقالك";
@@ -6,18 +7,18 @@
 
 <div class="clear-fix"></div>
 <form enctype="multipart/form-data" method="post" id="article_form">
-    @*@using (Html.BeginForm("Write", "Article", FormMethod.Post)) {*@
     @if (@ViewBag.ErrorMsg == 1)
     {
         <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
-    } else if (@ViewBag.ErrorMsg == 2)
+    }
+    else if (@ViewBag.ErrorMsg == 2)
     {
         <div class="ErrorMsg">Error: captcha is not valid.</div>
     }
     <div class="container full_width" id="createArticle_container">
         <div class="row">
-            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                <div class="input-group full_width input_margin"> 
+            <div class="col-xs-12">
+                <div class="input-group full_width input_margin">
                     @Html.TextBoxFor(m => m.newArticle.Title, new { @class = "form-control dark_border", placeholder = "أضف عنوان" })
                     <input type="hidden" name="article_picture_path" id="article_picture_path_0" />
                     <input type="hidden" name="video_url" id="video_url_0" value="" />
@@ -27,16 +28,10 @@
                         <img class="media_img" src="" />
                         <section class="image-upload-drop-target media_dropbox">
                             <div>أضف صورة أو فيديو</div>
-                            <button type="button" class="upload video_embed_btn"><i class="fa fa-video-camera"></i></button>
-                            <button type="button" class="upload picture_upload_btn"><i class="fa fa-picture-o"></i></button>
-                            <input type="file" name="article_picture" class="article_picture_btn hide" onchange="readURL(this)" />
+                            <button type="button" class="btn btn-primary btn-lg" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
+                                Launch demo modal
+                            </button>
                         </section>
-                        <div class="controls">
-                            <section>
-                                <button type="button" class="upload delete_btn" onclick="delete_btn(this)"><i class="fa fa-trash"></i></button>
-                                <button type="button" class="upload edit_btn" id="edit_0"><i class="fa fa-pencil-square-o"></i></button>
-                            </section>
-                        </div>
                     </div>
                 </div>
                 <div class="input-group full_width input_margin">
@@ -49,12 +44,13 @@
                         <ul id="articleTags"></ul>
                     </div>
                 </div>
+                <input type="hidden" id="video_id" value="media_0" />
                 <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
                 <div id="submit-btn">
                     <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
                 </div>
             </div>
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 image-choices">
+            @*<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 image-choices">
                 <ul class="nav nav-tabs">
                     <li class="active"><a href="#img_container" data-toggle="tab">
                         <i class="fa fa-camera"></i>صورة</a></li>
@@ -75,36 +71,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
-            Launch demo modal
-        </button>
-
-        <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed">
-            Launch demo modal
-        </button>
-
-        <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
-            <div class="modal-dialog modal-lg">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
-                    </div>
-                    <div class="modal-body" id="video_modal_body">
-                        <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
-                        <div id="modal_video_viewport">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <input type="hidden" id="media_id_vid" value="" />
-                        <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
-                        <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
-                    </div>
-                </div>
-            </div>
+            </div>*@
         </div>
 
         <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -115,37 +82,61 @@
                         <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
                     </div>
                     <div class="modal-body" id="edit_modal_body">
-                        <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
+                        <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a href="#uploadimage" data-toggle="tab">Upload Image</a></li>
+                            <li><a href="#uploadvideo" data-toggle="tab">Upload Video</a></li>
+                            <li><a href="#chooseimage" data-toggle="tab">Choose Image</a></li>
+                        </ul>
+                        <div id="my-tab-content" class="tab-content">
+                            <div class="tab-pane active" id="uploadimage">
+                                <div class="dropzone image-dropzone full_width" data-ajax="true" data-url="/Article/TestCrop" data-width="960" data-resize="true" data-canvas="true" data-height="540" style="width: 100%;">
+                                    <input type="file" name="thumb" id="" />
+                                </div>
+                                <input id="filename" type="text" />
+                            </div>
+                            <div class="tab-pane" id="uploadvideo">
+                                <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                                <div id="modal_video_viewport">
+                                </div>
+                                <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
+                                <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
+                            </div>
+                            <div class="tab-pane" id="chooseimage">
+                                <div id="img_container">
+                                    <div class="container full_width"></div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
-                        <input type="hidden" id="media_id" value="" />
+                        @*<input type="hidden" id="media_id" value="" />
                         <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
-                        <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
+                        <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>*@
                     </div>
                 </div>
             </div>
         </div>
-        <input name="article_img" id="article_img" value="" type="hidden" />
     </div>
-    @*}*@
 </form>
 
-<script src="~/Content/Scripts/jquery.validate.min.js"></script>
-<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+@*<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
 <script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
-<script src=”http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221; type=”text/javascript”></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221;" type="text/javascript"></script>
 <script src='https://www.google.com/recaptcha/api.js'></script>
+<script src="~/Content/Scripts/html5imageupload.min.js"></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script>
-
     $(document).ready(function () {
+        $('.dropzone').html5imageupload({
+            onAfterProcessImage: function () {
+                alert("test");
+                $('#filename').val($(this.element).data('name'));
+            }
+        });
+
         $('#image_edit').on('hidden.bs.modal', function () {
-            //$.getScript("script.js", function () {
-
-            //    alert("Script loaded but not necessarily executed.");
-
-            //});
             $("#edit_modal_body").html('<button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>');
         });
 
@@ -182,7 +173,7 @@
 
                     $('#img_container > div').append(html);
                 }
-                                
+
             },
             error: function () {
                 $('#myModal').modal('hide');
@@ -206,57 +197,57 @@
             var tagname = $(this).children('span').text();
             $("#submit-btn").append("<input name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
         });
-        
+
     });
 
-    $.validator.addMethod("needsSelection", function (value, element) {
-        return $(element).multiselect("getChecked").length > 0;
-    });
+    //$.validator.addMethod("needsSelection", function (value, element) {
+    //    return $(element).multiselect("getChecked").length > 0;
+    //});
 
-    $.validator.addMethod("minChars", function (value, element) {
-        return value.length > 300;
-    });
+    //$.validator.addMethod("minChars", function (value, element) {
+    //    return value.length > 300;
+    //});
 
-    $.validator.addMethod("ImageOrVideo", function (value, element) {
-        img_src = $("#media_0 .media_img").attr("src");
-        vid_src = $("#video_url_0").attr("value");
-        return ((img_src != "") || (vid_src != ""));
-    });
+    //$.validator.addMethod("ImageOrVideo", function (value, element) {
+    //    img_src = $("#media_0 .media_img").attr("src");
+    //    vid_src = $("#video_url_0").attr("value");
+    //    return ((img_src != "") || (vid_src != ""));
+    //});
 
-    $.validator.addMethod("RequiredTag", function (value, element) {
-        tags_count = $("#articleTags").children("li").length;
-        return (tags_count > 1);
-    });
+    //$.validator.addMethod("RequiredTag", function (value, element) {
+    //    tags_count = $("#articleTags").children("li").length;
+    //    return (tags_count > 1);
+    //});
 
-    $("#article_form").validate({
-        ignore: [],
-        rules: {
-            "newArticle.Title": "required",
-            "newArticle.Content": { required: true, minChars: true },
-            article_img: { ImageOrVideo: true },
-            mySelect: { RequiredTag: true }
-        },
-        messages: {
-            "newArticle.Title": "يجب إدخال عنوان المقالة.",
-            "newArticle.Content": {
-                required: "يجب إدخال مضمون المقالة.",
-                minChars: "يجب إدخال على الأقل 300 كلمة."
-            },
-            article_img: "يجب إدخال صورة للمقالة.",
-            mySelect: "يجب إدخال كلمة بحثية."
-        },
-        errorPlacement: function (error, element) {
-            if (element.attr("name") == "article_img") {
-                error.insertAfter(".media");
-            } else if (element.attr("name") == "newArticle.Content") {
-                error.insertAfter("#cke_article_content");
-            } else if (element.attr("name") == "mySelect") {
-                error.insertAfter("#articleTags");
-            } else {
-                error.insertAfter(element);
-            }
-        }
-    });
+    //$("#article_form").validate({
+    //    ignore: [],
+    //    rules: {
+    //        "newArticle.Title": "required",
+    //        "newArticle.Content": { required: true, minChars: true },
+    //        article_img: { ImageOrVideo: true },
+    //        mySelect: { RequiredTag: true }
+    //    },
+    //    messages: {
+    //        "newArticle.Title": "يجب إدخال عنوان المقالة.",
+    //        "newArticle.Content": {
+    //            required: "يجب إدخال مضمون المقالة.",
+    //            minChars: "يجب إدخال على الأقل 300 كلمة."
+    //        },
+    //        article_img: "يجب إدخال صورة للمقالة.",
+    //        mySelect: "يجب إدخال كلمة بحثية."
+    //    },
+    //    errorPlacement: function (error, element) {
+    //        if (element.attr("name") == "article_img") {
+    //            error.insertAfter(".media");
+    //        } else if (element.attr("name") == "newArticle.Content") {
+    //            error.insertAfter("#cke_article_content");
+    //        } else if (element.attr("name") == "mySelect") {
+    //            error.insertAfter("#articleTags");
+    //        } else {
+    //            error.insertAfter(element);
+    //        }
+    //    }
+    //});
 
     // START OF TAGIT FUNCTIONS//
     var availableTags = [];

@@ -441,8 +441,10 @@ $(document).ready(function () {
                         });
                 }
             }
-            var vid_image = $("#video_embed #modal_video_viewport").children("img").attr("src");
-            $("#video_embed .close").click();
+            //var vid_image = $("#video_embed #modal_video_viewport").children("img").attr("src");
+            var vid_image = $("#modal_video_viewport").children("img").attr("src");
+            //$("#video_embed .close").click();
+            $("#image_edit .close").click();
             $("#" + media_id + " .media_img").attr("src", vid_image);
         }
     });

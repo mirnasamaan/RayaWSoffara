@@ -17,7 +17,9 @@ using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Data;
-using RayaWSoffara.Helpers;  
+using RayaWSoffara.Helpers;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;  
 
 namespace RayaWSoffara.Controllers
 {
@@ -534,27 +536,18 @@ namespace RayaWSoffara.Controllers
             return newBytes;
         }
 
-        private static byte[] TestCrop(byte[] bytes, int rows, int columns, int CropPointX, int CropPointY, int ImageCropWidth)
+        [HttpPost]
+        public ActionResult TestCrop(String data, double left, double top, double imageWidth, double imageHeight, double imageOriginalWidth, double imageOriginalHeight)
         {
-            byte[] newBytes;
-            byte[] result_img = new byte[bytes.Length];
-            for (var i = 0; i < rows; i += ImageCropWidth)
-            {
-                newBytes = new byte[ImageCropWidth];
-                Buffer.BlockCopy(bytes, CropPointX, newBytes, 0, ImageCropWidth);
-                //result_img[i] = newBytes;
-            }
-            return result_img;
+            Dictionary<string, string> result = CropImage(data, left, top, imageWidth, imageHeight, imageOriginalWidth, imageOriginalHeight);
+            string response = JsonConvert.SerializeObject(result);
+            return Json(response, JsonRequestBehavior.AllowGet);
         }
 
         protected static System.Drawing.Image ByteArrayToBitmap(byte[] blob)
         {
             using (var mStream = new MemoryStream())
             {
-                //mStream.Write(blob, 0, blob.Length);
-                //mStream.Position = 0;
-                //var bm = new Bitmap(mStream);
-                //return bm;
                 MemoryStream memoryStream = new MemoryStream();
                 foreach (var b in blob) memoryStream.WriteByte(b);
                 memoryStream.Position = 0;
@@ -564,11 +557,13 @@ namespace RayaWSoffara.Controllers
         }
 
         [HttpPost]
-        public virtual ActionResult CropImage(String imagePath, double? cropPointX, double? cropPointY, double? imageCropWidth, double? imageCropHeight, double? originalWidth, double? originalHeight)
+        //public virtual ActionResult CropImage(String imagePath, double? cropPointX, double? cropPointY, double? imageCropWidth, double? imageCropHeight, double? originalWidth, double? originalHeight)
+        public Dictionary<string, string> CropImage(String imagePath, double? cropPointX, double? cropPointY, double? imageCropWidth, double? imageCropHeight, double? originalWidth, double? originalHeight)
         {
             if (string.IsNullOrEmpty(imagePath) || !cropPointX.HasValue || !cropPointY.HasValue || !imageCropWidth.HasValue || !imageCropHeight.HasValue)
             {
-                return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                //return new HttpStatusCodeResult((int)HttpStatusCode.BadRequest);
+                return null;
             }
             string path = AppDomain.CurrentDomain.BaseDirectory + imagePath;
             byte[] imageBytes;
@@ -577,39 +572,13 @@ namespace RayaWSoffara.Controllers
             if (imagePath.Length > 260)
             {
                 String imageDataParsed = imagePath.Substring(imagePath.IndexOf(',') + 1);
-
-                //string fileNameWitPath = path + DateTime.Now.ToString().Replace("/", "-").Replace(" ", "- ").Replace(":", "") + ".png";
-                //using (FileStream fs = new FileStream(fileNameWitPath, FileMode.Create))
-                //{
-                //    using (BinaryWriter bw = new BinaryWriter(fs))
-                //    {
                 imageBytes = Convert.FromBase64String(imageDataParsed);
-                //        bw.Write(data);
-                //        bw.Close();
-                //    }
-                //}
-
-                //imageBytes = Encoding.UTF8.GetBytes(imageDataParsed);
-
-                //imageBytes = new byte[imageDataParsed.Length * sizeof(char)];
-                //System.Buffer.BlockCopy(imageDataParsed.ToCharArray(), 0, imageBytes, 0, imageBytes.Length);
 
                 var columns = (int)originalWidth;
                 var rows = (int)originalHeight;
                 var stride = columns * 4;
-                //newbytes = PadLines(imageBytes, rows, columns);
-                //newbytes = TestCrop(imageBytes, rows, columns, Convert.ToInt16(cropPointX.Value), Convert.ToInt16(cropPointY.Value), Convert.ToInt16(imageCropWidth.Value));
-                //var im = new Bitmap(columns, rows, stride,
-                //                    PixelFormat.Format24bppRgb,
-                //                    Marshal.UnsafeAddrOfPinnedArrayElement(newbytes, 0));
-                //var stream = new MemoryStream(newbytes);
-                //TypeConverter bmpConverter = TypeDescriptor.GetConverter(typeof(Bitmap));
-                //Bitmap imageReceived = (Bitmap)bmpConverter.ConvertFrom(imageBytes);
                 MemoryStream stream = new MemoryStream(imageBytes);
-                //var stream = new System.IO.MemoryStream(imageBytes);
-                //int len = newbytes.Length;
                 int len = imageBytes.Length;
-                //System.Drawing.Image im = ByteArrayToBitmap(newbytes);
 
                 croppedImage = ImageHelper.CropImage(stream, (int)cropPointX, (int)cropPointY, Convert.ToInt16(imageCropWidth.Value), Convert.ToInt16(imageCropHeight.Value));
             }
@@ -624,7 +593,6 @@ namespace RayaWSoffara.Controllers
 
             string tempFolderName = Server.MapPath("~/" + ConfigurationManager.AppSettings["Image.TempFolderName"]);
             string fileName = Path.GetFileNameWithoutExtension(imagePath);
-            //string newName = fileName + new Random().Next().ToString() + Path.GetExtension(imagePath);
             string newName = fileName + new Random().Next().ToString() + ".jpg";
 
             try
@@ -634,11 +602,17 @@ namespace RayaWSoffara.Controllers
             catch (Exception ex)
             {
                 //Log an error     
-                return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
+                //return new HttpStatusCodeResult((int)HttpStatusCode.InternalServerError);
+                return null;
             }
 
             string photoPath = string.Concat("/", ConfigurationManager.AppSettings["Image.TempFolderName"], "/", newName);
-            return Json(new { photoPath = photoPath }, JsonRequestBehavior.AllowGet);
+            //return Json(new { photoPath = photoPath }, JsonRequestBehavior.AllowGet);
+            var response = new Dictionary<string, string>();
+            response["success"] = "success";
+            response["url"] = photoPath;
+            response["filename"] = newName;
+            return response;
         }
 
         public void AddShareCount(int PostId)
@@ -751,39 +725,6 @@ namespace RayaWSoffara.Controllers
             int tagId = _articleRepo.GetTagByName(tagName).TagId;
             return Json(tagId, JsonRequestBehavior.AllowGet);
         }
-
-        //public JsonResult GetPostsAjax(int draw, int start, int length)
-        //{
-        //    List<Post> posts = _articleRepo.GetPosts();
-
-        //    int total_rows = _articleRepo.GetAll().Count();
-        //    string search = Request.QueryString["search[value]"];
-        //    int sortColumn = -1;
-        //    string sortDirection = "asc";
-        //    if (length == -1)
-        //    {
-        //        length = total_rows;
-        //    }
-
-        //    // note: we only sort one column at a time
-        //    if (Request.QueryString["order[0][column]"] != null)
-        //    {
-        //        sortColumn = int.Parse(Request.QueryString["order[0][column]"]);
-        //    }
-        //    if (Request.QueryString["order[0][dir]"] != null)
-        //    {
-        //        sortDirection = Request.QueryString["order[0][dir]"];
-        //    }
-
-        //    DataTable dataTableData = new DataTable();
-        //    dataTableData.draw = draw;
-        //    dataTableData.recordsTotal = total_rows;
-        //    int recordsFiltered = 0;
-        //    dataTableData.data = FilterData(ref recordsFiltered, start, length, search, sortColumn, sortDirection);
-        //    dataTableData.recordsFiltered = recordsFiltered;
-
-        //    return Json(dataTableData, JsonRequestBehavior.AllowGet);
-        //}
 
     }
 }
