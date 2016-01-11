@@ -6,18 +6,19 @@
 }
 
 <div class="clear-fix"></div>
-<form enctype="multipart/form-data" method="post" id="article_form">
-    @if (@ViewBag.ErrorMsg == 1)
-    {
-        <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
-    }
-    else if (@ViewBag.ErrorMsg == 2)
-    {
-        <div class="ErrorMsg">Error: captcha is not valid.</div>
-    }
-    <div class="container full_width" id="createArticle_container">
+<div class="container full_width" id="createArticle_container">
+    <form enctype="multipart/form-data" method="post" id="article_form">
+        @if (@ViewBag.ErrorMsg == 1)
+        {
+            <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
+        }
+        else if (@ViewBag.ErrorMsg == 2)
+        {
+            <div class="ErrorMsg">Error: captcha is not valid.</div>
+        }
+        <input type="hidden" id="AllImagesCount" value="@ViewBag.AllImagesCount" />
         <div class="row">
-            <div class="col-xs-12">
+            <div class="col-md-8 col-md-offset-2 col-xs-12">
                 <div class="input-group full_width input_margin">
                     @Html.TextBoxFor(m => m.newArticle.Title, new { @class = "form-control dark_border", placeholder = "أضف عنوان" })
                     <input type="hidden" name="article_picture_path" id="article_picture_path_0" />
@@ -25,11 +26,14 @@
                 </div>
                 <div class="input-group full_width input_margin">
                     <div class="media dark_border" id="media_0">
+                        <button type="button" class="btn btn-primary btn-sm edit-image-btn hidden" data-toggle="modal" data-target="#image_edit">
+                            تعديل
+                        </button>
                         <img class="media_img" src="" />
+                        <input id="originalimage" type="hidden" />
                         <section class="image-upload-drop-target media_dropbox">
-                            <div>أضف صورة أو فيديو</div>
                             <button type="button" class="btn btn-primary btn-lg" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
-                                Launch demo modal
+                                أضف صورة أو فيديو
                             </button>
                         </section>
                     </div>
@@ -50,28 +54,6 @@
                     <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
                 </div>
             </div>
-            @*<div class="col-lg-4 col-md-4 col-sm-12 col-xs-12 image-choices">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#img_container" data-toggle="tab">
-                        <i class="fa fa-camera"></i>صورة</a></li>
-                    <li><a href="#video_container" data-toggle="tab">
-                        <i class="fa fa-video-camera"></i>فيديو</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="img_container">
-                        <div class="container full_width"></div>
-                    </div>
-                    <div class="tab-pane" id="video_container">
-                        <div>
-                            <input type="hidden" id="video_id" value="media_0" />
-                            <textarea id="video_embed_txt" rows="3" placeholder="رجاءً ضع الرابط هنا"></textarea>
-                            <button type="button" id="embed_btn" class="btn btn-default pull-right">أدخل</button>
-                            <div id="video_viewport"></div>
-                            <div class="clear-fix"></div>
-                        </div>
-                    </div>
-                </div>
-            </div>*@
         </div>
 
         <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
@@ -79,20 +61,21 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
+                        <h4 class="modal-title" id="myModalLabel">ضبط الصورة</h4>
                     </div>
                     <div class="modal-body" id="edit_modal_body">
                         <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                            <li class="active"><a href="#uploadimage" data-toggle="tab">Upload Image</a></li>
-                            <li><a href="#uploadvideo" data-toggle="tab">Upload Video</a></li>
-                            <li><a href="#chooseimage" data-toggle="tab">Choose Image</a></li>
+                            <li class="active"><a href="#uploadimage" data-toggle="tab">أضف صورة</a></li>
+                            <li><a href="#uploadvideo" data-toggle="tab">يوتيوب فيديو</a></li>
+                            <li><a href="#chooseimage" data-toggle="tab">إختر صورة</a></li>
                         </ul>
                         <div id="my-tab-content" class="tab-content">
                             <div class="tab-pane active" id="uploadimage">
-                                <div class="dropzone image-dropzone full_width" data-ajax="true" data-url="/Article/TestCrop" data-width="960" data-resize="true" data-canvas="true" data-height="540" style="width: 100%;">
-                                    <input type="file" name="thumb" id="" />
+                                <div class="dropzone image-dropzone full_width" data-ajax="false" data-url="/Article/TestCrop" data-save="false" data-resize="true" data-canvas="true" data-width="866" data-height="398" style="width: 100%;">
+                                    <input type="file" name="thumb" />
                                 </div>
-                                <input id="filename" type="text" />
+                                <input id="uploadimagefilename" type="hidden" />
+                                <button class="addImage btn btn-primary" disabled>أضف</button>
                             </div>
                             <div class="tab-pane" id="uploadvideo">
                                 <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
@@ -103,7 +86,8 @@
                             </div>
                             <div class="tab-pane" id="chooseimage">
                                 <div id="img_container">
-                                    <div class="container full_width"></div>
+                                    <div class="container full_width">@Html.Partial("_ImagesPartial", (List<RWSDataLayer.Context.Image>) @ViewBag.Images)</div>
+                                    <div id="testScroll" style="height: 10px"></div>
                                 </div>
                             </div>
                         </div>
@@ -116,70 +100,89 @@
                 </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
 
-@*<script src="~/Content/Scripts/jquery.validate.min.js"></script>
-<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+<div class="loading hidden">
+    <div>
+        <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+        </div>
+    </div>
+</div>
+
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
 <script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221;" type="text/javascript"></script>
 <script src='https://www.google.com/recaptcha/api.js'></script>
 <script src="~/Content/Scripts/html5imageupload.min.js"></script>
+<script src="~/Content/Scripts/jquery.visible.min.js"></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script>
+
+    var allImagesCount = $("#AllImagesCount").val();
+
+    $(".addImage").click(function () {
+        $('#image_edit').modal('hide');
+        $(".media_dropbox").addClass("hidden");
+        $(".media_img").attr("src", $("#uploadimagefilename").val());
+        $("#article_picture_path_0").attr("src", $("#uploadimagefilename").val());
+        $(".edit-image-btn").removeClass("hidden");
+        var originalimage = $(".dropzone > img").attr("src");
+        $("#originalimage").val(originalimage);
+        return false;
+    });
+
+    var page = 1;
+    var processing = false;
+    var done = false;
+
     $(document).ready(function () {
         $('.dropzone').html5imageupload({
-            onAfterProcessImage: function () {
-                alert("test");
-                $('#filename').val($(this.element).data('name'));
-            }
-        });
-
-        $('#image_edit').on('hidden.bs.modal', function () {
-            $("#edit_modal_body").html('<button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>');
-        });
-
-        $('#video_embed').on('hidden.bs.modal', function () {
-            $("#video_modal_body").html('<textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea><div id="modal_video_viewport"></div>');
-        });
-
-        $.ajax({
-            type: 'GET',
-            url: '/Article/GetImages',
-            beforeSend: function () {
-                $('#myModal').modal({
-                    show: true,
-                    backdrop: 'static',
-                    keyboard: false
-                })
-            },
-            success: function (data) {
-                for (i = 0; i < data.Images.length ; i += 2) {
-                    var html = '<div class="row">';
-                    html += '<div class="col-md-6 col-xs-12"><img src="' + data.Images[i] + '?w=150&h=100&mode=crop" /></div>';
-                    if (data.Images.length == (i + 1)) {
-                        html += '</div>';
-                    } else {
-                        html += '<div class="col-md-6 hidden-xs hidden-sm"><img src="' + data.Images[i + 1] + '?w=150&h=100&mode=crop" /></div>';
-                        html += '</div>';
-                        html += '<div class="vertical_space"></div>';
-
-                        html += '<div class="row hidden-md hidden-lg">';
-                        html += '<div class="col-xs-12 hidden-md hidden-lg"><img src="' + data.Images[i + 1] + '?w=150&h=100&mode=crop" /></div>';
-                        html += '</div>';
-                        html += '<div class="vertical_space"></div>';
+            onSave: function (data) {
+                $.ajax({
+                    type: 'POST',
+                    data: { data: data.data, left: data.left, top: data.top, imageWidth: data.imageWidth, imageHeight: data.imageHeight, imageOriginalWidth: data.imageOriginalWidth, imageOriginalHeight: data.imageOriginalHeight },
+                    url: '/Article/TestCrop',
+                    beforeSend: function () {
+                        $(".loading").removeClass("hidden");
+                    },
+                    success: function (data) {
+                        $(".loading").addClass("hidden");
+                        $("#uploadimagefilename").val("/Temp/" + data);
+                        $(".addImage").removeAttr("disabled");
+                    },
+                    error: function () {
+                        $(".loading").addClass("hidden");
                     }
-
-                    $('#img_container > div').append(html);
-                }
-
-            },
-            error: function () {
-                $('#myModal').modal('hide');
+                });
             }
         });
     });
+
+    function editImage(e) {
+        var src = $(e).attr("src");
+        src = src.split("?")[0];
+        $(".media_dropbox").addClass("hidden");
+        $(".media_img").attr("src", src);
+        $("#article_picture_path_0").attr("src", src);
+        $('#image_edit').modal('hide');
+        $(".edit-image-btn").removeClass("hidden");
+        return false;
+    }
 
     $("#btn_add_article").click(function () {
         src = $("#media_0 .media_img").attr("src");
@@ -200,54 +203,54 @@
 
     });
 
-    //$.validator.addMethod("needsSelection", function (value, element) {
-    //    return $(element).multiselect("getChecked").length > 0;
-    //});
+    $.validator.addMethod("needsSelection", function (value, element) {
+        return $(element).multiselect("getChecked").length > 0;
+    });
 
-    //$.validator.addMethod("minChars", function (value, element) {
-    //    return value.length > 300;
-    //});
+    $.validator.addMethod("minChars", function (value, element) {
+        return value.length > 300;
+    });
 
-    //$.validator.addMethod("ImageOrVideo", function (value, element) {
-    //    img_src = $("#media_0 .media_img").attr("src");
-    //    vid_src = $("#video_url_0").attr("value");
-    //    return ((img_src != "") || (vid_src != ""));
-    //});
+    $.validator.addMethod("ImageOrVideo", function (value, element) {
+        img_src = $("#media_0 .media_img").attr("src");
+        vid_src = $("#video_url_0").attr("value");
+        return ((img_src != "") || (vid_src != ""));
+    });
 
-    //$.validator.addMethod("RequiredTag", function (value, element) {
-    //    tags_count = $("#articleTags").children("li").length;
-    //    return (tags_count > 1);
-    //});
+    $.validator.addMethod("RequiredTag", function (value, element) {
+        tags_count = $("#articleTags").children("li").length;
+        return (tags_count > 1);
+    });
 
-    //$("#article_form").validate({
-    //    ignore: [],
-    //    rules: {
-    //        "newArticle.Title": "required",
-    //        "newArticle.Content": { required: true, minChars: true },
-    //        article_img: { ImageOrVideo: true },
-    //        mySelect: { RequiredTag: true }
-    //    },
-    //    messages: {
-    //        "newArticle.Title": "يجب إدخال عنوان المقالة.",
-    //        "newArticle.Content": {
-    //            required: "يجب إدخال مضمون المقالة.",
-    //            minChars: "يجب إدخال على الأقل 300 كلمة."
-    //        },
-    //        article_img: "يجب إدخال صورة للمقالة.",
-    //        mySelect: "يجب إدخال كلمة بحثية."
-    //    },
-    //    errorPlacement: function (error, element) {
-    //        if (element.attr("name") == "article_img") {
-    //            error.insertAfter(".media");
-    //        } else if (element.attr("name") == "newArticle.Content") {
-    //            error.insertAfter("#cke_article_content");
-    //        } else if (element.attr("name") == "mySelect") {
-    //            error.insertAfter("#articleTags");
-    //        } else {
-    //            error.insertAfter(element);
-    //        }
-    //    }
-    //});
+    $("#article_form").validate({
+        ignore: [],
+        rules: {
+            "newArticle.Title": "required",
+            "newArticle.Content": { required: true, minChars: true },
+            article_picture_path: { ImageOrVideo: true },
+            mySelect: { RequiredTag: true }
+        },
+        messages: {
+            "newArticle.Title": "يجب إدخال عنوان المقالة.",
+            "newArticle.Content": {
+                required: "يجب إدخال مضمون المقالة.",
+                minChars: "يجب إدخال على الأقل 300 كلمة."
+            },
+            article_picture_path: "يجب إدخال صورة للمقالة.",
+            mySelect: "يجب إدخال كلمة بحثية."
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "article_picture_path") {
+                error.insertAfter(".media");
+            } else if (element.attr("name") == "newArticle.Content") {
+                error.insertAfter("#cke_article_content");
+            } else if (element.attr("name") == "mySelect") {
+                error.insertAfter("#articleTags");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
 
     // START OF TAGIT FUNCTIONS//
     var availableTags = [];
@@ -289,5 +292,64 @@
 
     $("#articleTags input").attr("placeholder", "+ أضف كلمة بحثية");
     // END OF TAGIT FUNCTIONS //
+
+    function isScrolledIntoView(elem) {
+        var $elem = $(elem);
+        var $window = $("#img_container");
+
+        var docViewTop = $window.scrollTop();
+        var docViewBottom = docViewTop + $window.height();
+
+        var elemTop = $elem.offset().top;
+        var elemBottom = elemTop + $elem.height();
+
+        return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
+    }
+
+    function isBottomPartInView(elem) {
+        var $elem = $(elem);
+        var $window = $("#img_container");
+
+        var docViewTop = $window.scrollTop();
+        var docViewBottom = docViewTop + $window.height();
+        var elemTop = $elem.offset().top;
+        var elemBottom = elemTop + $elem.height();
+       
+        return ((elemBottom <= docViewBottom));
+    }
+
+    $("#img_container").scroll(function () {
+        //if (isBottomPartInView("#testScroll") && processing == false && done == false) {
+        if ($('#testScroll').visible() && processing == false && done == false) {
+            processing = true;
+            $.ajax({
+                type: 'POST',
+                data: { Page: page },
+                url: '/Article/GetImagesAjax',
+                beforeSend: function () {
+                    $('#myModal').modal({
+                        show: true,
+                        backdrop: 'static',
+                        keyboard: false
+                    })
+                },
+                success: function (data) {
+                    page++;
+                    $images = $(data);
+                    $('#img_container .container').append($images);
+                    var visibleImageCount = $("#img_container .image-choice").length;
+                    if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
+                        done = true;
+                    } else {
+                        done = false;
+                    }
+                    processing = false;
+                },
+                error: function () {
+                    $('#myModal').modal('hide');
+                }
+            });
+        }
+    });
 
 </script>

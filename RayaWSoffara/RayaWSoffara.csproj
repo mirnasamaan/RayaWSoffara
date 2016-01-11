@@ -1090,6 +1090,7 @@
     <Content Include="Content\Scripts\flot\jquery.flot.time.min.js" />
     <Content Include="Content\Scripts\flot\LICENSE.txt" />
     <Content Include="Content\Scripts\html5imageupload.min.js" />
+    <Content Include="Content\Scripts\jquery.visible.min.js" />
     <Content Include="Content\Scripts\script-backoffice.js" />
     <Content Include="Content\Scripts\custom.js" />
     <Content Include="Content\Scripts\dashboard.js" />
@@ -1258,6 +1259,7 @@
     <Content Include="Views\Admin\_ImagesPartial.cshtml" />
     <Content Include="Views\Admin\_UploadsPartial.cshtml" />
     <Content Include="Views\Article\Video.cshtml" />
+    <Content Include="Views\Article\_ImagesPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

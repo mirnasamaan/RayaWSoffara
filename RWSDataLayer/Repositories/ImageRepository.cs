@@ -14,9 +14,9 @@ namespace RWSDataLayer.Repositories
         /// Gets all images
         /// </summary>
         /// <returns></returns>
-        public IQueryable<Image> GetAllImages()
+        public IQueryable<Image> GetAllImages(int page, int count = 20)
         {
-            return Context.Images;
+            return Context.Images.OrderByDescending(i => i.ImageId).Skip(page*count).Take(count);
         }
         #endregion
     }

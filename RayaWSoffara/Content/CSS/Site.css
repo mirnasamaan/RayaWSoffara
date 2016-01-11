@@ -2413,6 +2413,16 @@ input[name="Email"] {
     margin: 5px;
     width: 100px;
 }
+
+#article_form .edit-image-btn {
+    position: absolute;
+}
+
+#image_edit #img_container {
+    height: 400px;
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
 /*===========================================================================================================================================*/
 
 /*New Article*/
@@ -4558,11 +4568,13 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 
 .image-dropzone {
     height: 400px !important;
-}
-
-.image-dropzone {
     position: absolute;
     direction: ltr;
+}
+
+#chooseimage .image-choice {
+    cursor: pointer;
+    padding: 10px;
 }
 /*===========================================================================================================================================*/
 

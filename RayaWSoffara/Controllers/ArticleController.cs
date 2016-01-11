@@ -19,6 +19,7 @@ using System.ComponentModel;
 using System.Data;
 using RayaWSoffara.Helpers;
 using System.Web.Script.Serialization;
+using System.Web.Helpers;
 using Newtonsoft.Json;  
 
 namespace RayaWSoffara.Controllers
@@ -45,6 +46,9 @@ namespace RayaWSoffara.Controllers
         {
             IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
             ViewBag.tags = articlesTags.ToList();
+            ViewBag.Images = GetImages(0);
+            ImageRepository _imgrepo = new ImageRepository();
+            ViewBag.AllImagesCount = _imgrepo.GetAll().Count();
             UserArticleVM model = new UserArticleVM();
             return View(model);
         }
@@ -86,12 +90,19 @@ namespace RayaWSoffara.Controllers
         }
 
         [Authorize]
-        public ActionResult GetImages()
+        public List<RWSDataLayer.Context.Image> GetImages(int page)
         {
             ImageRepository _imgrepo = new ImageRepository();
-            List<string> imgs = _imgrepo.GetAllImages().Select(i => i.ImageURL).ToList();
+            List<RWSDataLayer.Context.Image> imgs = _imgrepo.GetAllImages(page).ToList();
+            return imgs;
+        }
 
-            return Json(new { Images = imgs }, JsonRequestBehavior.AllowGet);
+        [Authorize]
+        public ActionResult GetImagesAjax(int page)
+        {
+            ImageRepository _imgrepo = new ImageRepository();
+            List<RWSDataLayer.Context.Image> imgs = _imgrepo.GetAllImages(page).ToList();
+            return PartialView("_ImagesPartial", imgs);
         }
 
         [Authorize]
@@ -130,8 +141,8 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.CreationDate = DateTime.Now;
                 article.newArticle.MetaTags = "";
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-                HttpPostedFileBase picture = Request.Files[0];
-                if (picture.FileName != "" || article_picture_path != "")
+                //HttpPostedFileBase picture = Request.Files[0];
+                if (article_picture_path != "")
                 {
                     if (article_picture_path != "")
                     {
@@ -145,13 +156,13 @@ namespace RayaWSoffara.Controllers
                             article.newArticle.FeaturedImage = imgName;
                         }
                     }
-                    else if (picture.FileName != "")
-                    {
-                        string picName = System.IO.Path.GetFileName(picture.FileName);
-                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                        picture.SaveAs(path);
-                        article.newArticle.FeaturedImage = picName;
-                    }
+                    //else if (picture.FileName != "")
+                    //{
+                    //    string picName = System.IO.Path.GetFileName(picture.FileName);
+                    //    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
+                    //    picture.SaveAs(path);
+                    //    article.newArticle.FeaturedImage = picName;
+                    //}
 
                     article.newArticle.HasImage = true;
                 }
@@ -539,9 +550,43 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         public ActionResult TestCrop(String data, double left, double top, double imageWidth, double imageHeight, double imageOriginalWidth, double imageOriginalHeight)
         {
-            Dictionary<string, string> result = CropImage(data, left, top, imageWidth, imageHeight, imageOriginalWidth, imageOriginalHeight);
-            string response = JsonConvert.SerializeObject(result);
-            return Json(response, JsonRequestBehavior.AllowGet);
+            //Dictionary<string, string> result = CropImage(data, left, top, imageWidth, imageHeight, imageOriginalWidth, imageOriginalHeight); 
+            //var jsonSerializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+            //string response = jsonSerializer.Serialize(result);
+            //string response = JsonConvert.SerializeObject(result);
+            string path = AppDomain.CurrentDomain.BaseDirectory + data;
+            byte[] imageBytes;
+            byte[] croppedImage;
+            byte[] newbytes;
+            MemoryStream stream;
+            if (data.Length > 260)
+            {
+                String imageDataParsed = data.Substring(data.IndexOf(',') + 1);
+                imageBytes = Convert.FromBase64String(imageDataParsed);
+                stream = new MemoryStream(imageBytes);
+            }
+            else
+            {
+                imageBytes = System.IO.File.ReadAllBytes(path);
+                int len2 = imageBytes.Length;
+                stream = new MemoryStream(imageBytes);
+            }
+
+            Bitmap sourceBitmap = new Bitmap(stream);
+            croppedImage = ImageHelper.GetBitmapBytes(sourceBitmap);
+            string tempFolderName = Server.MapPath("~/" + ConfigurationManager.AppSettings["Image.TempFolderName"]);
+            string fileName = Path.GetFileNameWithoutExtension(data);
+            string newName = fileName + new Random().Next().ToString() + ".jpg";
+
+            try
+            {
+                FileHelper.SaveFile(croppedImage, Path.Combine(tempFolderName, newName));
+                return Json(newName, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
         }
 
         protected static System.Drawing.Image ByteArrayToBitmap(byte[] blob)
