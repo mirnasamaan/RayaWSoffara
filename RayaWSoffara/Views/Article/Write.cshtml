@@ -27,7 +27,10 @@
                 <div class="input-group full_width input_margin">
                     <div class="media dark_border" id="media_0">
                         <button type="button" class="btn btn-primary btn-sm edit-image-btn hidden" data-toggle="modal" data-target="#image_edit">
-                            تعديل
+                            <i class="fa fa-pencil-square-o"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm delete-image-btn hidden">
+                            <i class="fa fa-trash-o"></i>
                         </button>
                         <img class="media_img" src="" />
                         <input id="originalimage" type="hidden" />
@@ -56,7 +59,7 @@
             </div>
         </div>
 
-        <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true" data-backdrop="static" data-keyboard="false">
+        <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -75,20 +78,44 @@
                                     <input type="file" name="thumb" />
                                 </div>
                                 <input id="uploadimagefilename" type="hidden" />
-                                <button class="addImage btn btn-primary" disabled>أضف</button>
+                                <button class="addImage btn btn-primary buttons" disabled>أضف</button>
                             </div>
                             <div class="tab-pane" id="uploadvideo">
-                                <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                                <textarea id="embedded_video_link" class="full_width form-control" placeholder="رجاءً ضع الرابط هنا"></textarea>
                                 <div id="modal_video_viewport">
                                 </div>
-                                <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
-                                <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
+                                <button type="button" class="btn btn-primary buttons" id="embed_confirm">أضف</button>
+                                @*<button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>*@
                             </div>
                             <div class="tab-pane" id="chooseimage">
+                                <ul class="imageTags"></ul>
+                                <input type="hidden" id="tagNames" />
+                                <button class="search-btn"><i class="fa fa-search"></i></button>
                                 <div id="img_container">
                                     <div class="container full_width">@Html.Partial("_ImagesPartial", (List<RWSDataLayer.Context.Image>) @ViewBag.Images)</div>
-                                    <div id="testScroll" style="height: 10px"></div>
+                                    <div id="testScroll" style="height: 10px">
+                                        <div class="loading-inline hidden">
+                                            <div>
+                                                <div class="sk-fading-circle">
+                                                    <div class="sk-circle1 sk-circle"></div>
+                                                    <div class="sk-circle2 sk-circle"></div>
+                                                    <div class="sk-circle3 sk-circle"></div>
+                                                    <div class="sk-circle4 sk-circle"></div>
+                                                    <div class="sk-circle5 sk-circle"></div>
+                                                    <div class="sk-circle6 sk-circle"></div>
+                                                    <div class="sk-circle7 sk-circle"></div>
+                                                    <div class="sk-circle8 sk-circle"></div>
+                                                    <div class="sk-circle9 sk-circle"></div>
+                                                    <div class="sk-circle10 sk-circle"></div>
+                                                    <div class="sk-circle11 sk-circle"></div>
+                                                    <div class="sk-circle12 sk-circle"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="vertical_space"></div>
+                                <button class="addImage btn btn-primary buttons" disabled>أضف</button>
                             </div>
                         </div>
                     </div>
@@ -134,23 +161,116 @@
 <script>
 
     var allImagesCount = $("#AllImagesCount").val();
+    var page = 1;
+    var processing = false;
+    var done = false;
 
-    $(".addImage").click(function () {
+    // start of getting search image tags //
+    var availableTags = [];
+    var availableTagsID = [];
+    $('.imageTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "Post",
+                    data: { Term: search.term },
+                    url: "/Home/GetTags",
+                    success: function (tags) {
+                        availableTags = [];
+                        availableTagsID = [];
+                        for (i = 0; i < tags.length; i++) {
+                            availableTags.push(tags[i].TagName);
+                            availableTagsID.push(tags[i].TagID);
+                        }
+                        showChoices(availableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                return false;
+            }
+        },
+        afterTagAdded: function (event, ui) {
+            var index = availableTags.indexOf(ui.tagLabel);
+            var id = availableTagsID[index];
+            var image_id = $(this).closest('div[class^="imageItem"]').attr("id");
+            $("#" + image_id + " .imageTags li").eq(-2).attr("data-id", id);
+        }
+    });
+    $(".imageTags .tagit-new input").attr("placeholder", "+ أضف كلمة بحثية");
+    // end of getting search image tags //
+
+    // start of clicking search button in tags //
+    $("#chooseimage .search-btn").click(function () {
+        $("#img_container .container").html("");
+        var tags = "";
+        $('.imageTags').children('li').each(function () {
+            var tagname = $(this).children('span').text();
+            tags = tags + tagname + ",";
+        });
+        tags = tags.substring(0, tags.length - 2);
+        $("#tagNames").val(tags);
+        page = 0;
+        $.ajax({
+            type: "Post",
+            data: { Page: 0, TagNames: tags },
+            url: "/Article/GetImagesAjax",
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (data) {
+                page++;
+                $images = $(data);
+                $('#img_container .container').append($images);
+                $(".loading").addClass("hidden");
+                var visibleImageCount = $("#img_container .image-choice").length;
+                if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
+                    done = true;
+                } else {
+                    done = false;
+                }
+                processing = false;
+            }
+        });
+        return false;
+    });
+    // end of clicking search button in tags //
+
+    // start of adding image from image-edit modal //
+    $("#uploadimage .addImage").click(function () {
         $('#image_edit').modal('hide');
         $(".media_dropbox").addClass("hidden");
         $(".media_img").attr("src", $("#uploadimagefilename").val());
         $("#article_picture_path_0").attr("src", $("#uploadimagefilename").val());
         $(".edit-image-btn").removeClass("hidden");
+        $(".delete-image-btn").removeClass("hidden");
         var originalimage = $(".dropzone > img").attr("src");
         $("#originalimage").val(originalimage);
         return false;
     });
 
-    var page = 1;
-    var processing = false;
-    var done = false;
+    $("#chooseimage .addImage").click(function () {
+        var src = $(".image-choice .chosen").attr("src");
+        src = src.split("?")[0];
+        $(".media_dropbox").addClass("hidden");
+        $(".media_img").attr("src", src);
+        $("#article_picture_path_0").attr("src", src);
+        $('#image_edit').modal('hide');
+        $(".edit-image-btn").removeClass("hidden");
+        $(".delete-image-btn").removeClass("hidden");
+        return false;
+    });
+    // end of adding image from image-edit modal //
 
     $(document).ready(function () {
+        // start of dropzone function for croppping //
         $('.dropzone').html5imageupload({
             onSave: function (data) {
                 $.ajax({
@@ -163,7 +283,7 @@
                     success: function (data) {
                         $(".loading").addClass("hidden");
                         $("#uploadimagefilename").val("/Temp/" + data);
-                        $(".addImage").removeAttr("disabled");
+                        $("#uploadimage .addImage").removeAttr("disabled");
                     },
                     error: function () {
                         $(".loading").addClass("hidden");
@@ -171,22 +291,31 @@
                 });
             }
         });
+        // end of dropzone function for cropping //
     });
 
-    function editImage(e) {
-        var src = $(e).attr("src");
-        src = src.split("?")[0];
-        $(".media_dropbox").addClass("hidden");
-        $(".media_img").attr("src", src);
-        $("#article_picture_path_0").attr("src", src);
-        $('#image_edit').modal('hide');
-        $(".edit-image-btn").removeClass("hidden");
-        return false;
+    // start of choosing image from images choices modal //
+    function chooseImage(e) {
+        $(".image-choice img").removeClass("chosen");
+        $(e).addClass("chosen");
+        $("#chooseimage .addImage").removeAttr("disabled");
     }
+    // end of choosing image from images choices modal //
 
+    // start of delete image button //
+    $(".delete-image-btn").click(function () {
+        $(".media_img").attr("src", "");
+        $("#article_picture_path_0").attr("src", "");
+        $(".media_dropbox").removeClass("hidden");
+        $(".delete-image-btn").addClass("hidden");
+        $(".edit-image-btn").addClass("hidden");
+        return false;
+    });
+    // end of delete buton //
+
+    // start of submitting the form //
     $("#btn_add_article").click(function () {
         src = $("#media_0 .media_img").attr("src");
-        //alert($("#video_url").attr("value"));
         if ($("#video_url_0").attr("value") == "") {
             $("#article_picture_path_0").attr("value", src);
         }
@@ -202,6 +331,7 @@
         });
 
     });
+    // end of submittin the form //
 
     $.validator.addMethod("needsSelection", function (value, element) {
         return $(element).multiselect("getChecked").length > 0;
@@ -293,45 +423,16 @@
     $("#articleTags input").attr("placeholder", "+ أضف كلمة بحثية");
     // END OF TAGIT FUNCTIONS //
 
-    function isScrolledIntoView(elem) {
-        var $elem = $(elem);
-        var $window = $("#img_container");
-
-        var docViewTop = $window.scrollTop();
-        var docViewBottom = docViewTop + $window.height();
-
-        var elemTop = $elem.offset().top;
-        var elemBottom = elemTop + $elem.height();
-
-        return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
-    }
-
-    function isBottomPartInView(elem) {
-        var $elem = $(elem);
-        var $window = $("#img_container");
-
-        var docViewTop = $window.scrollTop();
-        var docViewBottom = docViewTop + $window.height();
-        var elemTop = $elem.offset().top;
-        var elemBottom = elemTop + $elem.height();
-       
-        return ((elemBottom <= docViewBottom));
-    }
-
+    // start of load more images when scrolling //
     $("#img_container").scroll(function () {
-        //if (isBottomPartInView("#testScroll") && processing == false && done == false) {
         if ($('#testScroll').visible() && processing == false && done == false) {
             processing = true;
             $.ajax({
                 type: 'POST',
-                data: { Page: page },
+                data: { Page: page, TagNames: $("#tagNames").val() },
                 url: '/Article/GetImagesAjax',
                 beforeSend: function () {
-                    $('#myModal').modal({
-                        show: true,
-                        backdrop: 'static',
-                        keyboard: false
-                    })
+                    $(".loading-inline").removeClass("hidden");
                 },
                 success: function (data) {
                     page++;
@@ -344,12 +445,13 @@
                         done = false;
                     }
                     processing = false;
+                    $(".loading-inline").addClass("hidden");
                 },
                 error: function () {
-                    $('#myModal').modal('hide');
+                    $(".loading-inline").addClass("hidden");
                 }
             });
         }
     });
-
+    // end of load more images when scrolling //
 </script>

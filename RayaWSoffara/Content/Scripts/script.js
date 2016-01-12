@@ -499,7 +499,7 @@ $(document).ready(function () {
         });
     }
 
-    $('#my-select').multiSelect();
+    //$('#my-select').multiSelect();
 });
 
 //function edit_upload(media_id) {

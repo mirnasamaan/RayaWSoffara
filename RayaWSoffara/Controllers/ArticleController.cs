@@ -58,6 +58,7 @@ namespace RayaWSoffara.Controllers
         {
             IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
             ViewBag.tags = articlesTags.ToList();
+            ViewBag.Images = GetImages(0);
             UserArticleVM model = new UserArticleVM();
             return View(model);
         }
@@ -67,6 +68,7 @@ namespace RayaWSoffara.Controllers
         {
             IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
             ViewBag.tags = articlesTags.ToList();
+            ViewBag.Images = GetImages(0);
             UserArticleVM model = new UserArticleVM();
             return View(model);
         }
@@ -85,23 +87,42 @@ namespace RayaWSoffara.Controllers
         {
             IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
             ViewBag.tags = articlesTags.ToList();
+            ViewBag.Images = GetImages(0);
             UserArticleVM model = new UserArticleVM();
             return View(model);
         }
 
         [Authorize]
-        public List<RWSDataLayer.Context.Image> GetImages(int page)
+        public List<RWSDataLayer.Context.Image> GetImages(int page, string TagNames = null)
         {
             ImageRepository _imgrepo = new ImageRepository();
-            List<RWSDataLayer.Context.Image> imgs = _imgrepo.GetAllImages(page).ToList();
+            List<int> tagids = new List<int>();
+            if (TagNames != null && TagNames != "")
+            {
+                string[] Tags = TagNames.Split(',');
+                foreach (var item in Tags)
+                {
+                    tagids.Add(_articleRepo.GetTagByName(HttpUtility.UrlDecode(item)).TagId);
+                }
+            }
+            List<RWSDataLayer.Context.Image> imgs = _imgrepo.GetAllImages(page, tagids).ToList();
             return imgs;
         }
 
         [Authorize]
-        public ActionResult GetImagesAjax(int page)
+        public ActionResult GetImagesAjax(int page, string TagNames = null)
         {
-            ImageRepository _imgrepo = new ImageRepository();
-            List<RWSDataLayer.Context.Image> imgs = _imgrepo.GetAllImages(page).ToList();
+            ImageRepository _imgrepo = new ImageRepository(); 
+            List<int> tagids = new List<int>();
+            if (TagNames != null && TagNames != "")
+            {
+                string[] Tags = TagNames.Split(',');
+                foreach (var item in Tags)
+                {
+                    tagids.Add(_articleRepo.GetTagByName(HttpUtility.UrlDecode(item)).TagId);
+                }
+            }
+            List<RWSDataLayer.Context.Image> imgs = _imgrepo.GetAllImages(page, tagids).ToList();
             return PartialView("_ImagesPartial", imgs);
         }
 

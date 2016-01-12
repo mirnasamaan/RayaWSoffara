@@ -2416,12 +2416,42 @@ input[name="Email"] {
 
 #article_form .edit-image-btn {
     position: absolute;
+    border: 0;
+    border-radius: 0;
+}
+
+#article_form .delete-image-btn {
+    position: absolute;
+    margin-right: 32px;    
+    border: 0;
+    border-radius: 0;
 }
 
 #image_edit #img_container {
-    height: 400px;
+    height: 350px;
     overflow-x: hidden;
     overflow-y: scroll;
+}
+
+#image_edit .imageTags {
+    margin: 10px 0;
+}
+
+.loading-inline .sk-fading-circle {
+    position: relative !important;
+}
+
+#edit_modal_body li a {
+    font-weight: normal;
+}
+
+#edit_modal_body #embedded_video_link {
+    margin: 10px 0;
+}
+
+#edit_modal_body .addImage {
+    border-radius: 0;
+    width: 10%;
 }
 /*===========================================================================================================================================*/
 
@@ -2456,7 +2486,7 @@ input[name="Email"] {
     border: 1px solid rgb(52, 141, 185) !important;
     background-color: white;
 }
-#createArticle_container textarea, #display_post_container textarea {
+/*#createArticle_container textarea,*/ #display_post_container textarea {
     border: 1px solid rgb(52, 141, 185);
 }
 #newArticle_title {
@@ -3101,6 +3131,7 @@ input[name="Email"] {
     bottom: 0;
     background: #333;
     opacity: 0.8;
+    z-index: 100000;
 }
 .loading > div, .loading-crop > div {
     background: white;
@@ -4018,19 +4049,19 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 }
 
 .tagit-autocomplete {
-    z-index: 100 !important;
+    z-index: 100000 !important;
     border: none !important;
     background: none !important;
 }
 
-    .tagit-autocomplete li {
-        background-color: black;
-    }
+.tagit-autocomplete li {
+    background-color: black;
+}
 
-    .tagit-autocomplete a {
-        background-color: black;
-        color: white !important;
-    }
+.tagit-autocomplete a {
+    background-color: black;
+    color: white !important;
+}
 
 .header_div_3 .keywords .tagit-close i {
     color: white;
@@ -4572,9 +4603,62 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
     direction: ltr;
 }
 
+#chooseimage {
+    position: relative;
+}
+
+#chooseimage .search-btn {
+    background: #348DB9; 
+    position: absolute;
+    width: 40px;
+    left: 0px;
+    height: 36px;
+    top: 0;
+}
+
+#chooseimage .search-btn i {
+    color: white;
+    font-size: 20px;
+}
+
 #chooseimage .image-choice {
+    position: relative;
     cursor: pointer;
     padding: 10px;
+}
+
+#chooseimage .image-choice img {
+    border: 3px solid white;
+}
+
+#chooseimage .image-choice img.chosen {
+    border: 3px solid #42ACDC;
+}
+
+#chooseimage .inner-image-tags {
+    position: absolute;
+    bottom: 13px;
+    right: 13px;
+    left: 13px;
+    background: #348DB9;
+    padding: 0 3px;
+    color: white;
+}
+
+.g-recaptcha>div {
+    margin: auto 0;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+.dropzone.smalltools .tools .btn {
+    padding-top: 3px!important;
+    padding-left: 5px!important;
+    border-radius: 0;
+}
+
+#article_form #articleTags {
+    margin: 0;
 }
 /*===========================================================================================================================================*/
 

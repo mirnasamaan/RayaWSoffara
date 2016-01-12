@@ -75,9 +75,34 @@
                                 <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
                             </div>
                             <div class="tab-pane" id="chooseimage">
+                                <ul class="imageTags"></ul>
+                                <input type="hidden" id="tagNames" />
+                                <button class="search-btn"><i class="fa fa-search"></i></button>
                                 <div id="img_container">
-                                    <div class="container full_width"></div>
+                                    <div class="container full_width">@Html.Partial("_ImagesPartial", (List<RWSDataLayer.Context.Image>) @ViewBag.Images)</div>
+                                    <div id="testScroll" style="height: 10px">
+                                        <div class="loading-inline hidden">
+                                            <div>
+                                                <div class="sk-fading-circle">
+                                                    <div class="sk-circle1 sk-circle"></div>
+                                                    <div class="sk-circle2 sk-circle"></div>
+                                                    <div class="sk-circle3 sk-circle"></div>
+                                                    <div class="sk-circle4 sk-circle"></div>
+                                                    <div class="sk-circle5 sk-circle"></div>
+                                                    <div class="sk-circle6 sk-circle"></div>
+                                                    <div class="sk-circle7 sk-circle"></div>
+                                                    <div class="sk-circle8 sk-circle"></div>
+                                                    <div class="sk-circle9 sk-circle"></div>
+                                                    <div class="sk-circle10 sk-circle"></div>
+                                                    <div class="sk-circle11 sk-circle"></div>
+                                                    <div class="sk-circle12 sk-circle"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <div class="vertical_space"></div>
+                                <button class="addImage btn btn-primary" disabled>أضف</button>
                             </div>
                         </div>
                     </div>
@@ -93,6 +118,25 @@
     </div>
 </form>
 
+<div class="loading hidden">
+    <div>
+        <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+        </div>
+    </div>
+</div>
+
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
 <script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
@@ -102,6 +146,103 @@
 <script src="~/Content/Scripts/html5imageupload.min.js"></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script>
+    // start of getting search image tags //
+    var availableTags = [];
+    var availableTagsID = [];
+    $('.imageTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "Post",
+                    data: { Term: search.term },
+                    url: "/Home/GetTags",
+                    success: function (tags) {
+                        availableTags = [];
+                        availableTagsID = [];
+                        for (i = 0; i < tags.length; i++) {
+                            availableTags.push(tags[i].TagName);
+                            availableTagsID.push(tags[i].TagID);
+                        }
+                        showChoices(availableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                return false;
+            }
+        },
+        afterTagAdded: function (event, ui) {
+            var index = availableTags.indexOf(ui.tagLabel);
+            var id = availableTagsID[index];
+            var image_id = $(this).closest('div[class^="imageItem"]').attr("id");
+            $("#" + image_id + " .imageTags li").eq(-2).attr("data-id", id);
+        }
+    });
+    $(".imageTags .tagit-new input").attr("placeholder", "+ أضف كلمة بحثية");
+    // end of getting search image tags //
+
+    // start of clicking search button in tags //
+    $("#chooseimage .search-btn").click(function () {
+        $("#img_container .container").html("");
+        var tags = "";
+        $('.imageTags').children('li').each(function () {
+            var tagname = $(this).children('span').text();
+            tags = tags + tagname + ",";
+        });
+        tags = tags.substring(0, tags.length - 2);
+        $("#tagNames").val(tags);
+        page = 0;
+        $.ajax({
+            type: "Post",
+            data: { Page: 0, TagNames: tags },
+            url: "/Article/GetImagesAjax",
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (data) {
+                page++;
+                $images = $(data);
+                $('#img_container .container').append($images);
+                $(".loading").addClass("hidden");
+                var visibleImageCount = $("#img_container .image-choice").length;
+                if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
+                    done = true;
+                } else {
+                    done = false;
+                }
+                processing = false;
+            }
+        });
+        return false;
+    });
+    // end of clicking search button in tags //
+
+    // start of choosing image from images choices modal //
+    function chooseImage(e) {
+        $(".image-choice img").removeClass("chosen");
+        $(e).addClass("chosen");
+        $("#chooseimage .addImage").removeAttr("disabled");
+    }
+    // end of choosing image from images choices modal //
+
+    // start of delete image button //
+    $(".delete-image-btn").click(function () {
+        $(".media_img").attr("src", "");
+        $("#article_picture_path_0").attr("src", "");
+        $(".media_dropbox").removeClass("hidden");
+        $(".delete-image-btn").addClass("hidden");
+        $(".edit-image-btn").addClass("hidden");
+        return false;
+    });
+    // end of delete buton //
+
     $(".addImage").click(function () {
         $('#image_edit').modal('hide');
         $(".media_dropbox").addClass("hidden");
@@ -280,4 +421,35 @@
     $("#articleTags input").attr("placeholder", "+ أضف كلمة بحثية");
     // END OF TAGIT FUNCTIONS //
 
+    // start of load more images when scrolling //
+    $("#img_container").scroll(function () {
+        if ($('#testScroll').visible() && processing == false && done == false) {
+            processing = true;
+            $.ajax({
+                type: 'POST',
+                data: { Page: page, TagNames: $("#tagNames").val() },
+                url: '/Article/GetImagesAjax',
+                beforeSend: function () {
+                    $(".loading-inline").removeClass("hidden");
+                },
+                success: function (data) {
+                    page++;
+                    $images = $(data);
+                    $('#img_container .container').append($images);
+                    var visibleImageCount = $("#img_container .image-choice").length;
+                    if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
+                        done = true;
+                    } else {
+                        done = false;
+                    }
+                    processing = false;
+                    $(".loading-inline").addClass("hidden");
+                },
+                error: function () {
+                    $(".loading-inline").addClass("hidden");
+                }
+            });
+        }
+    });
+    // end of load more images when scrolling //
 </script>
