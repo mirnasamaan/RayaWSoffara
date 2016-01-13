@@ -1,162 +1,447 @@
-﻿@model RayaWSoffara.Models.UserArticleVM
+﻿<link href="~/Content/CSS/html5imageupload.css" rel="stylesheet" />
+@model RayaWSoffara.Models.UserArticleVM
 
 @{
     ViewBag.Title = "إكتب مقالك";
 }
 
-<form enctype="multipart/form-data" method="post">
-    <div class="container full_width" id="createArticle_container">
+<div class="clear-fix"></div>
+<div class="container full_width" id="createArticle_container">
+    <form enctype="multipart/form-data" method="post" id="article_form">
+        @if (@ViewBag.ErrorMsg == 1)
+        {
+            <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
+        }
+        else if (@ViewBag.ErrorMsg == 2)
+        {
+            <div class="ErrorMsg">Error: captcha is not valid.</div>
+        }
+        <input type="hidden" id="AllImagesCount" value="@ViewBag.AllImagesCount" />
         <div class="row">
-            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                <div class="input-group full_width input_margin"> 
-                    @Html.TextBoxFor(m => m.newArticle.title, new{@class = "form-control dark_border", placeholder = "أضف عنوان"})
-                    @*<input type="text" name="newArticle.title" value="@Model.newArticle.title" class="form-control dark_border" placeholder = "أضف عنوان" />*@
-                    <input type="hidden" name="article_picture_path" id="article_picture_path" />
-                    <input type="hidden" name="video_url" id="video_url" />
+            <div class="col-md-8 col-md-offset-2 col-xs-12">
+                <div class="input-group full_width input_margin">
+                    @Html.TextBoxFor(m => m.newArticle.Title, new { @class = "form-control dark_border", placeholder = "أضف عنوان" })
+                    <input type="hidden" name="article_picture_path" id="article_picture_path_0" />
+                    <input type="hidden" name="video_url" id="video_url_0" value="" />
                 </div>
                 <div class="input-group full_width input_margin">
-                    <div id="media" class="dark_border">
-                        <img id="media_img" src="" />
-                        <section class="image-upload-drop-target" id="media_dropbox">
-                            <span>أضف صورة أو فيديو</span>
-                            <button type="button" class="upload" id="video_embed_btn">Embed Video</button>
-                            <button type="button" class="upload" id="picture_upload_btn">Upload Image</button>
-                            <input type="file" name="article_picture" id="article_picture_btn" class="hide" onchange="readURL(this)" />
+                    <div class="media dark_border" id="media_0">
+                        <button type="button" class="btn btn-primary btn-sm edit-image-btn hidden" data-toggle="modal" data-target="#image_edit">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </button>
+                        <button type="button" class="btn btn-danger btn-sm delete-image-btn hidden">
+                            <i class="fa fa-trash-o"></i>
+                        </button>
+                        <img class="media_img img-responsive" src="" />
+                        <input id="originalimage" type="hidden" />
+                        <section class="image-upload-drop-target media_dropbox">
+                            <button type="button" class="btn btn-primary btn-lg" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
+                                أضف صورة أو فيديو
+                            </button>
                         </section>
-                        <div id="controls">
-                            <section>
-                                <button type="button" class="upload" id="delete_btn"><span class="glyphicon glyphicon-trash"></span></button>
-                                <button type="button" class="upload" id="edit_btn"><span class="glyphicon glyphicon-pencil"></span></button>
-                            </section>
-                        </div>
                     </div>
                 </div>
                 <div class="input-group full_width input_margin">
-                    @Html.TextAreaFor(m => m.newArticle.article_content, new{ id="article_content"})
-                    @*<textarea name="article_content" id="article_content">@Model.newArticle.article_content</textarea>*@
+                    @Html.TextAreaFor(m => m.newArticle.Content, new { id = "article_content" })
                 </div>
+
                 <div class="input-group full_width input_margin">
-                    @*<input type="hidden" name="newArticle.tags[0].tag_id" value="1" />*@
-                    <select multiple="multiple" id="my-select">
-                        @foreach (var item in (List<RWSDataLayer.Models.tag>)ViewBag.tags)
-                        {
-                            <option value="@item.id">@item.name</option>
-                        }
-                    </select>
+                    <div>
+                        <input name="mySelect" type="hidden" id="tagsCount" />
+                        <ul id="articleTags"></ul>
+                    </div>
                 </div>
-                <div id="btn_reg_div">
+                <input type="hidden" id="video_id" value="media_0" />
+                <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
+                <input name="recaptcha" type="hidden" />
+                <div id="submit-btn">
                     <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#one" data-toggle="tab">
-                        <img class="tab_imgs" src="~/Content/Images/icon_camera.png" />صورة</a></li>
-                    <li><a href="#two" data-toggle="tab">
-                        <img class="tab_imgs" src="~/Content/Images/icon_video.png" />فيديو</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="one">
-                        <div class="container full_width">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/sample_image1.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article2.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article3.png" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/sample_image1.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article2.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article3.png" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/sample_image1.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article2.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article3.png" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="two">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <textarea id="video_embed_txt" rows="3" placeholder="رجاءً ضع الرابط هنا"></textarea>
-                                    <button type="button" id="embed_btn" class="btn btn-default">أدخل</button>
-                                    <div id="video_viewport">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
-            Launch demo modal
-        </button>
-
-        <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed">
-            Launch demo modal
-        </button>
-
-        <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
-                    </div>
-                    <div class="modal-body" id="video_modal_body">
-                        <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
-                        <div id="modal_video_viewport">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
-                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
-                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
-                        <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
-                    </div>
                 </div>
             </div>
         </div>
 
         <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
+            <div class="modal-dialog modal-lg">
                 <div class="modal-content">
                     <div class="modal-header">
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
+                        <h4 class="modal-title" id="myModalLabel">ضبط الصورة</h4>
                     </div>
                     <div class="modal-body" id="edit_modal_body">
-                        <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
+                        <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                            <li class="active"><a href="#uploadimage" data-toggle="tab">أضف صورة</a></li>
+                            <li><a href="#uploadvideo" data-toggle="tab">يوتيوب فيديو</a></li>
+                            <li><a href="#chooseimage" data-toggle="tab">إختر صورة</a></li>
+                        </ul>
+                        <div id="my-tab-content" class="tab-content">
+                            <div class="tab-pane active" id="uploadimage">
+                                <div class="dropzone image-dropzone full_width" data-ajax="false" data-url="/Article/TestCrop" data-save="false" data-resize="true" data-canvas="true" data-width="866" data-height="398" style="width: 100%;">
+                                    <input type="file" name="thumb" />
+                                </div>
+                                <input id="uploadimagefilename" type="hidden" />
+                                <button class="addImage btn btn-primary buttons" disabled>أضف</button>
+                            </div>
+                            <div class="tab-pane" id="uploadvideo">
+                                <textarea id="embedded_video_link" class="full_width form-control" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                                <div id="modal_video_viewport">
+                                </div>
+                                <button type="button" class="btn btn-primary buttons" id="embed_confirm">أضف</button>
+                                @*<button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>*@
+                            </div>
+                            <div class="tab-pane" id="chooseimage">
+                                <ul class="imageTags"></ul>
+                                <input type="hidden" id="tagNames" />
+                                <button class="search-btn"><i class="fa fa-search"></i></button>
+                                <div id="img_container">
+                                    <div class="container full_width">@Html.Partial("_ImagesPartial", (List<RWSDataLayer.Context.Image>) @ViewBag.Images)</div>
+                                    <div id="testScroll" style="height: 10px">
+                                        <div class="loading-inline hidden">
+                                            <div>
+                                                <div class="sk-fading-circle">
+                                                    <div class="sk-circle1 sk-circle"></div>
+                                                    <div class="sk-circle2 sk-circle"></div>
+                                                    <div class="sk-circle3 sk-circle"></div>
+                                                    <div class="sk-circle4 sk-circle"></div>
+                                                    <div class="sk-circle5 sk-circle"></div>
+                                                    <div class="sk-circle6 sk-circle"></div>
+                                                    <div class="sk-circle7 sk-circle"></div>
+                                                    <div class="sk-circle8 sk-circle"></div>
+                                                    <div class="sk-circle9 sk-circle"></div>
+                                                    <div class="sk-circle10 sk-circle"></div>
+                                                    <div class="sk-circle11 sk-circle"></div>
+                                                    <div class="sk-circle12 sk-circle"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="vertical_space"></div>
+                                <button class="addImage btn btn-primary buttons" disabled>أضف</button>
+                            </div>
+                        </div>
                     </div>
                     <div class="modal-footer">
+                        @*<input type="hidden" id="media_id" value="" />
                         <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
-                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
-                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
-                        <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
+                        <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>*@
                     </div>
                 </div>
             </div>
         </div>
+    </form>
+</div>
+
+<div class="loading hidden">
+    <div>
+        <div class="sk-fading-circle">
+            <div class="sk-circle1 sk-circle"></div>
+            <div class="sk-circle2 sk-circle"></div>
+            <div class="sk-circle3 sk-circle"></div>
+            <div class="sk-circle4 sk-circle"></div>
+            <div class="sk-circle5 sk-circle"></div>
+            <div class="sk-circle6 sk-circle"></div>
+            <div class="sk-circle7 sk-circle"></div>
+            <div class="sk-circle8 sk-circle"></div>
+            <div class="sk-circle9 sk-circle"></div>
+            <div class="sk-circle10 sk-circle"></div>
+            <div class="sk-circle11 sk-circle"></div>
+            <div class="sk-circle12 sk-circle"></div>
+        </div>
     </div>
-</form>
+</div>
+
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221;" type="text/javascript"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<script src="~/Content/Scripts/html5imageupload.min.js"></script>
+<script src="~/Content/Scripts/jquery.visible.min.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script>
+
+    var allImagesCount = $("#AllImagesCount").val();
+    var page = 1;
+    var processing = false;
+    var done = false;
+
+    // start of getting search image tags //
+    var availableTags = [];
+    var availableTagsID = [];
+    $('.imageTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "Post",
+                    data: { Term: search.term },
+                    url: "/Home/GetTags",
+                    success: function (tags) {
+                        availableTags = [];
+                        availableTagsID = [];
+                        for (i = 0; i < tags.length; i++) {
+                            availableTags.push(tags[i].TagName);
+                            availableTagsID.push(tags[i].TagID);
+                        }
+                        showChoices(availableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                return false;
+            }
+        },
+        afterTagAdded: function (event, ui) {
+            var index = availableTags.indexOf(ui.tagLabel);
+            var id = availableTagsID[index];
+            var image_id = $(this).closest('div[class^="imageItem"]').attr("id");
+            $("#" + image_id + " .imageTags li").eq(-2).attr("data-id", id);
+        }
+    });
+    $(".imageTags .tagit-new input").attr("placeholder", "+ أضف كلمة بحثية");
+    // end of getting search image tags //
+
+    // start of clicking search button in tags //
+    $("#chooseimage .search-btn").click(function () {
+        $("#img_container .container").html("");
+        var tags = "";
+        $('.imageTags').children('li').each(function () {
+            var tagname = $(this).children('span').text();
+            tags = tags + tagname + ",";
+        });
+        tags = tags.substring(0, tags.length - 2);
+        $("#tagNames").val(tags);
+        page = 0;
+        $.ajax({
+            type: "Post",
+            data: { Page: 0, TagNames: tags },
+            url: "/Article/GetImagesAjax",
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (data) {
+                page++;
+                $images = $(data);
+                $('#img_container .container').append($images);
+                $(".loading").addClass("hidden");
+                var visibleImageCount = $("#img_container .image-choice").length;
+                if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
+                    done = true;
+                } else {
+                    done = false;
+                }
+                processing = false;
+            }
+        });
+        return false;
+    });
+    // end of clicking search button in tags //
+
+    // start of adding image from image-edit modal //
+    $("#uploadimage .addImage").click(function () {
+        $('#image_edit').modal('hide');
+        $(".media_dropbox").addClass("hidden");
+        $(".media_img").attr("src", $("#uploadimagefilename").val());
+        $("#article_picture_path_0").attr("src", $("#uploadimagefilename").val());
+        $(".edit-image-btn").removeClass("hidden");
+        $(".delete-image-btn").removeClass("hidden");
+        var originalimage = $(".dropzone > img").attr("src");
+        $("#originalimage").val(originalimage);
+        return false;
+    });
+
+    $("#chooseimage .addImage").click(function () {
+        var src = $(".image-choice .chosen").attr("src");
+        src = src.split("?")[0];
+        $(".media_dropbox").addClass("hidden");
+        $(".media_img").attr("src", src);
+        $("#article_picture_path_0").attr("src", src);
+        $('#image_edit').modal('hide');
+        $(".edit-image-btn").removeClass("hidden");
+        $(".delete-image-btn").removeClass("hidden");
+        return false;
+    });
+    // end of adding image from image-edit modal //
+
+    $(document).ready(function () {
+        // start of dropzone function for croppping //
+        $('.dropzone').html5imageupload({
+            onSave: function (data) {
+                $.ajax({
+                    type: 'POST',
+                    data: { data: data.data, left: data.left, top: data.top, imageWidth: data.imageWidth, imageHeight: data.imageHeight, imageOriginalWidth: data.imageOriginalWidth, imageOriginalHeight: data.imageOriginalHeight },
+                    url: '/Article/TestCrop',
+                    beforeSend: function () {
+                        $(".loading").removeClass("hidden");
+                    },
+                    success: function (data) {
+                        $(".loading").addClass("hidden");
+                        $("#uploadimagefilename").val("/Temp/" + data);
+                        $("#uploadimage .addImage").removeAttr("disabled");
+                    },
+                    error: function () {
+                        $(".loading").addClass("hidden");
+                    }
+                });
+            }
+        });
+        // end of dropzone function for cropping //
+    });
+
+    // start of submitting the form //
+    $("#btn_add_article").click(function () {
+        src = $("#media_0 .media_img").attr("src");
+        if ($("#video_url_0").attr("value") == "") {
+            $("#article_picture_path_0").attr("value", src);
+        }
+        $('#article_content').each(function () {
+            for (instance in CKEDITOR.instances)
+                CKEDITOR.instances[instance].updateElement();
+        });
+
+        var tags_qs = "";
+        $('#articleTags').children('li').each(function (index) {
+            var tagname = $(this).children('span').text();
+            $("#submit-btn").append("<input name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
+        });
+    });
+    // end of submitting the form //
+
+    $.validator.addMethod("needsSelection", function (value, element) {
+        return $(element).multiselect("getChecked").length > 0;
+    });
+
+    $.validator.addMethod("minChars", function (value, element) {
+        return value.length > 300;
+    });
+
+    $.validator.addMethod("ImageOrVideo", function (value, element) {
+        img_src = $("#media_0 .media_img").attr("src");
+        vid_src = $("#video_url_0").attr("value");
+        return ((img_src != "") || (vid_src != ""));
+    });
+
+    $.validator.addMethod("RequiredTag", function (value, element) {
+        tags_count = $("#articleTags").children("li").length;
+        return (tags_count > 1);
+    });
+
+    $.validator.addMethod("reCaptchaValidate", function (value, element) {
+        var googleResponse = jQuery('#g-recaptcha-response').val();
+        return googleResponse;
+    });
+
+    $("#article_form").validate({
+        ignore: [],
+        rules: {
+            "newArticle.Title": "required",
+            "newArticle.Content": { required: true, minChars: true },
+            article_picture_path: { ImageOrVideo: true },
+            mySelect: { RequiredTag: true },
+            recaptcha: { reCaptchaValidate: true }
+        },
+        messages: {
+            "newArticle.Title": "يجب إدخال عنوان المقالة.",
+            "newArticle.Content": {
+                required: "يجب إدخال مضمون المقالة.",
+                minChars: "يجب إدخال على الأقل 300 كلمة."
+            },
+            article_picture_path: "يجب إدخال صورة للمقالة.",
+            mySelect: "يجب إدخال كلمة بحثية.",
+            recaptcha: { reCaptchaValidate: "Please fill up the captcha." }
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "article_picture_path") {
+                error.insertAfter(".media");
+            } else if (element.attr("name") == "newArticle.Content") {
+                error.insertAfter("#cke_article_content");
+            } else if (element.attr("name") == "mySelect") {
+                error.insertAfter("#articleTags");
+            } else if (element.attr("name") == "recaptcha") {
+                error.insertAfter(".g-recaptcha > div > div");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+
+    // START OF TAGIT FUNCTIONS//
+    var availableTags = [];
+    var availableTagsID = [];
+
+    $('#articleTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "POST",
+                    data: { Term: search.term },
+                    url: "/Home/GetTags",
+                    success: function (Tags) {
+                        availableTags = [];
+                        availableTagsID = [];
+                        $('.header_div_2 .keywords').children('p').each(function () {
+                            availableTags.push();
+                        });
+                        for (i = 0; i < Tags.length; i++) {
+                            availableTags.push(Tags[i].TagName);
+                            availableTagsID.push(Tags[i].TagID);
+                        }
+                        showChoices(availableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                return false;
+            }
+        }
+    });
+
+    $("#articleTags input").attr("placeholder", "+ أضف كلمة بحثية");
+    // END OF TAGIT FUNCTIONS //
+
+    // start of load more images when scrolling //
+    $("#img_container").scroll(function () {
+        if ($('#testScroll').visible() && processing == false && done == false) {
+            processing = true;
+            $.ajax({
+                type: 'POST',
+                data: { Page: page, TagNames: $("#tagNames").val() },
+                url: '/Article/GetImagesAjax',
+                beforeSend: function () {
+                    $(".loading-inline").removeClass("hidden");
+                },
+                success: function (data) {
+                    page++;
+                    $images = $(data);
+                    $('#img_container .container').append($images);
+                    var visibleImageCount = $("#img_container .image-choice").length;
+                    if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
+                        done = true;
+                    } else {
+                        done = false;
+                    }
+                    processing = false;
+                    $(".loading-inline").addClass("hidden");
+                },
+                error: function () {
+                    $(".loading-inline").addClass("hidden");
+                }
+            });
+        }
+    });
+    // end of load more images when scrolling //
+</script>

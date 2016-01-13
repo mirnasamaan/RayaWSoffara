@@ -7,7 +7,7 @@
             <img onclick="chooseImage(this)" src="@item.ImageURL?w=242&h=137&mode=crop" />
             <div class="inner-image-tags">
                 @foreach(var tag in @item.Tags){
-                    <span>#@tag.TagName </span>
+                    <span>@tag.TagName </span>
                 }
             </div>
         </div>

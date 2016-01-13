@@ -150,6 +150,7 @@ namespace RayaWSoffara.Controllers
         [ValidateInput(false)]
         public ActionResult Write(UserArticleVM article, string article_picture_path, string video_url)
         {
+            //HttpPostedFileBase picture = null;
             string remoteip = Request.UserHostAddress;
             string recaptcha = Request.Form["g-recaptcha-response"];
             bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
@@ -162,7 +163,10 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.CreationDate = DateTime.Now;
                 article.newArticle.MetaTags = "";
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-                //HttpPostedFileBase picture = Request.Files[0];
+                //if (Request.Files != null && Request.Files.Count > 0)
+                //{
+                //    picture = Request.Files[0];
+                //}
                 if (article_picture_path != "")
                 {
                     if (article_picture_path != "")
@@ -170,9 +174,9 @@ namespace RayaWSoffara.Controllers
                         string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
                         if (System.IO.File.Exists(path))
                         {
-                            string[] separator = new string[] { "Temp/" };
+                            string[] separator = new string[] { "/" };
                             string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            string imgName = DateTime.Now.Ticks + "_" + temp.Last();
                             System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                             article.newArticle.FeaturedImage = imgName;
                         }
@@ -744,7 +748,7 @@ namespace RayaWSoffara.Controllers
             articleData.newArticle = _articleRepo.GetPostById(id);
             articleData.userArticles = _articleRepo.GetAllUserPosts(articleData.newArticle.CreatedBy, 5).ToList();
             //articleData.newArticle.article_content = _articleRepo.RemoveHTMLTags(articleData.newArticle.article_content);
-            _articleRepo.UpdatedArticleViewsCounter(id);
+            //_articleRepo.UpdatedArticleViewsCounter(id);
             ViewBag.userViewsCount = _articleRepo.GetViewsCountByUserId(articleData.newArticle.CreatedBy);
             List<Post> simillarArticles = _articleRepo.GetPostsWithTagIDs(articleData.newArticle.Tags.Select(i => i.TagId).ToList(), 5).ToList();
             ViewBag.simillarArticles = simillarArticles;

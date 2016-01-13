@@ -32,7 +32,7 @@
                         <button type="button" class="btn btn-danger btn-sm delete-image-btn hidden">
                             <i class="fa fa-trash-o"></i>
                         </button>
-                        <img class="media_img" src="" />
+                        <img class="media_img img-responsive" src="" />
                         <input id="originalimage" type="hidden" />
                         <section class="image-upload-drop-target media_dropbox">
                             <button type="button" class="btn btn-primary btn-lg" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
@@ -53,6 +53,7 @@
                 </div>
                 <input type="hidden" id="video_id" value="media_0" />
                 <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
+                <input name="recaptcha" type="hidden" />
                 <div id="submit-btn">
                     <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
                 </div>
@@ -294,25 +295,6 @@
         // end of dropzone function for cropping //
     });
 
-    // start of choosing image from images choices modal //
-    function chooseImage(e) {
-        $(".image-choice img").removeClass("chosen");
-        $(e).addClass("chosen");
-        $("#chooseimage .addImage").removeAttr("disabled");
-    }
-    // end of choosing image from images choices modal //
-
-    // start of delete image button //
-    $(".delete-image-btn").click(function () {
-        $(".media_img").attr("src", "");
-        $("#article_picture_path_0").attr("src", "");
-        $(".media_dropbox").removeClass("hidden");
-        $(".delete-image-btn").addClass("hidden");
-        $(".edit-image-btn").addClass("hidden");
-        return false;
-    });
-    // end of delete buton //
-
     // start of submitting the form //
     $("#btn_add_article").click(function () {
         src = $("#media_0 .media_img").attr("src");
@@ -329,9 +311,8 @@
             var tagname = $(this).children('span').text();
             $("#submit-btn").append("<input name='SelectedTags[" + index + "]' value='" + tagname + "' type='hidden' />");
         });
-
     });
-    // end of submittin the form //
+    // end of submitting the form //
 
     $.validator.addMethod("needsSelection", function (value, element) {
         return $(element).multiselect("getChecked").length > 0;
@@ -352,13 +333,19 @@
         return (tags_count > 1);
     });
 
+    $.validator.addMethod("reCaptchaValidate", function (value, element) {
+        var googleResponse = jQuery('#g-recaptcha-response').val();
+        return googleResponse;
+    });
+
     $("#article_form").validate({
         ignore: [],
         rules: {
             "newArticle.Title": "required",
             "newArticle.Content": { required: true, minChars: true },
             article_picture_path: { ImageOrVideo: true },
-            mySelect: { RequiredTag: true }
+            mySelect: { RequiredTag: true },
+            recaptcha: { reCaptchaValidate: true }
         },
         messages: {
             "newArticle.Title": "يجب إدخال عنوان المقالة.",
@@ -367,7 +354,8 @@
                 minChars: "يجب إدخال على الأقل 300 كلمة."
             },
             article_picture_path: "يجب إدخال صورة للمقالة.",
-            mySelect: "يجب إدخال كلمة بحثية."
+            mySelect: "يجب إدخال كلمة بحثية.",
+            recaptcha: { reCaptchaValidate: "Please fill up the captcha." }
         },
         errorPlacement: function (error, element) {
             if (element.attr("name") == "article_picture_path") {
@@ -376,6 +364,8 @@
                 error.insertAfter("#cke_article_content");
             } else if (element.attr("name") == "mySelect") {
                 error.insertAfter("#articleTags");
+            } else if (element.attr("name") == "recaptcha") {
+                error.insertAfter(".g-recaptcha > div > div");
             } else {
                 error.insertAfter(element);
             }

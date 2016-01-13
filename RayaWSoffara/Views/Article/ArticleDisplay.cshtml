@@ -34,50 +34,56 @@
                     <div class="pull-left user-data">
                         <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName&Page=1">@Model.newArticle.RWSUser.UserName</a></span></div>
                         <div class="border pull-left"></div>
-                        <div class="pull-left"><span class="date">@ArabicTimeStampHelper.ArabicTimeStamp(Convert.ToDateTime(Model.newArticle.ActivationDate))</span></div>
-                    </div>
+                        @if(Model.newArticle.ActivationDate == null){
+                            <div class="pull-left"><span class="date">تحت المراجعة</span></div>
+                        } else {
+                            <div class="pull-left"><span class="date">@ArabicTimeStampHelper.ArabicTimeStamp(Convert.ToDateTime(Model.newArticle.ActivationDate))</span></div>
+                        }
+                        </div>
                     <div class="clear-fix"></div>
                 </div>
             </div>
             <div class="row">
                 <div class="article_display_row">
-                    <div class="pull-left social-media-icons">
-                        <div class="pull-left">
-                            <a href="javascript:void(0)" class="so-facebook" onclick="facebookshare()"><i class="fa fa-facebook"></i></a>
+                    @if(Model.newArticle.IsActive != null && Model.newArticle.IsActive != false){
+                        <div class="pull-left social-media-icons">
+                            <div class="pull-left">
+                                <a href="javascript:void(0)" class="so-facebook" onclick="facebookshare()"><i class="fa fa-facebook"></i></a>
+                            </div>
+                            <div class="pull-left">
+                                <a href="javascript:void(0)" class="so-twitter" onclick="twittershare()"><i class="fa fa-twitter"></i></a>
+                            </div>
+                            <div class="pull-left">
+                                <a href="javascript:void(0)" class="so-google" onclick="googleplusshare()"><i class="fa fa-google-plus"></i></a>
+                            </div>
                         </div>
-                        <div class="pull-left">
-                            <a href="javascript:void(0)" class="so-twitter" onclick="twittershare()"><i class="fa fa-twitter"></i></a>
+                        <div class="pull-left article_stats">
+                            <div class="pull-left shares">
+                                <div class="count">@Model.newArticle.SharesCount</div>
+                                <div>مشاركة</div>
+                            </div>
+                            <div class="border pull-left"></div>
+                            <div class="pull-left comments">
+                                <div class="count">@ViewBag.AllCommentsCount</div>
+                                <div>تعليق</div>
+                            </div>
+                            <div class="border pull-left"></div>
+                            <div class="pull-left views">
+                                <div class="count">@Model.newArticle.ViewsCount</div>
+                                <div>مشاهدة</div>
+                            </div>
+                            <div class="border pull-left"></div>
+                            <div class="pull-left likes">
+                                <div class="count">@Model.newArticle.LikesCount</div>
+                                <div>اعجابات</div>
+                            </div>
                         </div>
-                        <div class="pull-left">
-                            <a href="javascript:void(0)" class="so-google" onclick="googleplusshare()"><i class="fa fa-google-plus"></i></a>
+                        <div class="pull-left social-media-icons">
+                            <div class="pull-left like-btn">
+                                <a href="javascript:void(0)" class="" onclick="like(this)"><i class="fa fa-thumbs-up"></i></a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="pull-left article_stats">
-                        <div class="pull-left shares">
-                            <div class="count">@Model.newArticle.SharesCount</div>
-                            <div>مشاركة</div>
-                        </div>
-                        <div class="border pull-left"></div>
-                        <div class="pull-left comments">
-                            <div class="count">@ViewBag.AllCommentsCount</div>
-                            <div>تعليق</div>
-                        </div>
-                        <div class="border pull-left"></div>
-                        <div class="pull-left views">
-                            <div class="count">@Model.newArticle.ViewsCount</div>
-                            <div>مشاهدة</div>
-                        </div>
-                        <div class="border pull-left"></div>
-                        <div class="pull-left likes">
-                            <div class="count">@Model.newArticle.LikesCount</div>
-                            <div>اعجابات</div>
-                        </div>
-                    </div>
-                    <div class="pull-left social-media-icons">
-                        <div class="pull-left like-btn">
-                            <a href="javascript:void(0)" class="" onclick="like(this)"><i class="fa fa-thumbs-up"></i></a>
-                        </div>
-                    </div>
+                    }
                     <div class="pull-right">
                         @{ int id = Model.newArticle.PostTypeId.Value;
                                    string color = "";
