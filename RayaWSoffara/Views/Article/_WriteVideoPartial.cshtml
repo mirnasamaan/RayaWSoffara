@@ -1,0 +1,81 @@
+﻿@model RayaWSoffara.Models.UserArticleVM
+
+@if (Model != null)
+{
+    <form enctype="multipart/form-data" method="post" id="article_form">
+        @if (@ViewBag.ErrorMsg == 1)
+        {
+            <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
+        }
+        else if (@ViewBag.ErrorMsg == 2)
+        {
+            <div class="ErrorMsg">Error: captcha is not valid.</div>
+        }
+        <div>
+            <input type="hidden" name="article_picture_path" id="article_picture_path_0" />
+            <input type="hidden" name="video_url" id="video_url_0" value="" />
+            <div class="input-group full_width input_margin">
+                <div class="media dark_border" id="media_0">
+                    <button type="button" class="btn btn-primary btn-sm edit-image-btn hidden" data-toggle="modal" data-target="#image_edit">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm delete-image-btn hidden">
+                        <i class="fa fa-trash-o"></i>
+                    </button>
+                    <img class="media_img img-responsive" src="" />
+                    <input id="originalimage_0" type="hidden" />
+                    <section class="image-upload-drop-target media_dropbox">
+                        <button type="button" class="btn btn-primary btn-lg addimage-btn" @*id="pictureModal_toggle_btn"*@ data-toggle="modal" data-target="#image_edit">
+                            أضف صورة أو فيديو
+                        </button>
+                    </section>
+                </div>
+            </div>
+            <div class="input-group full_width input_margin">
+                @Html.TextAreaFor(m => m.newArticle.Content, new { @class = "full_width", placeholder = "أضف تعليقك" })
+            </div>
+
+            <div class="input-group full_width input_margin">
+                <div>
+                    <input name="mySelect" type="hidden" class="tagsCount" />
+                    <ul class="articleTags"></ul>
+                </div>
+            </div>
+            <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
+            <input name="recaptcha" type="hidden" />
+            <div id="submit-btn">
+                <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
+            </div>
+        </div>
+    </form>
+}
+
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Content/Scripts/script.js"></script>
+<script>
+    $("#article_form").validate({
+        ignore: [],
+        rules: {
+            article_picture_path: { ImageOrVideo: true },
+            mySelect: { RequiredTag: true },
+            recaptcha: { reCaptchaValidate: true }
+        },
+        messages: {
+            article_picture_path: "يجب إدخال صورة للمقالة.",
+            mySelect: "يجب إدخال كلمة بحثية.",
+            recaptcha: { reCaptchaValidate: "Please fill up the captcha." }
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "article_picture_path") {
+                error.insertAfter(".media");
+            } else if (element.attr("name") == "mySelect") {
+                error.insertAfter(".articleTags");
+            } else if (element.attr("name") == "recaptcha") {
+                error.insertAfter(".g-recaptcha > div > div");
+            } else {
+                error.insertAfter(element);
+            }
+        }
+    });
+</script>

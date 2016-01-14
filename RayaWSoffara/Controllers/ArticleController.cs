@@ -42,6 +42,20 @@ namespace RayaWSoffara.Controllers
         }
 
         [Authorize]
+        [ValidateInput(false)]
+        public ActionResult Create(string Type)
+        {
+            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+            ViewBag.tags = articlesTags.ToList();
+            ViewBag.Images = GetImages(0);
+            ViewBag.Type = Type;
+            ImageRepository _imgrepo = new ImageRepository();
+            ViewBag.AllImagesCount = _imgrepo.GetAll().Count();
+            UserArticleVM model = new UserArticleVM();
+            return View(model);
+        }
+
+        [Authorize]
         public ActionResult Write()
         {
             IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
@@ -695,6 +709,33 @@ namespace RayaWSoffara.Controllers
         {
             int UserId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
             _articleRepo.AddLikeCount(PostId, UserId);
+        }
+
+        [HttpPost]
+        public ActionResult GetWritePartial(string Type)
+        {
+            UserArticleVM model = new UserArticleVM();
+            if (Type == "article")
+            {
+                return PartialView("_WriteArticlePartial", model);
+            }
+            else if (Type == "lists")
+            {
+                return PartialView("_WriteTopXPartial", model);
+            }
+            else if (Type == "opinion")
+            {
+                return PartialView("_WriteOpinionPartial", model);
+            }
+            else if (Type == "image")
+            {
+                return PartialView("_WriteImagePartial", model);
+            }
+            else if (Type == "video")
+            {
+                return PartialView("_WriteVideoPartial", model);
+            }
+            return null;
         }
 
         public ActionResult GetComments(int Index, int PostId)

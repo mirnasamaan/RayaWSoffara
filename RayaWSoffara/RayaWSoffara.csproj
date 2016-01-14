@@ -1199,6 +1199,7 @@
     <Content Include="Views\Admin\Engagements.cshtml" />
     <Content Include="Views\Admin\Leaderboard.cshtml" />
     <Content Include="Views\Admin\UserPoints.cshtml" />
+    <Content Include="Views\Account\UserPosts.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">
@@ -1230,14 +1231,14 @@
     <Content Include="Views\Article\Index.cshtml" />
     <Content Include="Views\Article\ArticleDisplay.cshtml" />
     <Content Include="Views\Article\Create.cshtml" />
-    <Content Include="Views\Article\Write.cshtml" />
-    <Content Include="Views\Article\WriteTopX.cshtml" />
+    <Content Include="Views\Article\_WriteArticlePartial.cshtml" />
+    <Content Include="Views\Article\_WriteTopXPartial.cshtml" />
     <Content Include="Views\Account\Profile.cshtml" />
     <Content Include="Views\Account\Settings.cshtml" />
     <Content Include="Views\Article\Copy of WriteTopX.cshtml" />
     <Content Include="Views\Home\_PostPartial.cshtml" />
-    <Content Include="Views\Article\Opinion.cshtml" />
-    <Content Include="Views\Article\Image.cshtml" />
+    <Content Include="Views\Article\_WriteOpinionPartial.cshtml" />
+    <Content Include="Views\Article\_WriteImagePartial.cshtml" />
     <Content Include="Views\Account\ForgotPassword.cshtml" />
     <Content Include="Views\Account\ConfirmationEmailSent.cshtml" />
     <None Include="Properties\PublishProfiles\local.pubxml" />
@@ -1258,7 +1259,7 @@
     </None>
     <Content Include="Views\Admin\_ImagesPartial.cshtml" />
     <Content Include="Views\Admin\_UploadsPartial.cshtml" />
-    <Content Include="Views\Article\Video.cshtml" />
+    <Content Include="Views\Article\_WriteVideoPartial.cshtml" />
     <Content Include="Views\Article\_ImagesPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>

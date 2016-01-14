@@ -516,6 +516,12 @@ namespace RayaWSoffara
             );
 
             routes.MapRoute(
+                name: "Create",
+                url: "Create",
+                defaults: new { controller = "Article", action = "Create", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
                 name: "Write",
                 url: "Write",
                 defaults: new { controller = "Article", action = "Write", id = UrlParameter.Optional }
@@ -543,6 +549,12 @@ namespace RayaWSoffara
                 name: "WriteTopX",
                 url: "WriteTopX",
                 defaults: new { controller = "Article", action = "WriteTopX", id = UrlParameter.Optional }
+            );
+
+            routes.MapRoute(
+                name: "UserPosts",
+                url: "UserPosts",
+                defaults: new { controller = "Article", action = "UserPosts", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(

@@ -2772,7 +2772,7 @@ input[name="Email"] {
     border-bottom-left-radius: 3px;
 }
 
-#createArticle_container .nav-tabs li a, #display_post_container .nav-tabs li a {
+#createArticle_container .nav-tabs li a, #image_edit .nav-tabs li a, #display_post_container .nav-tabs li a {
     background-color: #42ACDC!important;
     color: white !important;
 }
@@ -2866,7 +2866,7 @@ input[name="Email"] {
     color: #999;
     line-height: 38px;
 }
-#createArticle_container .nav-tabs li.active a, #display_post_container .nav-tabs li.active a {
+#createArticle_container .nav-tabs li.active a, #image_edit .nav-tabs li.active a, #display_post_container .nav-tabs li.active a {
     background-color: #348DB9!important;
     color: white !important;
 }
@@ -2945,8 +2945,8 @@ input[name="Email"] {
     text-align: center;
     top: 50%;
     right: 50%;
-    margin-top: -57px;
-    margin-right: -74px;
+    margin-top: -35px;
+    margin-right: -105px;
 }
 .media_dropbox > div {
     font-size: 20px;
@@ -3591,6 +3591,11 @@ input {
     font-family: GESS_Medium, 'Open Sans';
     padding-bottom: 10px;
     text-align: right;
+}
+
+#profile_container .allUserPosts {
+    text-align: right;
+    padding: 10px 30px;
 }
 
 #profile_container .settings {
@@ -4448,12 +4453,12 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
     -moz-border-radius: 3px;
     -webkit-border-radius: 3px;
 }
-#articleTags {
-    border: 1px solid rgb(52, 141, 185);
+.articleTags {
+    border: 1px solid rgb(52, 141, 185)!important;
     border-radius: 0;
     box-shadow: none;
 }
-#articleTags .ui-widget-content {
+.articleTags .ui-widget-content {
     background: none;
 }
 #embed_btn {
@@ -4656,6 +4661,7 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
     /* border: 1px solid #070707; */
     border-radius: 5px;
     padding: 0 3px;
+    margin-left: 1px;
 }
 
 .g-recaptcha>div {
@@ -4670,8 +4676,12 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
     border-radius: 0;
 }
 
-#article_form #articleTags {
+#article_form .articleTags {
     margin: 0;
+}
+
+#opinion textarea, #image textarea, #video textarea {
+    border: 1px solid #348DB9;
 }
 /*===========================================================================================================================================*/
 

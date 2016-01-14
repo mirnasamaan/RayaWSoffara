@@ -1,7 +1,7 @@
 ﻿@model RayaWSoffara.Models.UserProfileVM
 @using RayaWSoffara.Helpers
 @{
-    ViewBag.Title = "حساب الكاتب";
+    ViewBag.Title = "مقالات الكاتب";
 }
 
 <div class="clear-fix"></div>
@@ -123,7 +123,7 @@
             }
             @if(Model.articlesCount > 0) {
                 <div class="allUserPosts col-md-offset-4 col-md-8">
-                    <a href="/UserPosts?Username=@User.Identity.Name&Page=0">كل مقالات الكاتب</a>
+                    <a href="/UserPosts?Username=@User.Identity.Name">كل مقالات الكاتب</a>
                 </div>
             }
         </div>

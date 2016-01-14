@@ -427,6 +427,12 @@ namespace RayaWSoffara.Controllers
             return View(userProfile);
         }
 
+        [AllowAnonymous]
+        public ActionResult UserPosts(string Username, int Page)
+        {
+            return View();
+        }
+
         public List<UserPointsVM> GetUserAchievements(int UserId, int Page)
         {
             RWSUser user = _userRepo.GetUserByUserId(UserId);
