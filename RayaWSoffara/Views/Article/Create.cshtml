@@ -1,4 +1,7 @@
 ﻿<link href="~/Content/CSS/html5imageupload.css" rel="stylesheet" />
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Content/Scripts/script.js"></script>
 @model RayaWSoffara.Models.UserArticleVM
 
 @{
@@ -16,23 +19,40 @@
             <li class="@(ViewBag.Type == "Image" ? "active" : "")"><a href="#image" data-toggle="tab">صورة<i class="fa fa-picture-o"></i></a></li>
             <li class="@(ViewBag.Type == "Video" ? "active" : "")"><a href="#video" data-toggle="tab">فيديو<i class="fa fa-video-camera"></i></a></li>
         </ul>
-        <div id="my-tab-content2" class="tab-content">
-            <div class="tab-pane @(ViewBag.Type == "Article" ? "active" : "")" id="article">
+
+        @*<div class="tab-pane active">
+            <iframe id="iframe" frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
+        </div>*@
+        @if (ViewBag.Type == "Article")
+        {
+            <div class="tab-pane active" id="article">
                 @Html.Partial("_WriteArticlePartial", Model)
             </div>
-            <div class="tab-pane @(ViewBag.Type == "Lists" ? "active" : "")" id="lists">
+        }
+        @if (ViewBag.Type == "Lists")
+        {
+            <div class="tab-pane active" id="lists">
                 @Html.Partial("_WriteTopXPartial", Model)
             </div>
-            <div class="tab-pane @(ViewBag.Type == "Opinion" ? "active" : "")" id="opinion">
+        }
+        @if (ViewBag.Type == "Opinion")
+        {
+            <div class="tab-pane active" id="opinion">
                 @Html.Partial("_WriteOpinionPartial", Model)
             </div>
-            <div class="tab-pane @(ViewBag.Type == "Image" ? "active" : "")" id="image">
+        }
+        @if (ViewBag.Type == "Image")
+        {
+            <div class="tab-pane active" id="image">
                 @Html.Partial("_WriteImagePartial", Model)
             </div>
-            <div class="tab-pane @(ViewBag.Type == "Video" ? "active" : "")" id="video">
+        }
+        @if (ViewBag.Type == "Video")
+        {
+            <div class="tab-pane active" id="video">
                 @Html.Partial("_WriteVideoPartial", Model)
             </div>
-        </div>
+        }
     </div>
 </div>
 
@@ -56,7 +76,7 @@
                         </div>
                         <input id="uploadimagefilename" type="hidden" />
                         <input id="topXindex" type="hidden" />
-                        <button class="addImage btn btn-primary buttons" disabled>أضف</button>
+                        <button class="addImage btn btn-primary buttons" onclick="uploadImageClick(this)" disabled>أضف</button>
                     </div>
                     <div class="tab-pane" id="uploadvideo">
                         <textarea id="embedded_video_link" class="full_width form-control" placeholder="رجاءً ضع الرابط هنا"></textarea>
@@ -92,7 +112,7 @@
                             </div>
                         </div>
                         <div class="vertical_space"></div>
-                        <button class="addImage btn btn-primary buttons" disabled>أضف</button>
+                        <button class="addImage btn btn-primary buttons" onclick="chooseImageClick(this)" disabled>أضف</button>
                     </div>
                 </div>
             </div>
@@ -121,21 +141,22 @@
     </div>
 </div>
 
-<script src="~/Content/Scripts/jquery.validate.min.js"></script>
-<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
 <script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
-<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221;" type="text/javascript"></script>
+@*<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221;" type="text/javascript"></script>*@
 <script src='https://www.google.com/recaptcha/api.js'></script>
 <script src="~/Content/Scripts/html5imageupload.min.js"></script>
 <script src="~/Content/Scripts/jquery.visible.min.js"></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/CreatePostScript.js"></script>
 <script>
 
     var allImagesCount = $("#AllImagesCount").val();
     var page = 1;
     var processing = false;
     var done = false;
+
+    LoadScript();
 
     // start of getting search image tags //
     var availableTags = [];
@@ -179,169 +200,36 @@
     $(".imageTags .tagit-new input").attr("placeholder", "+ أضف كلمة بحثية");
     // end of getting search image tags //
 
-    $(document).ready(function () {
-        // start of dropzone function for croppping //
-        $('.dropzone').html5imageupload({
-            onSave: function (data) {
-                $.ajax({
-                    type: 'POST',
-                    data: { data: data.data, left: data.left, top: data.top, imageWidth: data.imageWidth, imageHeight: data.imageHeight, imageOriginalWidth: data.imageOriginalWidth, imageOriginalHeight: data.imageOriginalHeight },
-                    url: '/Article/TestCrop',
-                    beforeSend: function () {
-                        $(".loading").removeClass("hidden");
-                    },
-                    success: function (data) {
-                        $(".loading").addClass("hidden");
-                        $("#uploadimagefilename").val("/Temp/" + data);
-                        $("#uploadimage .addImage").removeAttr("disabled");
-                    },
-                    error: function () {
-                        $(".loading").addClass("hidden");
-                    }
-                });
-            }
-        });
-        // end of dropzone function for cropping //
-    });
-
     // start of loading partial views according to tab click //
-    $('#createArticle_container .nav-tabs').click(function (e) {
+    $('#createArticle_container .nav-tabs li').click(function (e) {
         $(".articleTags").tagit("removeAll");
         $(".media_img ").attr("src", "");
         $(".media_dropbox").removeClass("hidden");
         $(".edit-image-btn").addClass("hidden");
         $(".delete-image-btn").addClass("hidden");
         $(".tagsCount").val("");
-        var elem = e.target.toString();
+        var elem = $(this).children("a").attr("href");
         var post_type = elem.split('#')[1];
         $.ajax({
             type: 'POST',
             url: '/Article/GetWritePartial',
             data: { Type: post_type },
             beforeSend: function () {
-                $(".loading").removeClass("hidden");
-            },
+                    $(".loading").removeClass("hidden");
+                },
             success: function (data) {
-                //$model = $(data);
-                //$('.comments-box').append($model);
-                //$detailsDiv.replaceWith(data);
+                $('#createArticle_container .tab-pane').attr("id", post_type);
+                $('#createArticle_container .tab-pane').html(data);
+                var id = grecaptcha.render($('.g-recaptcha')[0], { sitekey: '6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI' });
+                grecaptcha.reset(id);
+                LoadScript();
                 $(".loading").addClass("hidden");
             },
             error: function () {
-                $(".loading").addClass("hidden");
-            }
+                    $(".loading").addClass("hidden");
+                }
         });
     });
     // end of loading partial views according to tab click //
 
-    // START OF TAGIT FUNCTIONS//
-    var availableTags = [];
-    var availableTagsID = [];
-
-    $('.articleTags').tagit({
-        tagSource: function (search, showChoices) {
-            if (search.term.length > 2) {
-                $.ajax({
-                    async: false,
-                    type: "POST",
-                    data: { Term: search.term },
-                    url: "/Home/GetTags",
-                    success: function (Tags) {
-                        availableTags = [];
-                        availableTagsID = [];
-                        $('.header_div_2 .keywords').children('p').each(function () {
-                            availableTags.push();
-                        });
-                        for (i = 0; i < Tags.length; i++) {
-                            availableTags.push(Tags[i].TagName);
-                            availableTagsID.push(Tags[i].TagID);
-                        }
-                        showChoices(availableTags);
-                    }
-                })
-            }
-        },
-        select: true,
-        sortable: true,
-        allowNewTags: false,
-        triggerKeys: ['enter', 'tab'],
-        beforeTagAdded: function (event, ui) {
-            if ($.inArray(ui.tagLabel, availableTags) == -1) {
-                return false;
-            }
-        }
-    });
-
-    $(".articleTags input").attr("placeholder", "+ أضف كلمة بحثية");
-    // END OF TAGIT FUNCTIONS //
-
-    // start of clicking search button in tags //
-    $("#chooseimage .search-btn").click(function () {
-        $("#img_container .container").html("");
-        var tags = "";
-        $('.imageTags').children('li').each(function () {
-            var tagname = $(this).children('span').text();
-            tags = tags + tagname + ",";
-        });
-        tags = tags.substring(0, tags.length - 2);
-        $("#tagNames").val(tags);
-        page = 0;
-        $.ajax({
-            type: "Post",
-            data: { Page: 0, TagNames: tags },
-            url: "/Article/GetImagesAjax",
-            beforeSend: function () {
-                $(".loading").removeClass("hidden");
-            },
-            success: function (data) {
-                alert("1");
-                page++;
-                $images = $(data);
-                $('#img_container .container').append($images);
-                $(".loading").addClass("hidden");
-                var visibleImageCount = $("#img_container .image-choice").length;
-                if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
-                    done = true;
-                } else {
-                    done = false;
-                }
-                processing = false;
-            }
-        });
-        return false;
-    });
-    // end of clicking search button in tags //
-
-    // start of load more images when scrolling //
-    $("#img_container").scroll(function () {
-        if ($('#testScroll').visible() && processing == false && done == false) {
-            processing = true;
-            $.ajax({
-                type: 'POST',
-                data: { Page: page, TagNames: $("#tagNames").val() },
-                url: '/Article/GetImagesAjax',
-                beforeSend: function () {
-                    $(".loading-inline").removeClass("hidden");
-                },
-                success: function (data) {
-                    alert("2");
-                    page++;
-                    $images = $(data);
-                    $('#img_container .container').append($images);
-                    var visibleImageCount = $("#img_container .image-choice").length;
-                    if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
-                        done = true;
-                    } else {
-                        done = false;
-                    }
-                    processing = false;
-                    $(".loading-inline").addClass("hidden");
-                },
-                error: function () {
-                    $(".loading-inline").addClass("hidden");
-                }
-            });
-        }
-    });
-    // end of load more images when scrolling //
 </script>

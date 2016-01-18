@@ -170,38 +170,25 @@ namespace RayaWSoffara.Controllers
             bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
             if (valid)
             {
-                IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
-                ViewBag.tags = articlesTags.ToList();
+                //IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+                //ViewBag.tags = articlesTags.ToList();
                 RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
                 article.newArticle.CreatedBy = currentUser.UserId;
                 article.newArticle.CreationDate = DateTime.Now;
                 article.newArticle.MetaTags = "";
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-                //if (Request.Files != null && Request.Files.Count > 0)
-                //{
-                //    picture = Request.Files[0];
-                //}
+                article.newArticle.Tags = tags;
                 if (article_picture_path != "")
                 {
-                    if (article_picture_path != "")
+                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                    if (System.IO.File.Exists(path))
                     {
-                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                        if (System.IO.File.Exists(path))
-                        {
-                            string[] separator = new string[] { "/" };
-                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp.Last();
-                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                            article.newArticle.FeaturedImage = imgName;
-                        }
+                        string[] separator = new string[] { "/" };
+                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        article.newArticle.FeaturedImage = imgName;
                     }
-                    //else if (picture.FileName != "")
-                    //{
-                    //    string picName = System.IO.Path.GetFileName(picture.FileName);
-                    //    string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                    //    picture.SaveAs(path);
-                    //    article.newArticle.FeaturedImage = picName;
-                    //}
 
                     article.newArticle.HasImage = true;
                 }
@@ -251,27 +238,17 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.CreationDate = DateTime.Now;
                 article.newArticle.MetaTags = "";
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-                HttpPostedFileBase picture = Request.Files[0];
-                if (picture.FileName != "" || article_picture_path != "")
+               
+                if (article_picture_path != "")
                 {
-                    if (article_picture_path != "")
+                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                    if (System.IO.File.Exists(path))
                     {
-                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                        if (System.IO.File.Exists(path))
-                        {
-                            string[] separator = new string[] { "Temp/" };
-                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                            article.newArticle.FeaturedImage = imgName;
-                        }
-                    }
-                    else if (picture.FileName != "")
-                    {
-                        string picName = System.IO.Path.GetFileName(picture.FileName);
-                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                        picture.SaveAs(path);
-                        article.newArticle.FeaturedImage = picName;
+                        string[] separator = new string[] { "/" };
+                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        article.newArticle.FeaturedImage = imgName;
                     }
 
                     article.newArticle.HasImage = true;
@@ -328,29 +305,16 @@ namespace RayaWSoffara.Controllers
                     article.newArticle.Content = "";
                 }
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-                HttpPostedFileBase picture = Request.Files[0];
-                if (picture.FileName != "" || article_picture_path != "")
+                if (article_picture_path != "")
                 {
-                    if (article_picture_path != "")
+                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                    if (System.IO.File.Exists(path))
                     {
-                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                        if (System.IO.File.Exists(path))
-                        {
-                            string[] separator = new string[] { "Temp/" };
-                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                            article.newArticle.FeaturedImage = imgName;
-                            article.newArticle.PostTypeId = 4;
-                        }
-                    }
-                    else if (picture.FileName != "")
-                    {
-                        string picName = System.IO.Path.GetFileName(picture.FileName);
-                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                        picture.SaveAs(path);
-                        article.newArticle.FeaturedImage = picName;
-                        article.newArticle.PostTypeId = 4;
+                        string[] separator = new string[] { "/" };
+                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        article.newArticle.FeaturedImage = imgName;
                     }
 
                     article.newArticle.HasImage = true;
@@ -366,6 +330,7 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.MetaTags = "";
                 article.newArticle.ViewsCount = 0;
                 article.newArticle.SharesCount = 0;
+                article.newArticle.PostTypeId = 4;
                 Post addedArticle = _articleRepo.AddPost(article.newArticle);
                 _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
                 if (addedArticle != null)
@@ -403,29 +368,16 @@ namespace RayaWSoffara.Controllers
                     article.newArticle.Content = "";
                 }
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
-                HttpPostedFileBase picture = Request.Files[0];
-                if (picture.FileName != "" || article_picture_path != "")
+                if (article_picture_path != "")
                 {
-                    if (article_picture_path != "")
+                    string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
+                    if (System.IO.File.Exists(path))
                     {
-                        string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
-                        if (System.IO.File.Exists(path))
-                        {
-                            string[] separator = new string[] { "Temp/" };
-                            string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                            System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                            article.newArticle.FeaturedImage = imgName;
-                            article.newArticle.PostTypeId = 4;
-                        }
-                    }
-                    else if (picture.FileName != "")
-                    {
-                        string picName = System.IO.Path.GetFileName(picture.FileName);
-                        string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                        picture.SaveAs(path);
-                        article.newArticle.FeaturedImage = picName;
-                        article.newArticle.PostTypeId = 4;
+                        string[] separator = new string[] { "/" };
+                        string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
+                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                        article.newArticle.FeaturedImage = imgName;
                     }
 
                     article.newArticle.HasImage = true;
@@ -441,6 +393,7 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.MetaTags = "";
                 article.newArticle.ViewsCount = 0;
                 article.newArticle.SharesCount = 0;
+                article.newArticle.PostTypeId = 5;
                 Post addedArticle = _articleRepo.AddPost(article.newArticle);
                 _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
                 if (addedArticle != null)
@@ -480,28 +433,16 @@ namespace RayaWSoffara.Controllers
                 {
                     if (count > 0)
                     {
-                        HttpPostedFileBase picture = Request.Files[count];
-                        if (picture.FileName != "" || img_path != "")
+                        if (img_path != "")
                         {
-                            if (img_path != "")
+                            string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
+                            if (System.IO.File.Exists(path))
                             {
-                                string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
-                                if (System.IO.File.Exists(path))
-                                {
-                                    string[] separator = new string[] { "Temp/" };
-                                    string[] temp = img_path.Split(separator, StringSplitOptions.None);
-                                    string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                                    System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                                    article.newArticle.ArticleTopXes.ElementAt(count - 1).TopXImage = imgName;
-                                }
-                            }
-                            else if (picture.FileName != "")
-                            {
-                                string picName = System.IO.Path.GetFileName(picture.FileName);
-                                // string newName = new Random().ne System.IO.Path.GetExtension(picture.FileName);
-                                string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                                picture.SaveAs(path);
-                                article.newArticle.ArticleTopXes.ElementAt(count).TopXImage = picName;
+                                string[] separator = new string[] { "/" };
+                                string[] temp = img_path.Split(separator, StringSplitOptions.None);
+                                string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                                System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                                article.newArticle.ArticleTopXes.ElementAt(count - 1).TopXImage = imgName;
                             }
                         }
                         else if (video_url != null || video_url[count] != string.Empty)
@@ -511,27 +452,16 @@ namespace RayaWSoffara.Controllers
                     }
                     else
                     {
-                        HttpPostedFileBase picture = Request.Files[0];
-                        if (picture.FileName != "" || img_path != "")
+                        if (img_path != "")
                         {
-                            if (img_path != "")
+                            string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
+                            if (System.IO.File.Exists(path))
                             {
-                                string path = AppDomain.CurrentDomain.BaseDirectory + img_path;
-                                if (System.IO.File.Exists(path))
-                                {
-                                    string[] separator = new string[] { "Temp/" };
-                                    string[] temp = img_path.Split(separator, StringSplitOptions.None);
-                                    string imgName = DateTime.Now.Ticks + "_" + temp[1];
-                                    System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
-                                    article.newArticle.FeaturedImage = imgName;
-                                }
-                            }
-                            else if (picture.FileName != "")
-                            {
-                                string picName = System.IO.Path.GetFileName(picture.FileName);
-                                string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), picName);
-                                picture.SaveAs(path);
-                                article.newArticle.FeaturedImage = picName;
+                                string[] separator = new string[] { "/" };
+                                string[] temp = img_path.Split(separator, StringSplitOptions.None);
+                                string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                                System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
+                                article.newArticle.FeaturedImage = imgName;
                             }
 
                             article.newArticle.HasImage = true;
@@ -736,6 +666,14 @@ namespace RayaWSoffara.Controllers
                 return PartialView("_WriteVideoPartial", model);
             }
             return null;
+        }
+
+        [HttpPost]
+        public ActionResult GetTopXAddItemPartial(int Count)
+        {
+            int order = Count + 1;
+            ViewBag.Order = order.ToString();
+            return PartialView("_AddTopXItemPartial");
         }
 
         public ActionResult GetComments(int Index, int PostId)

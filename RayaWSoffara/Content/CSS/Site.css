@@ -2414,14 +2414,14 @@ input[name="Email"] {
     width: 100px;
 }
 
-#article_form .edit-image-btn {
+.edit-image-btn {
     position: absolute;
     right: 0;
     border: 0;
     border-radius: 0;
 }
 
-#article_form .delete-image-btn {
+.delete-image-btn {
     position: absolute;
     right: 0;
     margin-right: 32px;    
@@ -4676,7 +4676,7 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
     border-radius: 0;
 }
 
-#article_form .articleTags {
+#article_form .articleTags, #topX_form .articleTags, #opinion_form .articleTags, #image_form .articleTags, #video .articleTags {
     margin: 0;
 }
 

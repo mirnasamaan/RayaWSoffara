@@ -2,7 +2,7 @@
 
 @if (Model != null)
 {
-    <form enctype="multipart/form-data" method="post" id="article_form">
+    <form enctype="multipart/form-data" method="post" id="video_form" action="/Video">
         @if (@ViewBag.ErrorMsg == 1)
         {
             <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
@@ -25,7 +25,7 @@
                     <img class="media_img img-responsive" src="" />
                     <input id="originalimage_0" type="hidden" />
                     <section class="image-upload-drop-target media_dropbox">
-                        <button type="button" class="btn btn-primary btn-lg addimage-btn" @*id="pictureModal_toggle_btn"*@ data-toggle="modal" data-target="#image_edit">
+                        <button type="button" class="btn btn-primary btn-lg addimage-btn" onclick="addImageBtn(this)" @*id="pictureModal_toggle_btn"*@ data-toggle="modal" data-target="#image_edit">
                             أضف صورة أو فيديو
                         </button>
                     </section>
@@ -44,38 +44,26 @@
             <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
             <input name="recaptcha" type="hidden" />
             <div id="submit-btn">
-                <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
+                <input type="submit" value="نشر المقال" class="buttons full_width btn_add_article" />
             </div>
         </div>
     </form>
 }
 
-<script src="~/Content/Scripts/jquery.validate.min.js"></script>
-<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
-<script src="~/Content/Scripts/script.js"></script>
 <script>
-    $("#article_form").validate({
-        ignore: [],
-        rules: {
-            article_picture_path: { ImageOrVideo: true },
-            mySelect: { RequiredTag: true },
-            recaptcha: { reCaptchaValidate: true }
-        },
-        messages: {
-            article_picture_path: "يجب إدخال صورة للمقالة.",
-            mySelect: "يجب إدخال كلمة بحثية.",
-            recaptcha: { reCaptchaValidate: "Please fill up the captcha." }
-        },
-        errorPlacement: function (error, element) {
-            if (element.attr("name") == "article_picture_path") {
-                error.insertAfter(".media");
-            } else if (element.attr("name") == "mySelect") {
-                error.insertAfter(".articleTags");
-            } else if (element.attr("name") == "recaptcha") {
-                error.insertAfter(".g-recaptcha > div > div");
-            } else {
-                error.insertAfter(element);
-            }
-        }
-    });
+    
+
+    //$("#article_form").rules("add", {
+    //    article_picture_path: { ImageOrVideo: true },
+    //    messages: {
+    //        article_picture_path: "يجب إدخال صورة للمقالة.",
+    //    },
+    //    errorPlacement: function (error, element) {
+    //        if (element.attr("name") == "article_picture_path") {
+    //            error.insertAfter(".media");
+    //        } else {
+    //            error.insertAfter(element);
+    //        }
+    //    }
+    //});
 </script>
