@@ -3593,9 +3593,13 @@ input {
     text-align: right;
 }
 
-#profile_container .allUserPosts {
+#profile-user-data {
+    margin-bottom: 15px;
+}
+
+#profile_container .allUserPosts, #profile-user-data .allUserPosts {
     text-align: right;
-    padding: 10px 30px;
+    padding: 3px;
 }
 
 #profile_container .settings {
@@ -4682,6 +4686,11 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 
 #opinion textarea, #image textarea, #video textarea {
     border: 1px solid #348DB9;
+}
+
+.recent-articles > a, .recent-articles > a:hover, .recent-articles > a:focus {
+    text-decoration: none;
+    color: black;
 }
 /*===========================================================================================================================================*/
 

@@ -48,22 +48,6 @@
             </div>
         </div>
     </form>
-}
-
-<script>
     
-
-    //$("#article_form").rules("add", {
-    //    article_picture_path: { ImageOrVideo: true },
-    //    messages: {
-    //        article_picture_path: "يجب إدخال صورة للمقالة.",
-    //    },
-    //    errorPlacement: function (error, element) {
-    //        if (element.attr("name") == "article_picture_path") {
-    //            error.insertAfter(".media");
-    //        } else {
-    //            error.insertAfter(element);
-    //        }
-    //    }
-    //});
-</script>
+    @Html.Partial("_PostMediaModalPartial", "Video")
+}

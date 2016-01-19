@@ -227,6 +227,7 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script src="~/Content/Scripts/imagesloaded.pkgd.min.js"></script>
+<script src="~/Content/Scripts/headerScript.js"></script>
 <script>
     $('.grid').imagesLoaded(function () {
         $('.grid').masonry({
@@ -236,34 +237,6 @@
         });
     });
 
-    //start of show/hide view button //
-    var page = 1;
-    var displayed_posts_count = parseInt($(".visible-lg .grid-item").length);
-    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-    if (displayed_posts_count >= all_posts_count) {
-        $("#viewMore").addClass("hidden");
-    }
-    //end of show/hide view button //
-
-
-    //start of reading query string //
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-
-    var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
-    var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
-
-    var displayed_posts_count = parseInt($(".grid-item").length);
-    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-    if (displayed_posts_count >= all_posts_count) {
-        $("#viewMore").addClass("hidden");
-    }
-    //end of reading query string //
 
     //start of view more button click function //
     function viewMore(e) {

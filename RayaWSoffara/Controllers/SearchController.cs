@@ -53,7 +53,7 @@ namespace RayaWSoffara.Controllers
             return leaderPosts;
         }
 
-        public IndexVM GetFilteredArticles(string PostIDs, string TagIDs, int displayedPageNumber, int count = 8 )
+        public IndexVM GetFilteredArticles(string PostIDs, string TagIDs, int displayedPageNumber, string Username, int count = 8)
         {
             ArticleRepository _articleRepo = new ArticleRepository();
 
@@ -103,6 +103,12 @@ namespace RayaWSoffara.Controllers
                     articles = GetFilteredArticlesByTags(tagids, articles);
                 }
 
+                if (Username != null)
+                {
+                    UserRepository _userRepo = new UserRepository();
+                    articles = _userRepo.GetUserActivePosts(Username, articles);
+                }
+
                 result.PostsCount = articles.Count();
 
                 articles = articles.OrderBy(i => i.CreationDate).Skip(displayedPageNumber*count).Take(count);
@@ -128,6 +134,12 @@ namespace RayaWSoffara.Controllers
 
                 articles = GetFilteredArticlesByTags(tagids, null);
 
+                if (Username != null)
+                {
+                    UserRepository _userRepo = new UserRepository();
+                    articles = _userRepo.GetUserActivePosts(Username, articles);
+                }
+
                 result.PostsCount = articles.Count();
 
                 articles = articles.OrderBy(i => i.CreationDate).Skip(displayedPageNumber*count).Take(count);
@@ -139,6 +151,11 @@ namespace RayaWSoffara.Controllers
             }
 
             articles = _articleRepo.GetActivePosts();
+            if (Username != null)
+            {
+                UserRepository _userRepo = new UserRepository();
+                articles = _userRepo.GetUserActivePosts(Username, articles);
+            }
             result.PostsCount = articles.Count();
             articles = articles.OrderByDescending(i => i.CreationDate).Skip(displayedPageNumber*count).Take(count);
             foreach (var item in articles)

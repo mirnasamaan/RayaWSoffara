@@ -137,6 +137,12 @@ namespace RWSDataLayer.Repositories
             return Context.Posts.Where(i => i.CreatedBy == UserId && i.IsActive == true);
         }
 
+        public IQueryable<Post> GetUserActivePosts(string Username, IQueryable<Post> filteredArticles)
+        {
+            IQueryable<Post> articles = filteredArticles.Where(i => i.IsActive == true && i.RWSUser.UserName == Username).OrderByDescending(i => i.CreationDate);
+            return articles;
+        }
+
         public void DeactivateUser(string username)
         {
             RWSUser user = Context.RWSUsers.Where(i => i.UserName == username).FirstOrDefault();

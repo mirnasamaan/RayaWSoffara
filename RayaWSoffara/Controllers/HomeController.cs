@@ -19,7 +19,7 @@ namespace RayaWSoffara.Controllers
     public class HomeController : SearchController
     {
         [AllowAnonymous]
-        public ActionResult Index(string posts, string tags, string count)
+        public ActionResult Index(string posts, string tags, int? Page, string Username, string count)
         {
             IndexVM result = new IndexVM();
             ArticleRepository _articleRepo = new ArticleRepository();
@@ -28,15 +28,15 @@ namespace RayaWSoffara.Controllers
             if (count != null)
             {
                 int displayedPostsCount = Int32.Parse(count);
-                result = GetFilteredArticles(posts, tags, displayedPostsCount);
+                result = GetFilteredArticles(posts, tags, displayedPostsCount, null);
             }
             else if (posts != null || tags != null)
             {
-                result = GetFilteredArticles(posts, tags, 0);
+                result = GetFilteredArticles(posts, tags, 0, null);
             }
             else
             {
-                result = GetFilteredArticles(null, null, 0);
+                result = GetFilteredArticles(null, null, 0, null);
             }
             
             if (Request.IsAjaxRequest())

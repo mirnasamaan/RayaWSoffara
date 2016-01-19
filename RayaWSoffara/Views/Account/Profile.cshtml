@@ -66,6 +66,12 @@
                 <label class="pull-left">حساب جوجل بلس</label>
                 <input type="text" class="form-control" name="Google" value="@Model.Google" disabled />
             </div>
+            @if (Model.articlesCount > 0)
+            {
+                <div class="allUserPosts">
+                    <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.UserName">كل مقالات الكاتب</a>
+                </div>
+            }
         </div>
 
     </div>
@@ -81,7 +87,7 @@
             <div class="achievements">
                 @Html.Partial("_AchievementsPartial")
             </div>
-            
+
             <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
         </div>
         <div class="clear-fix"></div>
@@ -95,8 +101,8 @@
             @foreach (var article in @Model.recentArticles)
             {
                 <div class="recent-articles">
-                    <div class="col-md-4 col-xs-12">
-                        <a href="/Post/@article.PostId">
+                    <a href="/Post/@article.PostId">
+                        <div class="col-md-4 col-xs-12">
                             @if (@article.FeaturedImage != null)
                             {
                                 <img class="" id="article_img" src="~/Content/Article_Images/@article.FeaturedImage?w=210&h=140&mode=crop" /> 
@@ -105,26 +111,21 @@
                             {
                                 <iframe width="210" height="140" src="https://www.youtube.com/embed/@article.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
                             }
-                        </a>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="article_title pull-left">@article.Title</div>
-                        <div class="clear-fix"></div>
-                        <div class="">
-                            <div class="content">
-                                @{ string text = @Html.Raw(article.Content).ToString(); }
-                                @TrimTextHelper.TrimText(@text, 300);
+                        </div>
+                        <div class="col-md-8">
+                            <div class="article_title pull-left">@article.Title</div>
+                            <div class="clear-fix"></div>
+                            <div class="">
+                                <div class="content">
+                                    @{ string text = @Html.Raw(article.Content).ToString(); }
+                                    @TrimTextHelper.TrimText(@text, 300);
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </a>
                 </div>
                 
                 <div class="clear-fix"></div>
-            }
-            @if(Model.articlesCount > 0) {
-                <div class="allUserPosts col-md-offset-4 col-md-8">
-                    <a href="/UserPosts?Username=@User.Identity.Name&Page=0">كل مقالات الكاتب</a>
-                </div>
             }
         </div>
     </div>
@@ -170,7 +171,7 @@
     function viewMore(e) {
         var username = $("#userName").val();
         $.ajax({
-            url: "/Profile?Username="+username+"&Page="+page,
+            url: "/Profile?Username=" + username + "&Page=" + page,
             beforeSend: function () {
                 $(".loading").removeClass("hidden");
             },

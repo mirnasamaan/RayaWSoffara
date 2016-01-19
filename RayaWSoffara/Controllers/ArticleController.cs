@@ -24,7 +24,7 @@ using Newtonsoft.Json;
 
 namespace RayaWSoffara.Controllers
 {
-    public class ArticleController : Controller
+    public class ArticleController : SearchController
     {
         private ArticleRepository _articleRepo;
         private UserRepository _userRepo;
@@ -447,7 +447,7 @@ namespace RayaWSoffara.Controllers
                         }
                         else if (video_url != null || video_url[count] != string.Empty)
                         {
-                            article.newArticle.ArticleTopXes.ElementAt(count).TopXVideo = video_url[count];
+                            article.newArticle.ArticleTopXes.ElementAt(count - 1).TopXVideo = video_url[count];
                         }
                     }
                     else

@@ -62,7 +62,6 @@ function chooseImageSearchFunc() {
                 $(".loading").removeClass("hidden");
             },
             success: function (data) {
-                alert("1");
                 page++;
                 $images = $(data);
                 $('#img_container .container').append($images);
@@ -80,6 +79,32 @@ function chooseImageSearchFunc() {
     });
     // end of clicking search button in tags //
 }
+
+// start of getting modal images when changing tabs //
+function GetImagesWhenChangingTabs() {
+    $.ajax({
+        type: "Post",
+        data: { Page: 0 },
+        url: "/Article/GetImagesAjax",
+        beforeSend: function () {
+            $(".loading-inline").removeClass("hidden");
+        },
+        success: function (data) {
+            page++;
+            $images = $(data);
+            $('#img_container .container').append($images);
+            var visibleImageCount = $("#img_container .image-choice").length;
+            if (parseInt(visibleImageCount) >= parseInt(allImagesCount)) {
+                done = true;
+            } else {
+                done = false;
+            }
+            processing = false;
+            $(".loading-inline").addClass("hidden");
+        }
+    });
+}
+// end of getting modal images when changing tabs //
 
 // start of up and down buttons //
 function upclick(index) {
@@ -238,7 +263,6 @@ function loadMoreFunc() {
                     $(".loading-inline").removeClass("hidden");
                 },
                 success: function (data) {
-                    alert("2");
                     page++;
                     $images = $(data);
                     $('#img_container .container').append($images);
@@ -341,6 +365,7 @@ function uploadImageClick(e) {
     $("#media_" + media_id + " .media_dropbox").addClass("hidden");
     $("#media_" + media_id + " .media_img").attr("src", $("#uploadimagefilename").val());
     $("#article_picture_path_" + media_id).attr("src", $("#uploadimagefilename").val());
+    $("#article_picture_path_" + media_id).val($("#uploadimagefilename").val());
     $("#media_" + media_id + " .edit-image-btn").removeClass("hidden");
     $("#media_" + media_id + " .delete-image-btn").removeClass("hidden");
     var originalimage = $(".dropzone > img").attr("src");
@@ -354,9 +379,55 @@ function chooseImageClick(e) {
     $("#media_" + media_id + " .media_dropbox").addClass("hidden");
     $("#media_" + media_id + " .media_img").attr("src", src);
     $("#article_picture_path_" + media_id).attr("src", src);
+    $("#article_picture_path_" + media_id).val(src);
     $('#image_edit').modal('hide');
     $("#media_" + media_id + " .edit-image-btn").removeClass("hidden");
     $("#media_" + media_id + " .delete-image-btn").removeClass("hidden");
+}
+
+function GetImageTags() {
+
+    // start of getting search image tags //
+    var availableTags = [];
+    var availableTagsID = [];
+    $('.imageTags').tagit({
+        tagSource: function (search, showChoices) {
+            if (search.term.length > 2) {
+                $.ajax({
+                    async: false,
+                    type: "Post",
+                    data: { Term: search.term },
+                    url: "/Home/GetTags",
+                    success: function (tags) {
+                        availableTags = [];
+                        availableTagsID = [];
+                        for (i = 0; i < tags.length; i++) {
+                            availableTags.push(tags[i].TagName);
+                            availableTagsID.push(tags[i].TagID);
+                        }
+                        showChoices(availableTags);
+                    }
+                })
+            }
+        },
+        select: true,
+        sortable: true,
+        allowNewTags: false,
+        triggerKeys: ['enter', 'tab'],
+        beforeTagAdded: function (event, ui) {
+            if ($.inArray(ui.tagLabel, availableTags) == -1) {
+                return false;
+            }
+        },
+        afterTagAdded: function (event, ui) {
+            var index = availableTags.indexOf(ui.tagLabel);
+            var id = availableTagsID[index];
+            var image_id = $(this).closest('div[class^="imageItem"]').attr("id");
+            $("#" + image_id + " .imageTags li").eq(-2).attr("data-id", id);
+        }
+    });
+    $(".imageTags .tagit-new input").attr("placeholder", "+ أضف كلمة بحثية");
+    // end of getting search image tags //
 }
 
 // start post creation validation methods //
@@ -399,6 +470,7 @@ $(document).ready(function () {
         $("#media_" + media_id + " .media_img").attr("src", "http://img.youtube.com/vi/" + id + "/0.jpg");
         $("#media_" + media_id + " .media_img").css("display", "block");
         $("#media_" + media_id + " .media_dropbox").css("display", "none");
+        $("#video_url_" + media_id).val(id);
 
         var vid_image = $("#modal_video_viewport").children("img").attr("src");
         $("#media_" + media_id + " .edit-image-btn").removeClass("hidden");

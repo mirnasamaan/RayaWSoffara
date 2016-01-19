@@ -27,7 +27,7 @@ using System.Globalization;
 namespace RayaWSoffara.Controllers
 {
     [Authorize]
-    public class AccountController : Controller
+    public class AccountController : SearchController
     {
         public IFormsAuthenticationService FormsService { get; set; }
         public IMembershipService MembershipService { get; set; }
@@ -427,12 +427,6 @@ namespace RayaWSoffara.Controllers
             return View(userProfile);
         }
 
-        [AllowAnonymous]
-        public ActionResult UserPosts(string Username, int Page)
-        {
-            return View();
-        }
-
         public List<UserPointsVM> GetUserAchievements(int UserId, int Page)
         {
             RWSUser user = _userRepo.GetUserByUserId(UserId);
@@ -827,6 +821,13 @@ namespace RayaWSoffara.Controllers
 
             ViewBag.ShowRemoveButton = externalLogins.Count > 1 || OAuthWebSecurity.HasLocalAccount(WebSecurity.GetUserId(User.Identity.Name));
             return PartialView("_RemoveExternalLoginsPartial", externalLogins);
+        }
+
+        [AllowAnonymous]
+        public ActionResult UserPosts(string posts, string tags, int Page, string Username, int count = 8)
+        {
+            IndexVM result = GetFilteredArticles(posts, tags, Page, Username, count);
+            return View(result);
         }
 
         #region Helpers

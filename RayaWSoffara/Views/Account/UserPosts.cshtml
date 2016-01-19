@@ -1,137 +1,44 @@
-﻿@model RayaWSoffara.Models.UserProfileVM
-@using RayaWSoffara.Helpers
+﻿@model RayaWSoffara.Models.IndexVM
 @{
     ViewBag.Title = "مقالات الكاتب";
 }
 
-<div class="clear-fix"></div>
-<div class="container" id="profile_container">
-    <input id="userId" type="hidden"  value="@Model.UserId"/>
-    <input id="userName" type="hidden"  value="@Model.UserName"/>
-    <div class="profile-title profile-title2 col-md-4 col-xs-12">
-        <div class="user-data-title">
-            <span>@Model.FirstName @Model.LastName</span>
-            <div class="clear-fix"></div>
-            <div>@Model.UserName</div>
+<div class="row header_divs header_div_4">
+    <div class="container-fluid checkbox-wrapper visible-xs">
+        <div class="pull-left checkbox-item-wrapper black col-xs-6">
+            <span class="black pull-left"></span>
+            <input class="الكل" type="checkbox" name="PostType" value="0">
+            <label>الكل</label>
         </div>
-        <div class="clear-fix"></div>
-        <div class="user-image">
-            @if (@Model.profileImgUrl != null)
-            {
-                <img class="pull-left" src="@Model.profileImgUrl?w=100&h=100&mode=crop" />
-            }
-            else
-            {
-                <img class="pull-left" src="~/Content/Images/img_writer.jpg?w=100&h=100&mode=crop" />
-            }
-        </div>
-        <div class="clear-fix"></div>
-        <div class="user-data">
-            <div class="numerics">
-                <div class="pull-left col-md-6">
-                    <div>@Model.articlesCount</div>
-                    <label>مقالة</label>
-                </div>
-                <div class="pull-left col-md-6">
-                    <div>@Model.viewsCount</div>
-                    <label>مشاهدة</label>
-                </div>
-            </div>
-            <div class="clear-fix"></div>
-        </div>
-        <div class="clear-fix"></div>
-        <div id="profile-user-data">
-            <div class="profile-sub-title">معلومات شخصية</div>
-            <div class="form-group">
-                <label class="pull-left">البطولة المفضلة</label>
-                <input class="form-control" value="@Model.FavCompName" disabled />
-            </div>
-            <div class="form-group">
-                <label class="pull-left">الفريق المفضل</label>
-                <input class="form-control" value="@Model.FavTeamName" disabled />
-            </div>
-            <div class="form-group">
-                <label class="pull-left">أسم المستخدم</label>
-                <input type="text" class="form-control" name="DisplayName" value="@Model.DisplayName" disabled />
-            </div>
-            <div class="form-group">
-                <label class="pull-left">نبذة عن @Model.FirstName</label>
-                <textarea class="form-control" name="AboutYou" disabled>@Model.AboutYou</textarea>
-            </div>
-            <div class="form-group">
-                <label class="pull-left">حساب تويتر</label>
-                <input type="text" class="form-control" name="Twitter" value="@Model.Twitter" disabled />
-            </div>
-            <div class="form-group">
-                <label class="pull-left">حساب جوجل بلس</label>
-                <input type="text" class="form-control" name="Google" value="@Model.Google" disabled />
-            </div>
-        </div>
-
     </div>
-
-    <div class="profile col-md-8">
-        <div class="achievement-container">
-            <div class="clear-fix"></div>
-            <div class="profile-sub-title">نقاط الكاتب</div>
-            <div class="pointsgraph">
-                <div id="basicflot" style="width: 100%; height: 300px"></div>
+    <div class="container-fluid checkbox-wrapper hidden-xs">
+        <div>
+            <div class="pull-left checkbox-item-wrapper black">
+                <span class="black pull-left"></span>
+                <input class="الكل" type="checkbox" name="PostType" value="0">
+                <label>الكل</label>
             </div>
-
-            <div class="achievements">
-                @Html.Partial("_AchievementsPartial")
-            </div>
-            
-            <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
-        </div>
-        <div class="clear-fix"></div>
-        <div class="recents">
-            <div class="profile-sub-title">مقالات الكاتب</div>
-            <div class="clear-fix"></div>
-            @if (@Model.articlesCount == 0)
-            {
-                <div class="no-results pull-left">لا توجد مقالات لهذا الكاتب.</div>
-            }
-            @foreach (var article in @Model.recentArticles)
-            {
-                <div class="recent-articles">
-                    <div class="col-md-4 col-xs-12">
-                        <a href="/Post/@article.PostId">
-                            @if (@article.FeaturedImage != null)
-                            {
-                                <img class="" id="article_img" src="~/Content/Article_Images/@article.FeaturedImage?w=210&h=140&mode=crop" /> 
-                            }
-                            else
-                            {
-                                <iframe width="210" height="140" src="https://www.youtube.com/embed/@article.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
-                            }
-                        </a>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="article_title pull-left">@article.Title</div>
-                        <div class="clear-fix"></div>
-                        <div class="">
-                            <div class="content">
-                                @{ string text = @Html.Raw(article.Content).ToString(); }
-                                @TrimTextHelper.TrimText(@text, 300);
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="clear-fix"></div>
-            }
-            @if(Model.articlesCount > 0) {
-                <div class="allUserPosts col-md-offset-4 col-md-8">
-                    <a href="/UserPosts?Username=@User.Identity.Name">كل مقالات الكاتب</a>
-                </div>
-            }
         </div>
     </div>
 </div>
 
-<input name="Page" value="1" type="hidden" />
-<input id="AllPointsCount" type="hidden" value="@ViewBag.AllPointsCount" />
+<input id="AllActivePostsCount" type="hidden" value="@Model.PostsCount" />
+
+<div class="container">
+    <div class="row negative-row">
+        <div class="col-lg-12 col-xs-12 no-padding">
+            <div class="grid">
+                @if (Model.PostsCount < 1)
+                {
+                    <div class="no-results">لا توجد نتائج لهذا البحث</div>
+                }
+                @Html.Partial("../Home/_PostPartial", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clear-fix"></div>
 
 <div class="viewMoreButton">
     <div class="loading hidden">
@@ -152,133 +59,82 @@
             </div>
         </div>
     </div>
+    <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
 </div>
 
-<script src="~/Content/Scripts/flot/jquery.flot.min.js"></script>
-<script src="~/Content/Scripts/flot/jquery.flot.resize.min.js"></script>
-<script src="~/Content/Scripts/flot/jquery.flot.time.min.js"></script>
+<script src="~/Content/Scripts/masonry.pkgd.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/imagesloaded.pkgd.min.js"></script>
+<script src="~/Content/Scripts/headerScript.js"></script>
 <script>
-    //start of show/hide view button //
-    var page = 2;
-    var displayed_points_count = parseInt($(".achievement-item").length);
-    var all_points_count = parseInt($("#AllPointsCount").val());
-    if (displayed_points_count >= all_points_count) {
-        $("#viewMore").addClass("hidden");
-    }
-    //end of show/hide view button //
-
-    function viewMore(e) {
-        var username = $("#userName").val();
-        $.ajax({
-            url: "/Profile?Username="+username+"&Page="+page,
-            beforeSend: function () {
-                $(".loading").removeClass("hidden");
-            },
-            success: function (points) {
-                page++;
-                $(".loading").addClass("hidden");
-                $('.achievements').append(points);
-                var displayed_points_count = parseInt($(".achievement-item").length);
-                var all_points_count = parseInt($("#AllPointsCount").val());
-                if (displayed_points_count >= all_points_count) {
-                    $("#viewMore").addClass("hidden");
-                }
-            }
+    $('.grid').imagesLoaded(function () {
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            isFitWidth: true,
+            isOriginLeft: false
         });
-
-        return false;
-    }
-
-    $.ajax({
-        url: "/Account/GetGraphPoints",
-        type: 'POST',
-        data: { userId: $("#userId").val() },
-        success: function (points) {
-            var dataSet = [
-                { label: "النقاط", data: points, points: { fillColor: "#4572A7", size: 5 }, color: '#4572A7' }
-            ];
-
-            $.plot($("#basicflot"), dataSet, {
-                xaxis: {
-                    mode: "time",
-                    tickSize: [1, "month"],
-                    timeformat: "%b %Y",
-                    tickLength: 0,
-                    axisLabel: 'Month',
-                    axisLabelUseCanvas: true,
-                    axisLabelFontSizePixels: 12,
-                    axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
-                    axisLabelPadding: 5
-                },
-                yaxis: {
-                    axisLabel: 'Points',
-                    axisLabelUseCanvas: true,
-                    axisLabelFontSizePixels: 12,
-                    axisLabelFontFamily: 'Verdana, Arial, Helvetica, Tahoma, sans-serif',
-                    axisLabelPadding: 5
-                },
-                series: {
-                    lines: {
-                        show: true,
-                        fill: true
-                    },
-                    points: {
-                        radius: 3,
-                        show: true,
-                        fill: true
-                    },
-                },
-                grid: {
-                    borderWidth: 1,
-                    hoverable: true
-                }
-            });
-
-            function showTooltip(x, y, contents, z) {
-                $('<div id="flot-tooltip">' + contents + '</div>').css({
-                    top: y - 210,
-                    left: x - 120,
-                    'border-color': z,
-                }).appendTo(".pointsgraph").fadeIn(200);
-            }
-
-            function getMonthName(numericMonth) {
-                var monthArray = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-                var alphaMonth = monthArray[numericMonth];
-
-                return alphaMonth;
-            }
-
-            function convertToDate(timestamp) {
-                var newDate = new Date(timestamp);
-                var dateString = newDate.getMonth();
-                var monthName = getMonthName(dateString);
-
-                return monthName;
-            }
-
-            var previousPoint = null;
-            $("#basicflot").bind("plothover", function (event, pos, item) {
-                if (item) {
-                    if ((previousPoint != item.dataIndex) || (previousLabel != item.series.label)) {
-                        previousPoint = item.dataIndex;
-                        previousLabel = item.series.label;
-
-                        $("#flot-tooltip").remove();
-
-                        var x = convertToDate(item.datapoint[0]),
-                        y = item.datapoint[1];
-                        z = item.series.color;
-
-                        showTooltip(item.pageX, item.pageY,
-                            "<b>" + item.series.label + "</b><br /> " + x + " = " + y,
-                            z);
-                    }
-                } else {
-                    $("#flot-tooltip").remove();
-                    previousPoint = null;
-                }
-            });
-        }
     });
+
+    //start of view more button click function //
+    //function viewMore(e) {
+    //    var vars = [], hash;
+    //    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    //    for (var i = 0; i < hashes.length; i++) {
+    //        hash = hashes[i].split('=');
+    //        vars.push(hash[0]);
+    //        vars[hash[0]] = hash[1];
+    //    }
+
+    //    var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
+    //    var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
+
+    //    var controller = window.location.href.slice(window.location.href.indexOf('?') + 1).split('/');
+    //    controller = controller[3];
+
+    //    if (controller == "Popular") {
+    //        $.ajax({
+    //            type: "POST",
+    //            data: { count: page },
+    //            url: "/Home/Popular",
+    //            beforeSend: function () {
+    //                $(".loading").removeClass("hidden");
+    //            },
+    //            success: function (posts) {
+    //                page++;
+    //                $posts = $(posts);
+    //                $(".loading").addClass("hidden");
+    //                $('.grid').append($posts).masonry('appended', $posts);
+    //                var displayed_posts_count = parseInt($(".grid-item").length);
+    //                var all_posts_count = parseInt($("#AllActivePostsCount").val());
+    //                if (displayed_posts_count >= all_posts_count) {
+    //                    $("#viewMore").addClass("hidden");
+    //                }
+    //            }
+    //        });
+    //    } else {
+    //        $.ajax({
+    //            type: "POST",
+    //            data: { posts: posts_qs, tags: tags_qs, count: page },
+    //            url: "/Home/Index",
+    //            beforeSend: function () {
+    //                $(".loading").removeClass("hidden");
+    //            },
+    //            success: function (posts) {
+    //                page++;
+    //                $posts = $(posts);
+    //                $(".loading").addClass("hidden");
+    //                $('.grid').append($posts).masonry('appended', $posts);
+    //                var displayed_posts_count = parseInt($(".grid-item").length);
+    //                var all_posts_count = parseInt($("#AllActivePostsCount").val());
+    //                if (displayed_posts_count >= all_posts_count) {
+    //                    $("#viewMore").addClass("hidden");
+    //                }
+    //            }
+    //        });
+    //    }
+
+    //    return false;
+    //}
+    //end of view more button click function //
 </script>

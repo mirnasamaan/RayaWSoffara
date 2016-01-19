@@ -298,6 +298,12 @@
                 <div class="form-group">
                     <input type="text" class="form-control" name="Google" value="@Model.newArticle.RWSUser.Google" disabled />
                 </div>
+                @if (Model.userArticles.Count > 0)
+                {
+                    <div class="allUserPosts">
+                        <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.newArticle.RWSUser.UserName">كل مقالات الكاتب</a>
+                    </div>
+                }
             </div>
         </div>
     </div>

@@ -431,6 +431,7 @@
     <Content Include="Content\Scripts\ckeditor\samples\toolbarconfigurator\lib\codemirror\LICENSE" />
     <Content Include="Content\Scripts\ckeditor\skins\moono\readme.md" />
     <Content Include="Content\CSS\fonts\fontawesome-webfont.woff2" />
+    <Content Include="Content\Scripts\headerScript.js" />
     <Content Include="Content\Scripts\CreatePostScript.js" />
     <Content Include="Content\Scripts\flot\.DS_Store" />
     <Content Include="ClassDiagram1.cd" />
@@ -1263,6 +1264,7 @@
     <Content Include="Views\Article\_WriteVideoPartial.cshtml" />
     <Content Include="Views\Article\_ImagesPartial.cshtml" />
     <Content Include="Views\Article\_AddTopXItemPartial.cshtml" />
+    <Content Include="Views\Article\_PostMediaModalPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

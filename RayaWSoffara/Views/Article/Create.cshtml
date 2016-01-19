@@ -56,72 +56,6 @@
     </div>
 </div>
 
-<div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">ضبط الصورة</h4>
-            </div>
-            <div class="modal-body" id="edit_modal_body">
-                <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
-                    <li class="active"><a href="#uploadimage" data-toggle="tab">أضف صورة</a></li>
-                    <li><a href="#uploadvideo" data-toggle="tab">يوتيوب فيديو</a></li>
-                    <li><a href="#chooseimage" data-toggle="tab">إختر صورة</a></li>
-                </ul>
-                <div id="my-tab-content" class="tab-content">
-                    <div class="tab-pane active" id="uploadimage">
-                        <div class="dropzone image-dropzone full_width" data-ajax="false" data-url="/Article/TestCrop" data-save="false" data-resize="true" data-canvas="true" data-width="866" data-height="398" style="width: 100%;">
-                            <input type="file" name="thumb" />
-                        </div>
-                        <input id="uploadimagefilename" type="hidden" />
-                        <input id="topXindex" type="hidden" />
-                        <button class="addImage btn btn-primary buttons" onclick="uploadImageClick(this)" disabled>أضف</button>
-                    </div>
-                    <div class="tab-pane" id="uploadvideo">
-                        <textarea id="embedded_video_link" class="full_width form-control" placeholder="رجاءً ضع الرابط هنا"></textarea>
-                        <div id="modal_video_viewport">
-                        </div>
-                        <button type="button" class="btn btn-primary buttons" id="embed_confirm">أضف</button>
-                    </div>
-                    <div class="tab-pane" id="chooseimage">
-                        <ul class="imageTags"></ul>
-                        <input type="hidden" id="tagNames" />
-                        <button class="search-btn"><i class="fa fa-search"></i></button>
-                        <div id="img_container">
-                            <div class="container full_width">@Html.Partial("_ImagesPartial", (List<RWSDataLayer.Context.Image>)@ViewBag.Images)</div>
-                            <div id="testScroll" style="height: 10px">
-                                <div class="loading-inline hidden">
-                                    <div>
-                                        <div class="sk-fading-circle">
-                                            <div class="sk-circle1 sk-circle"></div>
-                                            <div class="sk-circle2 sk-circle"></div>
-                                            <div class="sk-circle3 sk-circle"></div>
-                                            <div class="sk-circle4 sk-circle"></div>
-                                            <div class="sk-circle5 sk-circle"></div>
-                                            <div class="sk-circle6 sk-circle"></div>
-                                            <div class="sk-circle7 sk-circle"></div>
-                                            <div class="sk-circle8 sk-circle"></div>
-                                            <div class="sk-circle9 sk-circle"></div>
-                                            <div class="sk-circle10 sk-circle"></div>
-                                            <div class="sk-circle11 sk-circle"></div>
-                                            <div class="sk-circle12 sk-circle"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="vertical_space"></div>
-                        <button class="addImage btn btn-primary buttons" onclick="chooseImageClick(this)" disabled>أضف</button>
-                    </div>
-                </div>
-            </div>
-            <div class="modal-footer">
-            </div>
-        </div>
-    </div>
-</div>
-
 <div class="loading hidden">
     <div>
         <div class="sk-fading-circle">
@@ -157,51 +91,10 @@
     var done = false;
 
     LoadScript();
-
-    // start of getting search image tags //
-    var availableTags = [];
-    var availableTagsID = [];
-    $('.imageTags').tagit({
-        tagSource: function (search, showChoices) {
-            if (search.term.length > 2) {
-                $.ajax({
-                    async: false,
-                    type: "Post",
-                    data: { Term: search.term },
-                    url: "/Home/GetTags",
-                    success: function (tags) {
-                        availableTags = [];
-                        availableTagsID = [];
-                        for (i = 0; i < tags.length; i++) {
-                            availableTags.push(tags[i].TagName);
-                            availableTagsID.push(tags[i].TagID);
-                        }
-                        showChoices(availableTags);
-                    }
-                })
-            }
-        },
-        select: true,
-        sortable: true,
-        allowNewTags: false,
-        triggerKeys: ['enter', 'tab'],
-        beforeTagAdded: function (event, ui) {
-            if ($.inArray(ui.tagLabel, availableTags) == -1) {
-                return false;
-            }
-        },
-        afterTagAdded: function (event, ui) {
-            var index = availableTags.indexOf(ui.tagLabel);
-            var id = availableTagsID[index];
-            var image_id = $(this).closest('div[class^="imageItem"]').attr("id");
-            $("#" + image_id + " .imageTags li").eq(-2).attr("data-id", id);
-        }
-    });
-    $(".imageTags .tagit-new input").attr("placeholder", "+ أضف كلمة بحثية");
-    // end of getting search image tags //
+    GetImageTags();
 
     // start of loading partial views according to tab click //
-    $('#createArticle_container .nav-tabs li').click(function (e) {
+    $('#tabs2 li').click(function (e) {
         $(".articleTags").tagit("removeAll");
         $(".media_img ").attr("src", "");
         $(".media_dropbox").removeClass("hidden");
@@ -220,14 +113,18 @@
             success: function (data) {
                 $('#createArticle_container .tab-pane').attr("id", post_type);
                 $('#createArticle_container .tab-pane').html(data);
+                if (post_type != "Video") {
+                    GetImageTags();
+                    GetImagesWhenChangingTabs();
+                }
                 var id = grecaptcha.render($('.g-recaptcha')[0], { sitekey: '6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI' });
                 grecaptcha.reset(id);
                 LoadScript();
                 $(".loading").addClass("hidden");
             },
             error: function () {
-                    $(".loading").addClass("hidden");
-                }
+                $(".loading").addClass("hidden");
+            }
         });
     });
     // end of loading partial views according to tab click //

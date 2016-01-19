@@ -18,6 +18,10 @@ function LoadScript() {
     }
     var post_type = getUrlVars()["Type"];
 
+    $("#tabs li").removeClass("active");
+    $("#my-tab-content div").removeClass("active");
+    $("#tabs li:first-child").addClass("active");
+    $("#my-tab-content div:first-child").addClass("active");
 
     ///////////////////////////////////////////////////////////// ARTICLE /////////////////////////////////////////////////////////////
 

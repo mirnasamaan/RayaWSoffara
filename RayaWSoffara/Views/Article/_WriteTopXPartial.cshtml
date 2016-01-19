@@ -14,8 +14,8 @@
         <div>
             <div class="input-group full_width input_margin">
                 @Html.TextBoxFor(m => m.newArticle.Title, new { @class = "form-control dark_border", placeholder = "أضف عنوان" })
-                <input type="hidden" name="article_picture_path" id="article_picture_path_0" value="" />
-                <input type="hidden" name="video_url" id="video_url_0" value="" />
+                <input type="hidden" name="article_picture_path[0]" id="article_picture_path_0" value="" />
+                <input type="hidden" name="video_url[0]" id="video_url_0" value="" />
             </div>
             <div class="input-group full_width input_margin">
                 <div class="media dark_border" id="media_0">
@@ -98,4 +98,6 @@
             </div>
         </div>
     </form>
+    
+    @Html.Partial("_PostMediaModalPartial", "Lists")
 }

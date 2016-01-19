@@ -554,7 +554,7 @@ namespace RayaWSoffara
             routes.MapRoute(
                 name: "UserPosts",
                 url: "UserPosts",
-                defaults: new { controller = "Article", action = "UserPosts", id = UrlParameter.Optional }
+                defaults: new { controller = "Account", action = "UserPosts", id = UrlParameter.Optional }
             );
 
             routes.MapRoute(
