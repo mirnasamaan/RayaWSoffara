@@ -4,7 +4,7 @@
     //var model = ViewBag.Posts;
 }
 
-<div class="row header_divs header_div_4">
+<div class="row header_divs header_div_4" id="step4">
     <div class="container-fluid checkbox-wrapper visible-xs">
         <div class="pull-left checkbox-item-wrapper black col-xs-6">
             <span class="black pull-left"></span>
@@ -202,32 +202,16 @@
 <div class="clear-fix"></div>
 
 <div class="viewMoreButton">
-    <div class="loading hidden">
-        <div>
-            <div class="sk-fading-circle">
-                <div class="sk-circle1 sk-circle"></div>
-                <div class="sk-circle2 sk-circle"></div>
-                <div class="sk-circle3 sk-circle"></div>
-                <div class="sk-circle4 sk-circle"></div>
-                <div class="sk-circle5 sk-circle"></div>
-                <div class="sk-circle6 sk-circle"></div>
-                <div class="sk-circle7 sk-circle"></div>
-                <div class="sk-circle8 sk-circle"></div>
-                <div class="sk-circle9 sk-circle"></div>
-                <div class="sk-circle10 sk-circle"></div>
-                <div class="sk-circle11 sk-circle"></div>
-                <div class="sk-circle12 sk-circle"></div>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("_LoadingPartial", "overall")
     <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
 </div>
+@Html.Raw(ViewBag.tutorial)
 
 <script src="~/Content/Scripts/masonry.pkgd.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
 <script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
 <script src="~/Content/Scripts/imagesloaded.pkgd.min.js"></script>
-<script src="~/Content/Scripts/headerScript.js"></script>
+@*<script type='text/javascript'>function startIntro() { var intro = introJs(); intro.setOptions({ steps: [{ element: document.querySelector('#step1'), intro: 'This is a tooltip.' }, { element: document.querySelectorAll('#step2')[0], intro: 'Ok, wasnt that fun?', position: 'right' }, { element: '#step3', intro: 'More features, more fun.', position: 'left' }, { element: '#step4', intro: 'Another step.', position: 'bottom' }] }); intro.start(); }</script>*@
 <script>
     $('.grid').imagesLoaded(function () {
         $('.grid').masonry({
@@ -236,69 +220,6 @@
             isOriginLeft: false
         });
     });
-
-
-    //start of view more button click function //
-    function viewMore(e) {
-        var vars = [], hash;
-        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-        for (var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split('=');
-            vars.push(hash[0]);
-            vars[hash[0]] = hash[1];
-        }
-
-        var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
-        var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
-
-        var controller = window.location.href.slice(window.location.href.indexOf('?') + 1).split('/');
-        controller = controller[3];
-
-        if (controller == "Popular") {
-            $.ajax({
-                type: "POST",
-                data: { count: page },
-                url: "/Home/Popular",
-                beforeSend: function () {
-                    $(".loading").removeClass("hidden");
-                },
-                success: function (posts) {
-                    page++;
-                    $posts = $(posts);
-                    $(".loading").addClass("hidden");
-                    $('.grid').append($posts).masonry('appended', $posts);
-                    var displayed_posts_count = parseInt($(".grid-item").length);
-                    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-                    if (displayed_posts_count >= all_posts_count) {
-                        $("#viewMore").addClass("hidden");
-                    }
-                }
-            });
-        } else {
-            $.ajax({
-                type: "POST",
-                data: { posts: posts_qs, tags: tags_qs, count: page },
-                url: "/Home/Index",
-                beforeSend: function () {
-                    $(".loading").removeClass("hidden");
-                },
-                success: function (posts) {
-                    page++;
-                    $posts = $(posts);
-                    $(".loading").addClass("hidden");
-                    $('.grid').append($posts).masonry('appended', $posts);
-                    var displayed_posts_count = parseInt($(".grid-item").length);
-                    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-                    if (displayed_posts_count >= all_posts_count) {
-                        $("#viewMore").addClass("hidden");
-                    }
-                }
-            });
-        }
-
-        return false;
-    }
-    //end of view more button click function //
 
     //start of sidebar animation //
     function isScrolledIntoView(elem) {
@@ -375,6 +296,7 @@
     //end of sidebar animation //
 
     $(document).ready(function () {
+        startIntro();
         $(".leaderboard .tab-pane > div:nth-child(1)").animate({
             width: "100%"
         }, 5000, function () {

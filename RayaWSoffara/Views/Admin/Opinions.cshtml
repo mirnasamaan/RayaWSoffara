@@ -24,6 +24,9 @@
                         <th>Content</th>
                         <th>Actions</th>
                         <th>Status</th>
+                        <th>User Delete</th>
+                        <th>Comments</th>
+                        <th>Reported Comments</th>
                     </tr>
                 </thead>
             </table>
@@ -56,6 +59,15 @@
             },
             {
                 "data": "Status"
+            },
+            {
+                "data": "UserDelete"
+            },
+            {
+                "data": "CommentsCount"
+            },
+            {
+                "data": "ReportedCommentsCount"
             }
         ],
         "order": [[0, "asc"]]
@@ -109,5 +121,9 @@
                 }
             });
         }
+    }
+
+    function SeeComments(post_id) {
+        window.location.href = "/PostComments?PostId=" + post_id;
     }
 </script>

@@ -317,7 +317,8 @@ namespace RWSDataLayer.Repositories
         /// <param name="post">Post object</param>
         public void DeletePost(Post post)
         {
-            Context.Posts.Remove(post);
+            post.IsActive = false;
+            post.isDeleted = true;
             Context.SaveChanges();
         }
 
@@ -376,9 +377,35 @@ namespace RWSDataLayer.Repositories
         /// <param name="PostId">The post id</param>
         /// <param name="index">Start index</param>
         /// <returns></returns>
-        public List<Comment> GetComments(int index, int PostId)
+        public IQueryable<Comment> GetComments(int? index, int PostId)
         {
-            return Context.Comments.Where(i => i.CommentPostId == PostId).OrderByDescending(i => i.CommentCreationDate).Skip(index * 10).Take(10).ToList();
+            if (index == null)
+            {
+                return Context.Comments.Where(i => i.CommentPostId == PostId);
+            }
+            else
+            {
+                return Context.Comments.Where(i => i.CommentPostId == PostId).OrderByDescending(i => i.CommentCreationDate).Skip(index.Value * 10).Take(10);
+            }
+        }
+
+        public Comment GetCommentById(int CommentId)
+        {
+            return Context.Comments.FirstOrDefault(i => i.CommentId == CommentId);
+        }
+
+        public bool DeleteComment(Comment comment)
+        {
+            try
+            {
+                Context.Comments.Remove(comment);
+                Context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         /// <summary>
@@ -407,6 +434,27 @@ namespace RWSDataLayer.Repositories
             postTypeIDs.Add(2);
 
             return Context.Posts.Where(i => postTypeIDs.Contains(i.PostTypeId.Value)).Where(i => i.CreatedBy == UserId).Where(i => i.IsActive == true).OrderByDescending(i => i.CreationDate).Take(5);
+        }
+
+        public bool ReportComment(int CommentId, int UserId)
+        {
+            try
+            {
+                CommentReport report = new CommentReport();
+                report.CommentId = CommentId;
+                report.UserId = UserId;
+                report.ReportTimestamp = DateTime.Now;
+                Context.CommentReports.Add(report);
+                Comment comment = Context.Comments.FirstOrDefault(i => i.CommentId == CommentId);
+                comment.CommentReportCount = comment.CommentReportCount + 1;
+                //Context.Comments.FirstOrDefault(i => i.CommentId == CommentId).CommentReportCount++;
+                Context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
         #endregion
 

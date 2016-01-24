@@ -282,6 +282,8 @@
     <Content Include="Content\CSS\fullcalendar.css" />
     <Content Include="Content\CSS\html5imageupload.css" />
     <Content Include="Content\CSS\index.html" />
+    <Content Include="Content\CSS\introjs-rtl.css" />
+    <Content Include="Content\CSS\introjs.css" />
     <Content Include="Content\CSS\jquery-jvectormap-1.2.2.css" />
     <Content Include="Content\CSS\jquery-ui-1.10.3.css" />
     <Content Include="Content\CSS\jquery.bxslider.css" />
@@ -1092,6 +1094,7 @@
     <Content Include="Content\Scripts\flot\jquery.flot.time.min.js" />
     <Content Include="Content\Scripts\flot\LICENSE.txt" />
     <Content Include="Content\Scripts\html5imageupload.min.js" />
+    <Content Include="Content\Scripts\intro.js" />
     <Content Include="Content\Scripts\jquery.visible.min.js" />
     <Content Include="Content\Scripts\script-backoffice.js" />
     <Content Include="Content\Scripts\custom.js" />
@@ -1162,7 +1165,6 @@
     <Content Include="README.txt" />
     <Content Include="Release-notes.txt" />
     <Content Include="Views\Admin\Dashboard.cshtml" />
-    <Content Include="Views\Admin\index.html" />
     <Content Include="Views\Admin\Users.cshtml" />
     <Content Include="Views\Admin\AddUser.cshtml" />
     <Content Include="Views\Admin\EditUser.cshtml" />
@@ -1202,6 +1204,8 @@
     <Content Include="Views\Admin\Leaderboard.cshtml" />
     <Content Include="Views\Admin\UserPoints.cshtml" />
     <Content Include="Views\Account\UserPosts.cshtml" />
+    <Content Include="Views\Admin\PostComments.cshtml" />
+    <Content Include="Views\Admin\_PostCommentPartial.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">
@@ -1265,6 +1269,8 @@
     <Content Include="Views\Article\_ImagesPartial.cshtml" />
     <Content Include="Views\Article\_AddTopXItemPartial.cshtml" />
     <Content Include="Views\Article\_PostMediaModalPartial.cshtml" />
+    <Content Include="Views\Shared\_LoadingPartial.cshtml" />
+    <Content Include="Views\Admin\_CommentPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

@@ -4143,6 +4143,7 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 }
 
 .article-lg, .article-sm {
+    position: relative;
     padding: 0;
     border: 1px solid rgba(222, 222, 222, 1);
     /*-webkit-box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);
@@ -4154,6 +4155,19 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 .grid {
     margin: 0 auto;
     min-height: 100px;
+}
+.grid .remove-post {
+    position: absolute;
+    left: 0;
+    background: rgb(192, 57, 43);
+    color: white;
+    padding: 0;
+    text-align: center;
+    line-height: 20px;
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+    font-family: cursive;
 }
 .no-results {
     padding: 20px 20px;
@@ -4691,6 +4705,12 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 .recent-articles > a, .recent-articles > a:hover, .recent-articles > a:focus {
     text-decoration: none;
     color: black;
+}
+
+.comment-container .report {
+    color: #AB2019;
+    padding-top: 5px;
+    cursor: pointer;
 }
 /*===========================================================================================================================================*/
 

@@ -827,6 +827,10 @@ namespace RayaWSoffara.Controllers
         public ActionResult UserPosts(string posts, string tags, int Page, string Username, int count = 8)
         {
             IndexVM result = GetFilteredArticles(posts, tags, Page, Username, count);
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_PostPartial", result);
+            }
             return View(result);
         }
 

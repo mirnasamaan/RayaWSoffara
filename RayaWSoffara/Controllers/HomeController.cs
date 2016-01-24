@@ -24,6 +24,7 @@ namespace RayaWSoffara.Controllers
             IndexVM result = new IndexVM();
             ArticleRepository _articleRepo = new ArticleRepository();
             UserRepository _userRepo = new UserRepository();
+            TutorialRepository _tutRepo = new TutorialRepository();
 
             if (count != null)
             {
@@ -74,6 +75,16 @@ namespace RayaWSoffara.Controllers
                 MonthlyLeadersPoints.Add(new UserPointsVM { UserId = item, UserProfilePicture = _userRepo.GetUserByUserId(item).ProfileImagePath, UserName = _userRepo.GetUserByUserId(item).UserName, PointsValue = _userRepo.GetUserPointsBySelectedDate(item, MonthStartDate, MonthEndDate) });
             }
             ViewBag.MonthlyLeadersPoints = MonthlyLeadersPoints;
+
+            if (User != null)
+            {
+                int userId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
+                UserTutorial userTut = _tutRepo.GetUserTutorialByTutAndUserId(1, userId);
+                if (userTut.isViewed != true)
+                {
+                    ViewBag.tutorial = _tutRepo.GetTutorialById(1).TutScript;
+                }
+            }
 
             return View(result);
         }

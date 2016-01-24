@@ -20,9 +20,12 @@
     <EntitySet Name="Tag" EntityType="RWS_DevelopmentModel.Store.Tag" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="Team" EntityType="RWS_DevelopmentModel.Store.Team" store:Type="Tables" Schema="dbo" />
     <EntitySet Name="TeamPlayer" EntityType="RWS_DevelopmentModel.Store.TeamPlayer" store:Type="Tables" Schema="dbo" />
+    <EntitySet Name="CommentReport" EntityType="RWS_DevelopmentModel.Store.CommentReport" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="Engagement" EntityType="RWS_DevelopmentModel.Store.Engagement" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="EngagementType" EntityType="RWS_DevelopmentModel.Store.EngagementType" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="TagType" EntityType="RWS_DevelopmentModel.Store.TagType" store:Type="Tables" Schema="marvot" />
+    <EntitySet Name="Tutorial" EntityType="RWS_DevelopmentModel.Store.Tutorial" store:Type="Tables" Schema="marvot" />
+    <EntitySet Name="UserTutorial" EntityType="RWS_DevelopmentModel.Store.UserTutorial" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="UserPointsView" EntityType="RWS_DevelopmentModel.Store.UserPointsView" store:Type="Views" store:Schema="marvot" store:Name="UserPointsView">
       <DefiningQuery>SELECT 
       [UserPointsView].[UserId] AS [UserId], 
@@ -51,9 +54,21 @@
       <End Role="Post" EntitySet="Post" />
       <End Role="ArticleTopX" EntitySet="ArticleTopX" />
     </AssociationSet>
+    <AssociationSet Name="FK_Comment_Post" Association="RWS_DevelopmentModel.Store.FK_Comment_Post">
+      <End Role="Post" EntitySet="Post" />
+      <End Role="Comment" EntitySet="Comment" />
+    </AssociationSet>
     <AssociationSet Name="FK_Comment_RWSUser" Association="RWS_DevelopmentModel.Store.FK_Comment_RWSUser">
       <End Role="RWSUser" EntitySet="RWSUser" />
       <End Role="Comment" EntitySet="Comment" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommentReport_Comment" Association="RWS_DevelopmentModel.Store.FK_CommentReport_Comment">
+      <End Role="Comment" EntitySet="Comment" />
+      <End Role="CommentReport" EntitySet="CommentReport" />
+    </AssociationSet>
+    <AssociationSet Name="FK_CommentReport_RWSUser" Association="RWS_DevelopmentModel.Store.FK_CommentReport_RWSUser">
+      <End Role="RWSUser" EntitySet="RWSUser" />
+      <End Role="CommentReport" EntitySet="CommentReport" />
     </AssociationSet>
     <AssociationSet Name="FK_Competition_Region" Association="RWS_DevelopmentModel.Store.FK_Competition_Region">
       <End Role="Region" EntitySet="Region" />
@@ -115,6 +130,14 @@
       <End Role="Team" EntitySet="Team" />
       <End Role="TeamPlayer" EntitySet="TeamPlayer" />
     </AssociationSet>
+    <AssociationSet Name="FK_UserTutorial_Tutorial" Association="RWS_DevelopmentModel.Store.FK_UserTutorial_Tutorial">
+      <End Role="Tutorial" EntitySet="Tutorial" />
+      <End Role="UserTutorial" EntitySet="UserTutorial" />
+    </AssociationSet>
+    <AssociationSet Name="FK_UserTutorial_UserTutorial" Association="RWS_DevelopmentModel.Store.FK_UserTutorial_UserTutorial">
+      <End Role="RWSUser" EntitySet="RWSUser" />
+      <End Role="UserTutorial" EntitySet="UserTutorial" />
+    </AssociationSet>
   </EntityContainer>
   <EntityType Name="ArticleTopX">
     <Key>
@@ -135,8 +158,9 @@
     <Property Name="CommentId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
     <Property Name="CommentContent" Type="ntext" />
     <Property Name="CommentUserId" Type="int" />
-    <Property Name="CommentPostId" Type="int" />
+    <Property Name="CommentPostId" Type="int" Nullable="false" />
     <Property Name="CommentCreationDate" Type="datetime" />
+    <Property Name="CommentReportCount" Type="int" Nullable="false" />
   </EntityType>
   <EntityType Name="Competition">
     <Key>
@@ -202,6 +226,7 @@
     <Property Name="PostTypeId" Type="int" />
     <Property Name="SharesCount" Type="int" Nullable="false" />
     <Property Name="LikesCount" Type="int" Nullable="false" />
+    <Property Name="isDeleted" Type="bit" />
   </EntityType>
   <EntityType Name="PostTag">
     <Key>
@@ -320,6 +345,15 @@
     <Property Name="TeamId" Type="int" Nullable="false" />
     <Property Name="PlayerId" Type="int" Nullable="false" />
   </EntityType>
+  <EntityType Name="CommentReport">
+    <Key>
+      <PropertyRef Name="CommentId" />
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="CommentId" Type="int" Nullable="false" />
+    <Property Name="UserId" Type="int" Nullable="false" />
+    <Property Name="ReportTimestamp" Type="date" />
+  </EntityType>
   <EntityType Name="Engagement">
     <Key>
       <PropertyRef Name="EngId" />
@@ -344,6 +378,23 @@
     </Key>
     <Property Name="TagType" Type="int" Nullable="false" />
     <Property Name="TagName" Type="nvarchar" MaxLength="255" />
+  </EntityType>
+  <EntityType Name="Tutorial">
+    <Key>
+      <PropertyRef Name="TutId" />
+    </Key>
+    <Property Name="TutId" Type="int" Nullable="false" />
+    <Property Name="TutTitle" Type="nvarchar" MaxLength="50" />
+    <Property Name="TutScript" Type="ntext" />
+  </EntityType>
+  <EntityType Name="UserTutorial">
+    <Key>
+      <PropertyRef Name="TutId" />
+      <PropertyRef Name="UserId" />
+    </Key>
+    <Property Name="TutId" Type="int" Nullable="false" />
+    <Property Name="UserId" Type="int" Nullable="false" />
+    <Property Name="isViewed" Type="bit" />
   </EntityType>
   <!--Errors Found During Generation:
       warning 6002: The table/view 'RWS_Development.marvot.UserPointsView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
@@ -428,6 +479,18 @@
       </Dependent>
     </ReferentialConstraint>
   </Association>
+  <Association Name="FK_Comment_Post">
+    <End Role="Post" Type="RWS_DevelopmentModel.Store.Post" Multiplicity="1" />
+    <End Role="Comment" Type="RWS_DevelopmentModel.Store.Comment" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Post">
+        <PropertyRef Name="PostId" />
+      </Principal>
+      <Dependent Role="Comment">
+        <PropertyRef Name="CommentPostId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
   <Association Name="FK_Comment_RWSUser">
     <End Role="RWSUser" Type="RWS_DevelopmentModel.Store.RWSUser" Multiplicity="0..1" />
     <End Role="Comment" Type="RWS_DevelopmentModel.Store.Comment" Multiplicity="*" />
@@ -437,6 +500,32 @@
       </Principal>
       <Dependent Role="Comment">
         <PropertyRef Name="CommentUserId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommentReport_Comment">
+    <End Role="Comment" Type="RWS_DevelopmentModel.Store.Comment" Multiplicity="1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="CommentReport" Type="RWS_DevelopmentModel.Store.CommentReport" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Comment">
+        <PropertyRef Name="CommentId" />
+      </Principal>
+      <Dependent Role="CommentReport">
+        <PropertyRef Name="CommentId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_CommentReport_RWSUser">
+    <End Role="RWSUser" Type="RWS_DevelopmentModel.Store.RWSUser" Multiplicity="1" />
+    <End Role="CommentReport" Type="RWS_DevelopmentModel.Store.CommentReport" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RWSUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="CommentReport">
+        <PropertyRef Name="UserId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>
@@ -641,6 +730,30 @@
       </Principal>
       <Dependent Role="TeamPlayer">
         <PropertyRef Name="TeamId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UserTutorial_Tutorial">
+    <End Role="Tutorial" Type="RWS_DevelopmentModel.Store.Tutorial" Multiplicity="1" />
+    <End Role="UserTutorial" Type="RWS_DevelopmentModel.Store.UserTutorial" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Tutorial">
+        <PropertyRef Name="TutId" />
+      </Principal>
+      <Dependent Role="UserTutorial">
+        <PropertyRef Name="TutId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_UserTutorial_UserTutorial">
+    <End Role="RWSUser" Type="RWS_DevelopmentModel.Store.RWSUser" Multiplicity="1" />
+    <End Role="UserTutorial" Type="RWS_DevelopmentModel.Store.UserTutorial" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RWSUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="UserTutorial">
+        <PropertyRef Name="UserId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

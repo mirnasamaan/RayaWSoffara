@@ -17,6 +17,7 @@
     <EntitySetMapping Name="Comments">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Comment">
         <MappingFragment StoreEntitySet="Comment">
+          <ScalarProperty Name="CommentReportCount" ColumnName="CommentReportCount" />
           <ScalarProperty Name="CommentId" ColumnName="CommentId" />
           <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
           <ScalarProperty Name="CommentUserId" ColumnName="CommentUserId" />
@@ -57,6 +58,7 @@
     <EntitySetMapping Name="Posts">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Post">
         <MappingFragment StoreEntitySet="Post">
+          <ScalarProperty Name="isDeleted" ColumnName="isDeleted" />
           <ScalarProperty Name="LikesCount" ColumnName="LikesCount" />
           <ScalarProperty Name="PostId" ColumnName="PostId" />
           <ScalarProperty Name="Title" ColumnName="Title" />
@@ -281,5 +283,32 @@
     </FunctionImportMapping>
     <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="RWS_DevelopmentModel.Store.sp_renamediagram" />
     <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="RWS_DevelopmentModel.Store.sp_upgraddiagrams" />
+    <EntitySetMapping Name="CommentReports">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.CommentReport">
+        <MappingFragment StoreEntitySet="CommentReport">
+          <ScalarProperty Name="ReportTimestamp" ColumnName="ReportTimestamp" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="Tutorials">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.Tutorial">
+        <MappingFragment StoreEntitySet="Tutorial">
+          <ScalarProperty Name="TutScript" ColumnName="TutScript" />
+          <ScalarProperty Name="TutTitle" ColumnName="TutTitle" />
+          <ScalarProperty Name="TutId" ColumnName="TutId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserTutorials">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.UserTutorial">
+        <MappingFragment StoreEntitySet="UserTutorial">
+          <ScalarProperty Name="isViewed" ColumnName="isViewed" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="TutId" ColumnName="TutId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

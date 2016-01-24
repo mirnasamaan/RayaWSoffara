@@ -112,6 +112,9 @@
     <Compile Include="Context\Comment.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Context\CommentReport.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Context\Competition.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
@@ -178,13 +181,20 @@
     <Compile Include="Context\Team.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Context\Tutorial.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Context\UserPointsView.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Context\UserTutorial.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IUserProfile.cs" />
     <Compile Include="Repositories\ArticleRepository.cs" />
     <Compile Include="Repositories\BaseRepository.cs" />
     <Compile Include="Repositories\CompetitionRepository.cs" />
+    <Compile Include="Repositories\TutorialRepository.cs" />
     <Compile Include="Repositories\IBaseRepository.cs" />
     <Compile Include="Repositories\ImageRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />

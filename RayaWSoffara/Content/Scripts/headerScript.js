@@ -342,10 +342,10 @@ $(function () {
 
         var controller = window.location.href.split('?')[0];
         controller = controller.split('/')[controller.split('/').length - 1];
-        if (controller == "") {
-            window.location.href = "/?posts=" + posts_qs + "&tags=" + tags_qs + "&Page=0&Username=" + username;
-        } else if (controller == "UserPosts") {
+        if (controller == "UserPosts") {
             window.location.href = "/UserPosts?posts=" + posts_qs + "&tags=" + tags_qs + "&Page=0&Username=" + username;
+        } else {
+            window.location.href = "/?posts=" + posts_qs + "&tags=" + tags_qs + "&Page=0&Username=" + username;
         }
     });
     // END OF CHECKBOX CHECK //
@@ -403,3 +403,86 @@ $(".search").click(function () {
     }
 });
 //END OF SEARCH CLICK FUNCTION 
+
+//start of view more button click function //
+function viewMore(e) {
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+
+    username = (vars["Username"] == null) ? "" : vars["Username"];
+    var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
+    var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
+
+    var controller = window.location.href.split('?')[0];
+    controller = controller.split('/')[controller.split('/').length - 1];
+
+    if (controller == "Popular") {
+        $.ajax({
+            type: "POST",
+            data: { count: page },
+            url: "/Home/Popular",
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (posts) {
+                page++;
+                $posts = $(posts);
+                $(".loading").addClass("hidden");
+                $('.grid').append($posts).masonry('appended', $posts);
+                var displayed_posts_count = parseInt($(".grid-item").length);
+                var all_posts_count = parseInt($("#AllActivePostsCount").val());
+                if (displayed_posts_count >= all_posts_count) {
+                    $("#viewMore").addClass("hidden");
+                }
+            }
+        });
+    } else if (controller == "UserPosts") {
+        $.ajax({
+            type: "POST",
+            data: { posts: posts_qs, tags: tags_qs, count: page },
+            url: "/Account/UserPosts",
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (posts) {
+                page++;
+                $posts = $(posts);
+                $(".loading").addClass("hidden");
+                $('.grid').append($posts).masonry('appended', $posts);
+                var displayed_posts_count = parseInt($(".grid-item").length);
+                var all_posts_count = parseInt($("#AllActivePostsCount").val());
+                if (displayed_posts_count >= all_posts_count) {
+                    $("#viewMore").addClass("hidden");
+                }
+            }
+        });
+    } else {
+        $.ajax({
+            type: "POST",
+            data: { posts: posts_qs, tags: tags_qs, count: page },
+            url: "/Home/Index",
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (posts) {
+                page++;
+                $posts = $(posts);
+                $(".loading").addClass("hidden");
+                $('.grid').append($posts).masonry('appended', $posts);
+                var displayed_posts_count = parseInt($(".grid-item").length);
+                var all_posts_count = parseInt($("#AllActivePostsCount").val());
+                if (displayed_posts_count >= all_posts_count) {
+                    $("#viewMore").addClass("hidden");
+                }
+            }
+        });
+    }
+
+    return false;
+}
+//end of view more button click function //

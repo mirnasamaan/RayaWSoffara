@@ -39,6 +39,14 @@
         <AssociationConnector Association="RWS_DevelopmentModel.TeamPlayer" ManuallyRouted="false" />
         <AssociationConnector Association="RWS_DevelopmentModel.FK_RWSUser_Competition" />
         <AssociationConnector Association="RWS_DevelopmentModel.FK_RWSUser_Team" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_Comment_Post" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.CommentReport" Width="1.5" PointX="4.948661843756522" PointY="7.83707566924257" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_CommentReport_Comment" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_CommentReport_RWSUser" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.Tutorial" Width="1.5" PointX="11.735109792898925" PointY="15.663153387449288" />
+        <EntityTypeShape EntityType="RWS_DevelopmentModel.UserTutorial" Width="1.5" PointX="11.444981636221046" PointY="1.1378912036949263" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_UserTutorial_UserTutorial" />
+        <AssociationConnector Association="RWS_DevelopmentModel.FK_UserTutorial_Tutorial" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

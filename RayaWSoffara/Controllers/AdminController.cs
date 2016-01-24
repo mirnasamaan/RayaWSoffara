@@ -76,6 +76,9 @@ namespace RayaWSoffara.Controllers
             public string Status { get; set; }
             public string Actions { get; set; }
             public string Featured { get; set; }
+            public string UserDelete { get; set; }
+            public string CommentsCount { get; set; }
+            public string ReportedCommentsCount { get; set; }
         }
 
         public static string GetMd5Hash(string value)
@@ -1439,6 +1442,9 @@ namespace RayaWSoffara.Controllers
             foreach (var item in posts_items)
             {
                 string status;
+                string userdelete = "";
+                string commentsCount = "<span onclick='SeeComments(" + item.PostId + ")' class='comments-count'>" + item.Comments.Count() + "</span>";
+                int reportedCommentsCount = item.Comments.Sum(i => i.CommentReportCount);
                 if (item.IsActive == true)
                 {
                     status = "<span onclick='Deactivate(this)' class='status-action label label-success'>Active</span>";
@@ -1447,9 +1453,12 @@ namespace RayaWSoffara.Controllers
                 {
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
+                if (item.isDeleted == true) {
+                    userdelete = "<span class='status-action label label-danger'>Deleted</span>";
+                }
                 string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
 
-                posts.Add(new DataItem { ItemName = item.Title, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
+                posts.Add(new DataItem { ItemName = item.Title, Actions = actions, Status = status, UserDelete = userdelete, CommentsCount = commentsCount, ReportedCommentsCount = reportedCommentsCount.ToString(), DT_RowId = item.PostId.ToString() });
             }
             dataTableData.data = posts;
             //dataTableData.data = FilterData(ref recordsFiltered, start, length, search, sortColumn, sortDirection);
@@ -1639,7 +1648,7 @@ namespace RayaWSoffara.Controllers
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult ArticlesTopX()
         {
-            ViewBag.SubSidebarItem = "articles-top-X";
+            ViewBag.SubSidebarItem = "lists";
             ViewBag.SidebarItem = "posts-management";
             ViewBag.PageHeader = "Posts Management";
             return View();
@@ -1675,6 +1684,9 @@ namespace RayaWSoffara.Controllers
             foreach (var item in posts_items)
             {
                 string status;
+                string userdelete = "";
+                string commentsCount = "<span onclick='SeeComments(" + item.PostId + ")' class='comments-count'>" + item.Comments.Count() + "</span>";
+                int reportedCommentsCount = item.Comments.Sum(i => i.CommentReportCount);
                 if (item.IsActive == true)
                 {
                     status = "<span onclick='Deactivate(this)' class='status-action label label-success'>Active</span>";
@@ -1683,9 +1695,13 @@ namespace RayaWSoffara.Controllers
                 {
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
+                if (item.isDeleted == true)
+                {
+                    userdelete = "<span class='status-action label label-danger'>Deleted</span>";
+                }
                 string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
 
-                posts.Add(new DataItem { ItemName = item.Title, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
+                posts.Add(new DataItem { ItemName = item.Title, Actions = actions, Status = status, UserDelete = userdelete, CommentsCount = commentsCount, ReportedCommentsCount = reportedCommentsCount.ToString(), DT_RowId = item.PostId.ToString() });
             }
             dataTableData.data = posts;
             dataTableData.recordsFiltered = recordsFiltered;
@@ -1696,7 +1712,7 @@ namespace RayaWSoffara.Controllers
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddArticleTopX()
         {
-            ViewBag.SubSidebarItem = "articles-top-X";
+            ViewBag.SubSidebarItem = "lists";
             ViewBag.SidebarItem = "posts-management";
             ViewBag.PageHeader = "Posts Management";
             return View();
@@ -1793,7 +1809,7 @@ namespace RayaWSoffara.Controllers
             Post article = _postRepo.GetPostById(PostId);
             UserArticleVM articleVM = new UserArticleVM();
             articleVM.newArticle = article;
-            ViewBag.SubSidebarItem = "articles-top-X";
+            ViewBag.SubSidebarItem = "lists";
             ViewBag.SidebarItem = "posts-management";
             ViewBag.PageHeader = "Posts Management";
             return View(articleVM);
@@ -1924,6 +1940,9 @@ namespace RayaWSoffara.Controllers
             foreach (var item in posts_items)
             {
                 string status;
+                string userdelete = "";
+                string commentsCount = "<span onclick='SeeComments(" + item.PostId + ")' class='comments-count'>" + item.Comments.Count() + "</span>";
+                int reportedCommentsCount = item.Comments.Sum(i => i.CommentReportCount);
                 if (item.IsActive == true)
                 {
                     status = "<span onclick='Deactivate(this)' class='status-action label label-success'>Active</span>";
@@ -1932,9 +1951,13 @@ namespace RayaWSoffara.Controllers
                 {
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
+                if (item.isDeleted == true)
+                {
+                    userdelete = "<span class='status-action label label-danger'>Deleted</span>";
+                }
                 string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
 
-                posts.Add(new DataItem { ItemName = item.Content, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
+                posts.Add(new DataItem { ItemName = item.Content, Actions = actions, Status = status, UserDelete = userdelete, CommentsCount = commentsCount, ReportedCommentsCount = reportedCommentsCount.ToString(), DT_RowId = item.PostId.ToString() });
             }
             dataTableData.data = posts;
             dataTableData.recordsFiltered = recordsFiltered;
@@ -2123,6 +2146,9 @@ namespace RayaWSoffara.Controllers
             foreach (var item in posts_items)
             {
                 string status;
+                string userdelete = "";
+                string commentsCount = "<span onclick='SeeComments(" + item.PostId + ")' class='comments-count'>" + item.Comments.Count() + "</span>";
+                int reportedCommentsCount = item.Comments.Sum(i => i.CommentReportCount);
                 if (item.IsActive == true)
                 {
                     status = "<span onclick='Deactivate(this)' class='status-action label label-success'>Active</span>";
@@ -2131,9 +2157,13 @@ namespace RayaWSoffara.Controllers
                 {
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
+                if (item.isDeleted == true)
+                {
+                    userdelete = "<span class='status-action label label-danger'>Deleted</span>";
+                }
                 string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
                 string imageHtml = "<img src='/Content/Article_Images/" + item.FeaturedImage + "?w=230&h=140&mode=crop' />";
-                posts.Add(new DataItem { ItemName = imageHtml, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
+                posts.Add(new DataItem { ItemName = imageHtml, Actions = actions, Status = status, UserDelete = userdelete, CommentsCount = commentsCount, ReportedCommentsCount = reportedCommentsCount.ToString(), DT_RowId = item.PostId.ToString() });
             }
             dataTableData.data = posts;
             dataTableData.recordsFiltered = recordsFiltered;
@@ -2325,6 +2355,9 @@ namespace RayaWSoffara.Controllers
             foreach (var item in posts_items)
             {
                 string status;
+                string userdelete = "";
+                string commentsCount = "<span onclick='SeeComments(" + item.PostId + ")' class='comments-count'>" + item.Comments.Count() + "</span>";
+                int reportedCommentsCount = item.Comments.Sum(i => i.CommentReportCount);
                 if (item.IsActive == true)
                 {
                     status = "<span onclick='Deactivate(this)' class='status-action label label-success'>Active</span>";
@@ -2333,9 +2366,13 @@ namespace RayaWSoffara.Controllers
                 {
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
+                if (item.isDeleted == true)
+                {
+                    userdelete = "<span class='status-action label label-danger'>Deleted</span>";
+                }
                 string actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
                 string videoHtml = "<iframe width='266' height='156' src='https://www.youtube.com/embed/" + item.FeaturedVideo + "' frameborder='0; allowfullscreen=''></iframe>";
-                posts.Add(new DataItem { ItemName = videoHtml, Actions = actions, Status = status, DT_RowId = item.PostId.ToString() });
+                posts.Add(new DataItem { ItemName = videoHtml, Actions = actions, Status = status, UserDelete = userdelete, CommentsCount = commentsCount, ReportedCommentsCount = reportedCommentsCount.ToString(), DT_RowId = item.PostId.ToString() });
             }
             dataTableData.data = posts;
             dataTableData.recordsFiltered = recordsFiltered;
@@ -2484,6 +2521,53 @@ namespace RayaWSoffara.Controllers
             _postRepo.UpdateArticle(video, currentUser);
             _postRepo.UpdatedArticleTags(articleVM.newArticle.PostId, tags);
             return Redirect("/Admin/Videos");
+        }
+        #endregion
+
+        #region Comments
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult PostComments(int PostId, int? Page)
+        {
+            int post_type = _postRepo.GetPostById(PostId).PostTypeId.Value;
+            if (post_type == 1)
+            {
+                ViewBag.SubSidebarItem = "articles";
+            }
+            else if (post_type == 2)
+            {
+                ViewBag.SubSidebarItem = "lists";
+            }
+            else if (post_type == 3)
+            {
+                ViewBag.SubSidebarItem = "opinions";
+            }
+            else if (post_type == 4)
+            {
+                ViewBag.SubSidebarItem = "image-posts";
+            }
+            else if (post_type == 5)
+            {
+                ViewBag.SubSidebarItem = "videos";
+            }
+            ViewBag.SidebarItem = "posts-management";
+            ViewBag.PageHeader = "Posts Management";
+            ViewBag.AllCommentsCount = _postRepo.GetComments(null, PostId).Count();
+            if (Page == null) Page = 0;
+            List<Comment> comments = _postRepo.GetComments(Page.Value, PostId).ToList();
+            comments.Reverse();
+            if (Request.IsAjaxRequest())
+            {
+                return PartialView("_PostCommentPartial", comments);
+            }
+            return View(comments);
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult DeleteComment(int CommentId)
+        {
+            Comment comment = _postRepo.GetCommentById(CommentId);
+            _postRepo.DeleteComment(comment);
+            return Json(true, JsonRequestBehavior.AllowGet);
         }
         #endregion
 

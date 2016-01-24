@@ -19,6 +19,7 @@ namespace RWSDataLayer.Context
             this.ArticleTopXes = new HashSet<ArticleTopX>();
             this.Engagements = new HashSet<Engagement>();
             this.Tags = new HashSet<Tag>();
+            this.Comments = new HashSet<Comment>();
         }
     
         public int PostId { get; set; }
@@ -39,11 +40,13 @@ namespace RWSDataLayer.Context
         public Nullable<int> PostTypeId { get; set; }
         public int SharesCount { get; set; }
         public int LikesCount { get; set; }
+        public Nullable<bool> isDeleted { get; set; }
     
         public virtual ICollection<ArticleTopX> ArticleTopXes { get; set; }
         public virtual PostType PostType { get; set; }
         public virtual RWSUser RWSUser { get; set; }
         public virtual ICollection<Engagement> Engagements { get; set; }
         public virtual ICollection<Tag> Tags { get; set; }
+        public virtual ICollection<Comment> Comments { get; set; }
     }
 }

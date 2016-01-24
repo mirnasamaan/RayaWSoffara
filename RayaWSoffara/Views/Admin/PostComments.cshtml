@@ -1,0 +1,110 @@
+﻿@{
+    ViewBag.Title = "Post Comments";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+@using RayaWSoffara.Helpers
+@model List<RWSDataLayer.Context.Comment>
+
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <h4 class="panel-title">Post Comments</h4>
+    </div>
+    <div class="panel-body">
+        <div class="table-responsive">
+            <input type="hidden" id="AllCommentsCount" value="@ViewBag.AllCommentsCount" />
+            <div class="comments-box">
+            @Html.Partial("_PostCommentPartial", @Model)
+            </div>
+
+            <div class="hidden load-more-comments"><button onclick="loadMore()">View More</button></div>
+
+            @Html.Partial("_LoadingPartial", "overall")
+        </div>
+    </div>
+</div>
+<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+    var page = 0;
+    function DeleteComment(comment_id) {
+        var r = confirm("Are you sure you want to delete this comment?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { CommentId: comment_id },
+                url: "/Admin/DeleteComment",
+                beforeSend: function () {
+                    $(".loading").removeClass("hidden");
+                },
+                success: function (data) {
+                    $("#" + comment_id).hide(100);
+                },
+                complete: function () {
+                    $(".loading").addClass("hidden");
+                }
+            });
+        }
+    }
+
+    //START OF GETTING QUERYSTRING VALUES
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    var post_id = vars["PostId"];
+    //END OF GETTING QUERYSTRING VALUES
+
+    //start of view more button display //
+    $(document).ready(function () {
+        var allCommentsCount = parseInt($("#AllCommentsCount").val());
+        if (allCommentsCount <= 10) {
+            $(".load-more-comments").css("display", "none");
+        } else {
+            $(".load-more-comments").removeClass("hidden");
+        }
+    });
+    //end of view more button display //
+
+    //start of loading more comments //
+    function loadMore() {
+        page++;
+        $.ajax({
+            type: 'POST',
+            url: '/Admin/PostComments',
+            data: { PostId: post_id, Page: page },
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (data) {
+                $comments = $(data);
+                $('.comments-box').prepend($comments);
+
+                $('html, body').animate({
+                    scrollTop: $(".comments-box").offset().top - 150
+                }, 1000);
+
+                var allCommentsCount = parseInt($("#AllCommentsCount").val());
+                var displayedCommentCount = parseInt($(".comment-container").length);
+                if (allCommentsCount <= displayedCommentCount) {
+                    $(".load-more-comments").css("display", "none");
+                }
+                $(".loading").addClass("hidden");
+            },
+            error: function () {
+                $(".loading").addClass("hidden");
+            }
+        });
+    }
+    // end of loading more comments //
+</script>

@@ -12,22 +12,13 @@ namespace RWSDataLayer.Context
     using System;
     using System.Collections.Generic;
     
-    public partial class Comment
+    public partial class CommentReport
     {
-        public Comment()
-        {
-            this.CommentReports = new HashSet<CommentReport>();
-        }
-    
         public int CommentId { get; set; }
-        public string CommentContent { get; set; }
-        public Nullable<int> CommentUserId { get; set; }
-        public int CommentPostId { get; set; }
-        public Nullable<System.DateTime> CommentCreationDate { get; set; }
-        public int CommentReportCount { get; set; }
+        public int UserId { get; set; }
+        public Nullable<System.DateTime> ReportTimestamp { get; set; }
     
+        public virtual Comment Comment { get; set; }
         public virtual RWSUser RWSUser { get; set; }
-        public virtual Post Post { get; set; }
-        public virtual ICollection<CommentReport> CommentReports { get; set; }
     }
 }

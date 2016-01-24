@@ -409,6 +409,14 @@ namespace RayaWSoffara
             );
             #endregion
 
+            #region Comments
+            routes.MapRoute(
+                name: "PostComments",
+                url: "PostComments",
+                defaults: new{ controller = "Admin", action = "PostComments", id = UrlParameter.Optional }
+            );
+            #endregion
+
             #region Engagements
             routes.MapRoute(
                 name: "Admin/Engagements",

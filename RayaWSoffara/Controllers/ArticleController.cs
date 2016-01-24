@@ -497,6 +497,21 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [Authorize]
+        public ActionResult ReportComment(int CommentId, string Username)
+        {
+            try
+            {
+                int userId = _userRepo.GetUserByUsername(Username).UserId;
+                _articleRepo.ReportComment(CommentId, userId);
+                return Json(true, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex) 
+            {
+                return Json(false, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         private string EncodeTo64(string toEncode)
         {
             var toEncodeAsBytes = Encoding.ASCII.GetBytes(toEncode);
@@ -678,11 +693,12 @@ namespace RayaWSoffara.Controllers
 
         public ActionResult GetComments(int Index, int PostId)
         {
-            List<Comment> comments = _articleRepo.GetComments(Index, PostId);
+            List<Comment> comments = _articleRepo.GetComments(Index, PostId).ToList();
             UserArticleVM result = new UserArticleVM();
             result.Comments = comments;
             if (Request.IsAjaxRequest())
             {
+                result.Comments.Reverse();
                 return PartialView("_CommentPartial", result);
             }
             return View("ArticleDisplay", comments);
@@ -775,5 +791,19 @@ namespace RayaWSoffara.Controllers
             return Json(tagId, JsonRequestBehavior.AllowGet);
         }
 
+        [Authorize]
+        public bool DeletePost(int PostId)
+        {
+            Post post = _articleRepo.GetPostById(PostId);
+            try
+            {
+                _articleRepo.DeletePost(post);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
     }
 }
