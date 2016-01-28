@@ -23,16 +23,19 @@
     <EntitySet Name="CommentReport" EntityType="RWS_DevelopmentModel.Store.CommentReport" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="Engagement" EntityType="RWS_DevelopmentModel.Store.Engagement" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="EngagementType" EntityType="RWS_DevelopmentModel.Store.EngagementType" store:Type="Tables" Schema="marvot" />
+    <EntitySet Name="Point" EntityType="RWS_DevelopmentModel.Store.Point" store:Type="Tables" Schema="marvot" />
+    <EntitySet Name="PointType" EntityType="RWS_DevelopmentModel.Store.PointType" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="TagType" EntityType="RWS_DevelopmentModel.Store.TagType" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="Tutorial" EntityType="RWS_DevelopmentModel.Store.Tutorial" store:Type="Tables" Schema="marvot" />
     <EntitySet Name="UserTutorial" EntityType="RWS_DevelopmentModel.Store.UserTutorial" store:Type="Tables" Schema="marvot" />
-    <EntitySet Name="UserPointsView" EntityType="RWS_DevelopmentModel.Store.UserPointsView" store:Type="Views" store:Schema="marvot" store:Name="UserPointsView">
+    <EntitySet Name="PointsView" EntityType="RWS_DevelopmentModel.Store.PointsView" store:Type="Views" store:Schema="marvot" store:Name="PointsView">
       <DefiningQuery>SELECT 
-      [UserPointsView].[UserId] AS [UserId], 
-      [UserPointsView].[PostId] AS [PostId], 
-      [UserPointsView].[EngWeight] AS [EngWeight], 
-      [UserPointsView].[EngTimestamp] AS [EngTimestamp]
-      FROM [marvot].[UserPointsView] AS [UserPointsView]</DefiningQuery>
+      [PointsView].[UserId] AS [UserId], 
+      [PointsView].[PointTypeWeight] AS [PointTypeWeight], 
+      [PointsView].[PointTimestamp] AS [PointTimestamp], 
+      [PointsView].[PostId] AS [PostId], 
+      [PointsView].[isActive] AS [isActive]
+      FROM [marvot].[PointsView] AS [PointsView]</DefiningQuery>
     </EntitySet>
     <AssociationSet Name="FK_Article_ArticleType" Association="RWS_DevelopmentModel.Store.FK_Article_ArticleType">
       <End Role="PostType" EntitySet="PostType" />
@@ -101,6 +104,18 @@
     <AssociationSet Name="FK_ImageTag_Tag" Association="RWS_DevelopmentModel.Store.FK_ImageTag_Tag">
       <End Role="Tag" EntitySet="Tag" />
       <End Role="ImageTag" EntitySet="ImageTag" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Point_PointType" Association="RWS_DevelopmentModel.Store.FK_Point_PointType">
+      <End Role="PointType" EntitySet="PointType" />
+      <End Role="Point" EntitySet="Point" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Point_Post" Association="RWS_DevelopmentModel.Store.FK_Point_Post">
+      <End Role="Post" EntitySet="Post" />
+      <End Role="Point" EntitySet="Point" />
+    </AssociationSet>
+    <AssociationSet Name="FK_Point_RWSUser" Association="RWS_DevelopmentModel.Store.FK_Point_RWSUser">
+      <End Role="RWSUser" EntitySet="RWSUser" />
+      <End Role="Point" EntitySet="Point" />
     </AssociationSet>
     <AssociationSet Name="FK_RWSProviderUser_RWSUser" Association="RWS_DevelopmentModel.Store.FK_RWSProviderUser_RWSUser">
       <End Role="RWSUser" EntitySet="RWSUser" />
@@ -227,6 +242,7 @@
     <Property Name="SharesCount" Type="int" Nullable="false" />
     <Property Name="LikesCount" Type="int" Nullable="false" />
     <Property Name="isDeleted" Type="bit" />
+    <Property Name="isOriginal" Type="bit" />
   </EntityType>
   <EntityType Name="PostTag">
     <Key>
@@ -372,6 +388,25 @@
     <Property Name="EngType" Type="nvarchar" MaxLength="50" />
     <Property Name="EngWeight" Type="float" />
   </EntityType>
+  <EntityType Name="Point">
+    <Key>
+      <PropertyRef Name="PointId" />
+    </Key>
+    <Property Name="PointId" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+    <Property Name="isActive" Type="bit" />
+    <Property Name="PointTimestamp" Type="datetime" />
+    <Property Name="PointTypeId" Type="int" />
+    <Property Name="PostId" Type="int" />
+    <Property Name="UserId" Type="int" />
+  </EntityType>
+  <EntityType Name="PointType">
+    <Key>
+      <PropertyRef Name="PointTypeId" />
+    </Key>
+    <Property Name="PointTypeId" Type="int" Nullable="false" />
+    <Property Name="PointTypeName" Type="nvarchar(max)" />
+    <Property Name="PointTypeWeight" Type="float" />
+  </EntityType>
   <EntityType Name="TagType">
     <Key>
       <PropertyRef Name="TagType" />
@@ -397,17 +432,17 @@
     <Property Name="isViewed" Type="bit" />
   </EntityType>
   <!--Errors Found During Generation:
-      warning 6002: The table/view 'RWS_Development.marvot.UserPointsView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
+      warning 6002: The table/view 'RWS_Development.marvot.PointsView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.
       -->
-  <EntityType Name="UserPointsView">
+  <EntityType Name="PointsView">
     <Key>
       <PropertyRef Name="UserId" />
-      <PropertyRef Name="PostId" />
     </Key>
     <Property Name="UserId" Type="int" Nullable="false" />
-    <Property Name="PostId" Type="int" Nullable="false" />
-    <Property Name="EngWeight" Type="float" />
-    <Property Name="EngTimestamp" Type="datetime" />
+    <Property Name="PointTypeWeight" Type="float" />
+    <Property Name="PointTimestamp" Type="datetime" />
+    <Property Name="PostId" Type="int" />
+    <Property Name="isActive" Type="bit" />
   </EntityType>
   <Association Name="FK_Article_ArticleType">
     <End Role="PostType" Type="RWS_DevelopmentModel.Store.PostType" Multiplicity="0..1">
@@ -636,6 +671,46 @@
       </Principal>
       <Dependent Role="ImageTag">
         <PropertyRef Name="TagId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Point_PointType">
+    <End Role="PointType" Type="RWS_DevelopmentModel.Store.PointType" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Point" Type="RWS_DevelopmentModel.Store.Point" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="PointType">
+        <PropertyRef Name="PointTypeId" />
+      </Principal>
+      <Dependent Role="Point">
+        <PropertyRef Name="PointTypeId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Point_Post">
+    <End Role="Post" Type="RWS_DevelopmentModel.Store.Post" Multiplicity="0..1">
+      <OnDelete Action="Cascade" />
+    </End>
+    <End Role="Point" Type="RWS_DevelopmentModel.Store.Point" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="Post">
+        <PropertyRef Name="PostId" />
+      </Principal>
+      <Dependent Role="Point">
+        <PropertyRef Name="PostId" />
+      </Dependent>
+    </ReferentialConstraint>
+  </Association>
+  <Association Name="FK_Point_RWSUser">
+    <End Role="RWSUser" Type="RWS_DevelopmentModel.Store.RWSUser" Multiplicity="0..1" />
+    <End Role="Point" Type="RWS_DevelopmentModel.Store.Point" Multiplicity="*" />
+    <ReferentialConstraint>
+      <Principal Role="RWSUser">
+        <PropertyRef Name="UserId" />
+      </Principal>
+      <Dependent Role="Point">
+        <PropertyRef Name="UserId" />
       </Dependent>
     </ReferentialConstraint>
   </Association>

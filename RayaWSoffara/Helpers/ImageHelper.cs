@@ -4,7 +4,7 @@ using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
 using System.IO;
 
-namespace TestImageCrop
+namespace RayaWSoffara.Helpers
 {
     public static class ImageHelper
     {

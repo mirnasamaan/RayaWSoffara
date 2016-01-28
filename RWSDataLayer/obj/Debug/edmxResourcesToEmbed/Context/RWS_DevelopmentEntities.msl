@@ -17,12 +17,12 @@
     <EntitySetMapping Name="Comments">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Comment">
         <MappingFragment StoreEntitySet="Comment">
-          <ScalarProperty Name="CommentReportCount" ColumnName="CommentReportCount" />
           <ScalarProperty Name="CommentId" ColumnName="CommentId" />
           <ScalarProperty Name="CommentContent" ColumnName="CommentContent" />
           <ScalarProperty Name="CommentUserId" ColumnName="CommentUserId" />
           <ScalarProperty Name="CommentPostId" ColumnName="CommentPostId" />
           <ScalarProperty Name="CommentCreationDate" ColumnName="CommentCreationDate" />
+          <ScalarProperty Name="CommentReportCount" ColumnName="CommentReportCount" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -58,8 +58,7 @@
     <EntitySetMapping Name="Posts">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Post">
         <MappingFragment StoreEntitySet="Post">
-          <ScalarProperty Name="isDeleted" ColumnName="isDeleted" />
-          <ScalarProperty Name="LikesCount" ColumnName="LikesCount" />
+          <ScalarProperty Name="isOriginal" ColumnName="isOriginal" />
           <ScalarProperty Name="PostId" ColumnName="PostId" />
           <ScalarProperty Name="Title" ColumnName="Title" />
           <ScalarProperty Name="Content" ColumnName="Content" />
@@ -77,6 +76,8 @@
           <ScalarProperty Name="UpdateDate" ColumnName="UpdateDate" />
           <ScalarProperty Name="PostTypeId" ColumnName="PostTypeId" />
           <ScalarProperty Name="SharesCount" ColumnName="SharesCount" />
+          <ScalarProperty Name="LikesCount" ColumnName="LikesCount" />
+          <ScalarProperty Name="isDeleted" ColumnName="isDeleted" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -181,14 +182,23 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="CommentReports">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.CommentReport">
+        <MappingFragment StoreEntitySet="CommentReport">
+          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="ReportTimestamp" ColumnName="ReportTimestamp" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <EntitySetMapping Name="Engagements">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.Engagement">
         <MappingFragment StoreEntitySet="Engagement">
-          <ScalarProperty Name="EngUserId" ColumnName="EngUserId" />
           <ScalarProperty Name="EngId" ColumnName="EngId" />
           <ScalarProperty Name="EngTimestamp" ColumnName="EngTimestamp" />
           <ScalarProperty Name="PostId" ColumnName="PostId" />
           <ScalarProperty Name="EngTypeId" ColumnName="EngTypeId" />
+          <ScalarProperty Name="EngUserId" ColumnName="EngUserId" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -201,6 +211,27 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
+    <EntitySetMapping Name="Points">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.Point">
+        <MappingFragment StoreEntitySet="Point">
+          <ScalarProperty Name="PointId" ColumnName="PointId" />
+          <ScalarProperty Name="isActive" ColumnName="isActive" />
+          <ScalarProperty Name="PointTimestamp" ColumnName="PointTimestamp" />
+          <ScalarProperty Name="PointTypeId" ColumnName="PointTypeId" />
+          <ScalarProperty Name="PostId" ColumnName="PostId" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PointTypes">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.PointType">
+        <MappingFragment StoreEntitySet="PointType">
+          <ScalarProperty Name="PointTypeId" ColumnName="PointTypeId" />
+          <ScalarProperty Name="PointTypeName" ColumnName="PointTypeName" />
+          <ScalarProperty Name="PointTypeWeight" ColumnName="PointTypeWeight" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
     <EntitySetMapping Name="TagTypes">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.TagType">
         <MappingFragment StoreEntitySet="TagType">
@@ -209,13 +240,32 @@
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
-    <EntitySetMapping Name="UserPointsViews">
-      <EntityTypeMapping TypeName="RWS_DevelopmentModel.UserPointsView">
-        <MappingFragment StoreEntitySet="UserPointsView">
+    <EntitySetMapping Name="Tutorials">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.Tutorial">
+        <MappingFragment StoreEntitySet="Tutorial">
+          <ScalarProperty Name="TutId" ColumnName="TutId" />
+          <ScalarProperty Name="TutTitle" ColumnName="TutTitle" />
+          <ScalarProperty Name="TutScript" ColumnName="TutScript" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="UserTutorials">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.UserTutorial">
+        <MappingFragment StoreEntitySet="UserTutorial">
+          <ScalarProperty Name="TutId" ColumnName="TutId" />
           <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="isViewed" ColumnName="isViewed" />
+        </MappingFragment>
+      </EntityTypeMapping>
+    </EntitySetMapping>
+    <EntitySetMapping Name="PointsViews">
+      <EntityTypeMapping TypeName="RWS_DevelopmentModel.PointsView">
+        <MappingFragment StoreEntitySet="PointsView">
+          <ScalarProperty Name="isActive" ColumnName="isActive" />
+          <ScalarProperty Name="UserId" ColumnName="UserId" />
+          <ScalarProperty Name="PointTypeWeight" ColumnName="PointTypeWeight" />
+          <ScalarProperty Name="PointTimestamp" ColumnName="PointTimestamp" />
           <ScalarProperty Name="PostId" ColumnName="PostId" />
-          <ScalarProperty Name="EngWeight" ColumnName="EngWeight" />
-          <ScalarProperty Name="EngTimestamp" ColumnName="EngTimestamp" />
         </MappingFragment>
       </EntityTypeMapping>
     </EntitySetMapping>
@@ -283,32 +333,5 @@
     </FunctionImportMapping>
     <FunctionImportMapping FunctionImportName="sp_renamediagram" FunctionName="RWS_DevelopmentModel.Store.sp_renamediagram" />
     <FunctionImportMapping FunctionImportName="sp_upgraddiagrams" FunctionName="RWS_DevelopmentModel.Store.sp_upgraddiagrams" />
-    <EntitySetMapping Name="CommentReports">
-      <EntityTypeMapping TypeName="RWS_DevelopmentModel.CommentReport">
-        <MappingFragment StoreEntitySet="CommentReport">
-          <ScalarProperty Name="ReportTimestamp" ColumnName="ReportTimestamp" />
-          <ScalarProperty Name="UserId" ColumnName="UserId" />
-          <ScalarProperty Name="CommentId" ColumnName="CommentId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="Tutorials">
-      <EntityTypeMapping TypeName="RWS_DevelopmentModel.Tutorial">
-        <MappingFragment StoreEntitySet="Tutorial">
-          <ScalarProperty Name="TutScript" ColumnName="TutScript" />
-          <ScalarProperty Name="TutTitle" ColumnName="TutTitle" />
-          <ScalarProperty Name="TutId" ColumnName="TutId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
-    <EntitySetMapping Name="UserTutorials">
-      <EntityTypeMapping TypeName="RWS_DevelopmentModel.UserTutorial">
-        <MappingFragment StoreEntitySet="UserTutorial">
-          <ScalarProperty Name="isViewed" ColumnName="isViewed" />
-          <ScalarProperty Name="UserId" ColumnName="UserId" />
-          <ScalarProperty Name="TutId" ColumnName="TutId" />
-        </MappingFragment>
-      </EntityTypeMapping>
-    </EntitySetMapping>
   </EntityContainerMapping>
 </Mapping>

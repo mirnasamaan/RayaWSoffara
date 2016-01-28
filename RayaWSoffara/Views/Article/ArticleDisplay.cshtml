@@ -67,7 +67,9 @@
                                 <div class="count">@ViewBag.AllCommentsCount</div>
                                 <div>تعليق</div>
                             </div>
-                            <div class="border pull-left"></div>
+                            <div class="border hidden-xs hidden-sm pull-left"></div>
+                            <div class="clear-fix hidden-lg hidden-md"></div>
+                            <div class="vertical_space hidden-lg hidden-md"></div>
                             <div class="pull-left views">
                                 <div class="count">@Model.newArticle.ViewsCount</div>
                                 <div>مشاهدة</div>
@@ -244,35 +246,9 @@
             </div>
             <div class="clear-fix"></div>
             <div class="writers_data_div">
-                @foreach (var article in @Model.userArticles)
+                @foreach (var post in @Model.userArticles)
                 {
-                    <div class="single_article col-md-12 col-xs-6">
-                        <div class="col-xs-5">
-                            <div class="other_articles_img">
-                                <a href="../../Article/ArticleDisplay/@article.PostId">
-                                    @if (@article.HasImage == true)
-                                    {
-                                        <img class="img" id="" src="~/Content/Article_Images/@article.FeaturedImage?w=135&h=90&mode=crop" />
-                                    }
-                                    else
-                                    {
-                                        <img class="video_img" src="http://img.youtube.com/vi/@article.FeaturedVideo/0.jpg?w=135&h=90&mode=crop">
-                                    }
-
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-xs-7">
-                            <div class="title">
-                                @Html.ActionLink(@article.Title, "ArticleDisplay", new { id = @article.PostId })
-                            </div>
-                            <div class="abstract">
-                                @{ string text = @Html.Raw(@article.Content).ToString(); }
-                                @TrimTextHelper.TrimText(@text, 50)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="clear-fix hidden-xs hidden-sm"></div>
+                    @Html.Partial("_RecentPostPartial", post)
                 }
             </div>
             <div class="clear-fix"></div>
@@ -300,7 +276,7 @@
                 </div>
                 @if (Model.userArticles.Count > 0)
                 {
-                    <div class="allUserPosts">
+                    <div class="profile-sub-title">
                         <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.newArticle.RWSUser.UserName">كل مقالات الكاتب</a>
                     </div>
                 }

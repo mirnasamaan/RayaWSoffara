@@ -18,13 +18,14 @@ namespace RayaWSoffara.Controllers
     [AllowAnonymous]
     public class HomeController : SearchController
     {
+        ArticleRepository _articleRepo = new ArticleRepository();
+        UserRepository _userRepo = new UserRepository();
+        TutorialRepository _tutRepo = new TutorialRepository();
+
         [AllowAnonymous]
         public ActionResult Index(string posts, string tags, int? Page, string Username, string count)
         {
             IndexVM result = new IndexVM();
-            ArticleRepository _articleRepo = new ArticleRepository();
-            UserRepository _userRepo = new UserRepository();
-            TutorialRepository _tutRepo = new TutorialRepository();
 
             if (count != null)
             {
@@ -76,24 +77,33 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.MonthlyLeadersPoints = MonthlyLeadersPoints;
 
-            if (User != null)
+            if (User.Identity.Name != "")
             {
                 int userId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
                 UserTutorial userTut = _tutRepo.GetUserTutorialByTutAndUserId(1, userId);
-                if (userTut.isViewed != true)
+                if (userTut == null || userTut.isViewed != true)
                 {
                     ViewBag.tutorial = _tutRepo.GetTutorialById(1).TutScript;
+                }
+                else
+                {
+                    ViewBag.tutorial = "";
                 }
             }
 
             return View(result);
         }
 
+        public ActionResult ViewTutorial(int TutorialId, string UserName)
+        {
+            int userId = _userRepo.GetUserByUsername(UserName).UserId;
+            _tutRepo.ViewTutorial(TutorialId, userId);
+            return Json(true, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult Popular(string count)
         {
             IndexVM result = new IndexVM();
-            ArticleRepository _articleRepo = new ArticleRepository();
-            UserRepository _userRepo = new UserRepository();
 
             if (count != null)
             {
@@ -144,9 +154,6 @@ namespace RayaWSoffara.Controllers
 
         public ActionResult Leaderboard(DateTime? startDate, DateTime? endDate)
         {
-            ArticleRepository _articleRepo = new ArticleRepository();
-            UserRepository _userRepo = new UserRepository();
-
             List<int> LeaderIdsAllTime = GetLeaderboardAuthorIds(null, null);
             List<UserPointsVM> AllTimeLeadersPoints = new List<UserPointsVM>();
             foreach (var item in LeaderIdsAllTime)

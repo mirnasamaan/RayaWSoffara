@@ -7,7 +7,6 @@ using RayaWSoffara.Models;
 using System.Net;
 using System.Configuration;
 using System.IO;
-using TestImageCrop;
 using RayaWSoffara.Filters;
 using RWSDataLayer.Repositories;
 using RWSDataLayer.Context;
@@ -28,6 +27,7 @@ namespace RayaWSoffara.Controllers
     {
         private ArticleRepository _articleRepo;
         private UserRepository _userRepo;
+        private EngagementRepository _engRepo = new EngagementRepository();
         public ArticleController()
         {
             _articleRepo = new ArticleRepository();
@@ -647,13 +647,13 @@ namespace RayaWSoffara.Controllers
         public void AddShareCount(int PostId)
         {
             int UserId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
-            _articleRepo.AddShareCount(PostId, UserId);
+            _engRepo.AddShareCount(PostId, UserId);
         }
 
         public void AddLikeCount(int PostId)
         {
             int UserId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
-            _articleRepo.AddLikeCount(PostId, UserId);
+            _engRepo.AddLikeCount(PostId, UserId);
         }
 
         [HttpPost]
@@ -709,7 +709,7 @@ namespace RayaWSoffara.Controllers
             if (User.Identity.Name != null && User.Identity.Name != "")
             {
                 int UserId = _userRepo.GetUserByUsername(User.Identity.Name).UserId;
-                bool liked = _articleRepo.isPostLikedByUser(PostId, UserId);
+                bool liked = _engRepo.isPostLikedByUser(PostId, UserId);
                 if (liked)
                 {
                     return "liked";
@@ -735,16 +735,16 @@ namespace RayaWSoffara.Controllers
             // start of checking if the current user is the author of the post //
             if (User.Identity.Name != _articleRepo.GetPostById(id).RWSUser.UserName)
             {
-                _articleRepo.AddViewsCount(id, User.Identity.Name);
+                _engRepo.AddViewsCount(id, User.Identity.Name);
             }
             // end of checking if the current user is the author of the post //
 
             UserArticleVM articleData = new UserArticleVM();
             articleData.newArticle = _articleRepo.GetPostById(id);
-            articleData.userArticles = _articleRepo.GetAllUserPosts(articleData.newArticle.CreatedBy, 5).ToList();
+            articleData.userArticles = _articleRepo.GetAllUserPostsButOne(articleData.newArticle.CreatedBy, id, 5).ToList();
             //articleData.newArticle.article_content = _articleRepo.RemoveHTMLTags(articleData.newArticle.article_content);
             //_articleRepo.UpdatedArticleViewsCounter(id);
-            ViewBag.userViewsCount = _articleRepo.GetViewsCountByUserId(articleData.newArticle.CreatedBy);
+            ViewBag.userViewsCount = _engRepo.GetViewsCountByUserId(articleData.newArticle.CreatedBy);
             List<Post> simillarArticles = _articleRepo.GetPostsWithTagIDs(articleData.newArticle.Tags.Select(i => i.TagId).ToList(), 5).ToList();
             ViewBag.simillarArticles = simillarArticles;
 

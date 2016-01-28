@@ -5,7 +5,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 
-namespace TestImageCrop
+namespace RayaWSoffara.Helpers
 {
     public static class FileHelper
     {

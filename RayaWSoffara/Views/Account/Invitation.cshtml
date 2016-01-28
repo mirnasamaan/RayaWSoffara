@@ -1,6 +1,5 @@
-﻿@model RayaWSoffara.Models.RegisterModel
-@{
-    ViewBag.Title = "تغير كلمة السر";
+﻿@{
+    ViewBag.Title = "إرسال دعوة لصديق";
 }
 
 
@@ -15,7 +14,7 @@
 
     <div class="clear-fix"></div>
 
-    @using (Html.BeginForm("ForgotPassword", "Account", null, FormMethod.Post, new { @id = "form", @name = "form" }))
+    @using (Html.BeginForm("SendInvitation", "Account", null, FormMethod.Post, new { @id = "form", @name = "form" }))
     {
         @Html.AntiForgeryToken()
         @Html.ValidationSummary()
@@ -25,8 +24,7 @@
         <div id="reg_div">
             <div class="form-group">
                 <label class="pull-left">البريد الالكتروني</label>
-                @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
-                @Html.ValidationMessageFor(model => model.Email)
+                <input name="friendEmail" class="form-control" />
             </div>
         </div>
         <div id="btn_reg_div">
@@ -40,7 +38,7 @@
 <script>
     $("#form").validate({
         rules: {
-            Email: {
+            friendEmail: {
                 required: true,
                 email: true
             }

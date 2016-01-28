@@ -226,7 +226,7 @@
     <Compile Include="Controllers\HomeController.cs">
       <BrowseToURL>m</BrowseToURL>
     </Compile>
-    <Compile Include="FileHelper.cs" />
+    <Compile Include="Helpers\FileHelper.cs" />
     <Compile Include="Filters\InitializeSimpleMembershipAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -235,7 +235,7 @@
     <Compile Include="Helpers\ArabicTimeStampHelper.cs" />
     <Compile Include="Helpers\CalculateTimeHelper.cs" />
     <Compile Include="Helpers\TrimTextHelper.cs" />
-    <Compile Include="ImageHelper.cs" />
+    <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\CompetitionModels.cs" />
     <Compile Include="Models\PostPointsVM.cs" />
@@ -1206,6 +1206,7 @@
     <Content Include="Views\Account\UserPosts.cshtml" />
     <Content Include="Views\Admin\PostComments.cshtml" />
     <Content Include="Views\Admin\_PostCommentPartial.cshtml" />
+    <Content Include="Views\Account\Invitation.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">
@@ -1226,7 +1227,6 @@
     <Content Include="Views\Account\_ChangePasswordPartial.cshtml" />
     <Content Include="Views\Account\_ExternalLoginsListPartial.cshtml" />
     <Content Include="Views\Account\_RemoveExternalLoginsPartial.cshtml" />
-    <Content Include="Views\Account\_SetPasswordPartial.cshtml" />
     <Content Include="Views\Emails\Web.config" />
     <Content Include="Views\Emails\_ViewStart.cshtml" />
     <Content Include="Views\Emails\RegEmail.cshtml" />
@@ -1271,6 +1271,8 @@
     <Content Include="Views\Article\_PostMediaModalPartial.cshtml" />
     <Content Include="Views\Shared\_LoadingPartial.cshtml" />
     <Content Include="Views\Admin\_CommentPartial.cshtml" />
+    <Content Include="Views\Emails\InvitationEmail.cshtml" />
+    <Content Include="Views\Article\_RecentPostPartial.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

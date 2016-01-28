@@ -8,6 +8,7 @@
         <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
             <li class="pull-left">@Ajax.ActionLink("حسابي", "Profile", "Account", new { Username = User.Identity.Name, Page = 1 }, new AjaxOptions { HttpMethod = "POST" })</li>
             <li class="pull-left">@Ajax.ActionLink("البيانلت الشخصية", "Settings", "Account", new { Username = User.Identity.Name }, new AjaxOptions { HttpMethod = "POST" })</li>
+            <li class="pull-left">@Ajax.ActionLink("إدعو اصدقائك", "Invitation", "Account", new { Username = User.Identity.Name }, new AjaxOptions { HttpMethod = "POST" })</li>
             @using (Html.BeginForm("Logoff", "Account", FormMethod.Post, new { id = "logoutForm" }))
             {
                 @Html.AntiForgeryToken()
@@ -16,11 +17,9 @@
             }
         </ul>
     </div>
-   
 }
 else
 {
-    
     <ul class="hidden-xs hidden-sm">
         <li class="register-container pull-left">
             <a href="/Login"><button class="registerLink"><span class="hidden-sm hidden-xs">تسجيل الدخول</span><i class="fa fa-sign-in article-write pull-right"></i></button></a>

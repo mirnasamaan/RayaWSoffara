@@ -19,9 +19,10 @@ namespace RWSDataLayer.Context
             this.Comments = new HashSet<Comment>();
             this.Posts = new HashSet<Post>();
             this.RWSProviderUsers = new HashSet<RWSProviderUser>();
-            this.RWSRoles = new HashSet<RWSRole>();
             this.CommentReports = new HashSet<CommentReport>();
+            this.Points = new HashSet<Point>();
             this.UserTutorials = new HashSet<UserTutorial>();
+            this.RWSRoles = new HashSet<RWSRole>();
         }
     
         public int UserId { get; set; }
@@ -52,12 +53,13 @@ namespace RWSDataLayer.Context
         public string DisplayName { get; set; }
     
         public virtual ICollection<Comment> Comments { get; set; }
+        public virtual Competition Competition { get; set; }
         public virtual ICollection<Post> Posts { get; set; }
         public virtual ICollection<RWSProviderUser> RWSProviderUsers { get; set; }
-        public virtual ICollection<RWSRole> RWSRoles { get; set; }
-        public virtual Competition Competition { get; set; }
-        public virtual Team Team { get; set; }
         public virtual ICollection<CommentReport> CommentReports { get; set; }
+        public virtual ICollection<Point> Points { get; set; }
+        public virtual Team Team { get; set; }
         public virtual ICollection<UserTutorial> UserTutorials { get; set; }
+        public virtual ICollection<RWSRole> RWSRoles { get; set; }
     }
 }

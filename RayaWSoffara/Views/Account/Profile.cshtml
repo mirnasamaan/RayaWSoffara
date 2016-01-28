@@ -68,7 +68,7 @@
             </div>
             @if (Model.articlesCount > 0)
             {
-                <div class="allUserPosts">
+                <div class="profile-sub-title">
                     <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.UserName">كل مقالات الكاتب</a>
                 </div>
             }
@@ -98,9 +98,10 @@
             {
                 <div class="no-results pull-left">لا توجد مقالات لهذا الكاتب.</div>
             }
-            @foreach (var article in @Model.recentArticles)
+            @foreach (var post in @Model.recentArticles)
             {
-                <div class="recent-articles">
+                @Html.Partial("../Article/_RecentPostPartial", post)
+                @*<div class="recent-articles">
                     <a href="/Post/@article.PostId">
                         <div class="col-md-4 col-xs-12">
                             @if (@article.FeaturedImage != null)
@@ -123,7 +124,7 @@
                             </div>
                         </div>
                     </a>
-                </div>
+                </div>*@
                 
                 <div class="clear-fix"></div>
             }
@@ -135,24 +136,7 @@
 <input id="AllPointsCount" type="hidden" value="@ViewBag.AllPointsCount" />
 
 <div class="viewMoreButton">
-    <div class="loading hidden">
-        <div>
-            <div class="sk-fading-circle">
-                <div class="sk-circle1 sk-circle"></div>
-                <div class="sk-circle2 sk-circle"></div>
-                <div class="sk-circle3 sk-circle"></div>
-                <div class="sk-circle4 sk-circle"></div>
-                <div class="sk-circle5 sk-circle"></div>
-                <div class="sk-circle6 sk-circle"></div>
-                <div class="sk-circle7 sk-circle"></div>
-                <div class="sk-circle8 sk-circle"></div>
-                <div class="sk-circle9 sk-circle"></div>
-                <div class="sk-circle10 sk-circle"></div>
-                <div class="sk-circle11 sk-circle"></div>
-                <div class="sk-circle12 sk-circle"></div>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("_LoadingPartial", "overall")
 </div>
 
 <script src="~/Content/Scripts/flot/jquery.flot.min.js"></script>

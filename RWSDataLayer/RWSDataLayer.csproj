@@ -130,6 +130,15 @@
     <Compile Include="Context\Player.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
+    <Compile Include="Context\Point.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Context\PointsView.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Context\PointType.cs">
+      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
+    </Compile>
     <Compile Include="Context\Post.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
@@ -184,9 +193,6 @@
     <Compile Include="Context\Tutorial.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
-    <Compile Include="Context\UserPointsView.cs">
-      <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
-    </Compile>
     <Compile Include="Context\UserTutorial.cs">
       <DependentUpon>RWS_DevelopmentEntities.tt</DependentUpon>
     </Compile>
@@ -194,6 +200,7 @@
     <Compile Include="Repositories\ArticleRepository.cs" />
     <Compile Include="Repositories\BaseRepository.cs" />
     <Compile Include="Repositories\CompetitionRepository.cs" />
+    <Compile Include="Repositories\EngagementRepository.cs" />
     <Compile Include="Repositories\TutorialRepository.cs" />
     <Compile Include="Repositories\IBaseRepository.cs" />
     <Compile Include="Repositories\ImageRepository.cs" />

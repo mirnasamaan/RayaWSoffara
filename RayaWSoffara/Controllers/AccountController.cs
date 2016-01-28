@@ -32,6 +32,7 @@ namespace RayaWSoffara.Controllers
         public IFormsAuthenticationService FormsService { get; set; }
         public IMembershipService MembershipService { get; set; }
         private UserRepository _userRepo;
+        private EngagementRepository _engRepo = new EngagementRepository();
 
         protected override void Initialize(RequestContext requestContext)
         {
@@ -202,7 +203,7 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(RegisterModel model)
+        public ActionResult Register(RegisterModel model, string sender)
         {
             if (ModelState.IsValid)
             {
@@ -229,6 +230,10 @@ namespace RayaWSoffara.Controllers
                     try
                     {
                         email.Send();
+                        if (sender != null && sender != "")
+                        {
+                            _engRepo.AddInvitationPoints(sender);
+                        }
                         return RedirectToAction("ConfirmationEmailSent", "Account", new { message = "لقد تم ارسال رسالة الى بريدك الالكتروني" });
                     }
                     catch (Exception ex)
@@ -410,7 +415,7 @@ namespace RayaWSoffara.Controllers
 
             ArticleRepository _articleRepo = new ArticleRepository();
             userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
-            userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
+            userProfile.viewsCount = _engRepo.GetViewsCountByUserId(user.UserId);
 
             List<UserPointsVM> Points = new List<UserPointsVM>();
             Points = GetUserAchievements(user.UserId, Page);
@@ -497,7 +502,7 @@ namespace RayaWSoffara.Controllers
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
 
-            userProfile.viewsCount = _articleRepo.GetViewsCountByUserId(user.UserId);
+            userProfile.viewsCount = _engRepo.GetViewsCountByUserId(user.UserId);
 
             UserPointsDetailsVM points = new UserPointsDetailsVM();
             points.UserId = userProfile.UserId;
@@ -535,11 +540,11 @@ namespace RayaWSoffara.Controllers
                 post_points.PostContent = item.Content;
 
                 post_points.PostSharesCount = _userRepo.GetPostSharesByMonthId(item.PostId, MonthId, YearId);
-                post_points.PostSharesValue = post_points.PostSharesCount * _articleRepo.GetEngagementTypeWeight(1);
+                post_points.PostSharesValue = post_points.PostSharesCount * _engRepo.GetEngagementTypeWeight(1);
                 post_points.PostLikesCount = _userRepo.GetPostLikesByMonthId(item.PostId, MonthId, YearId);
-                post_points.PostLikesValue = post_points.PostLikesCount * _articleRepo.GetEngagementTypeWeight(2);
+                post_points.PostLikesValue = post_points.PostLikesCount * _engRepo.GetEngagementTypeWeight(2);
                 post_points.PostViewsCount = _userRepo.GetPostViewsByMonthId(item.PostId, MonthId, YearId);
-                post_points.PostViewsValue = post_points.PostViewsCount * _articleRepo.GetEngagementTypeWeight(3);
+                post_points.PostViewsValue = post_points.PostViewsCount * _engRepo.GetEngagementTypeWeight(3);
                 points.PostsPoints.Add(post_points);
             }
 
@@ -832,6 +837,33 @@ namespace RayaWSoffara.Controllers
                 return PartialView("_PostPartial", result);
             }
             return View(result);
+        }
+
+        [Authorize]
+        public ActionResult Invitation(string Username)
+        {
+            @ViewBag.username = Username;
+            return View();
+        }
+
+        [Authorize]
+        public ActionResult SendInvitation(string friendEmail)
+        {
+            try
+            {
+                string userEmail = _userRepo.GetUserByUsername(User.Identity.Name).Email;
+                dynamic email = new Email("InvitationEmail");
+                email.To = friendEmail;
+                email.UserEmail = userEmail;
+                email.BaseUrl = Request.Url.Authority;
+                email.Send();
+                ViewBag.Message = "تم دعوة صديقك.";
+                return View("ConfirmationEmailSent");
+            }
+            catch (Exception ex)
+            {
+                return View("ConfirmationFailure");
+            }
         }
 
         #region Helpers

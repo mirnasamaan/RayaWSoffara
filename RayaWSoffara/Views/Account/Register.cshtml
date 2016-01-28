@@ -62,6 +62,7 @@
                 </select>
                 @Html.ValidationMessageFor(model => model.Country)
             </div>
+            <input id="sender" name="sender" type="hidden" />
         </div>
         <div id="btn_reg_div">
             <input type="submit" value="تسجيل" id="btn_reg" class="buttons" />
@@ -69,24 +70,7 @@
     }
 </div>
 
-<div class="loading hidden">
-    <div>
-        <div class="sk-fading-circle">
-            <div class="sk-circle1 sk-circle"></div>
-            <div class="sk-circle2 sk-circle"></div>
-            <div class="sk-circle3 sk-circle"></div>
-            <div class="sk-circle4 sk-circle"></div>
-            <div class="sk-circle5 sk-circle"></div>
-            <div class="sk-circle6 sk-circle"></div>
-            <div class="sk-circle7 sk-circle"></div>
-            <div class="sk-circle8 sk-circle"></div>
-            <div class="sk-circle9 sk-circle"></div>
-            <div class="sk-circle10 sk-circle"></div>
-            <div class="sk-circle11 sk-circle"></div>
-            <div class="sk-circle12 sk-circle"></div>
-        </div>
-    </div>
-</div>
+@Html.Partial("_LoadingPartial", "overall")
 
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
@@ -150,6 +134,17 @@
                 }
             });
         }
+    }
+
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    if(vars["sender"] != null && vars["sender"] != "") {
+        $("#sender").val(vars["sender"]);
     }
 
     jQuery.validator.addMethod("UsernameExist", function (value, element) {

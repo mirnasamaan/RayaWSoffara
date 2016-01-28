@@ -12,11 +12,12 @@ namespace RWSDataLayer.Context
     using System;
     using System.Collections.Generic;
     
-    public partial class UserPointsView
+    public partial class PointsView
     {
         public int UserId { get; set; }
-        public int PostId { get; set; }
-        public Nullable<double> EngWeight { get; set; }
-        public Nullable<System.DateTime> EngTimestamp { get; set; }
+        public Nullable<double> PointTypeWeight { get; set; }
+        public Nullable<System.DateTime> PointTimestamp { get; set; }
+        public Nullable<int> PostId { get; set; }
+        public Nullable<bool> isActive { get; set; }
     }
 }

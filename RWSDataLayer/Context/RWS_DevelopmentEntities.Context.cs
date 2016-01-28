@@ -42,13 +42,15 @@ namespace RWSDataLayer.Context
         public DbSet<sysdiagram> sysdiagrams { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<Team> Teams { get; set; }
+        public DbSet<CommentReport> CommentReports { get; set; }
         public DbSet<Engagement> Engagements { get; set; }
         public DbSet<EngagementType> EngagementTypes { get; set; }
+        public DbSet<Point> Points { get; set; }
+        public DbSet<PointType> PointTypes { get; set; }
         public DbSet<TagType> TagTypes { get; set; }
-        public DbSet<UserPointsView> UserPointsViews { get; set; }
-        public DbSet<CommentReport> CommentReports { get; set; }
         public DbSet<Tutorial> Tutorials { get; set; }
         public DbSet<UserTutorial> UserTutorials { get; set; }
+        public DbSet<PointsView> PointsViews { get; set; }
     
         public virtual int sp_alterdiagram(string diagramname, Nullable<int> owner_id, Nullable<int> version, byte[] definition)
         {

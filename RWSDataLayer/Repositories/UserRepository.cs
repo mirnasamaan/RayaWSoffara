@@ -33,18 +33,18 @@ namespace RWSDataLayer.Repositories
 
             if (startDate == null && endDate == null)
             {
-                leaderIds = Context.UserPointsViews
+                leaderIds = Context.PointsViews
                     .GroupBy(i => new { i.UserId })
-                    .OrderByDescending(sum => sum.Sum(i => i.EngWeight.Value))
+                    .OrderByDescending(sum => sum.Sum(i => i.PointTypeWeight.Value))
                     .Select(i => i.Key.UserId)
                     .Take(count).ToList();
             }
             else
             {
-                leaderIds = Context.UserPointsViews
-                    .Where(i => i.EngTimestamp.Value >= startDate && i.EngTimestamp.Value <= endDate)
+                leaderIds = Context.PointsViews
+                    .Where(i => i.PointTimestamp.Value >= startDate && i.PointTimestamp.Value <= endDate)
                     .GroupBy(i => new { i.UserId })
-                    .OrderByDescending(sum => sum.Sum(i => i.EngWeight.Value))
+                    .OrderByDescending(sum => sum.Sum(i => i.PointTypeWeight.Value))
                     .Select(i => i.Key.UserId)
                     .Take(count).ToList();
             }
@@ -312,16 +312,25 @@ namespace RWSDataLayer.Repositories
         {
             if (Context.RWSUsers.Any(x => x.UserId == userId))
             {
-                //RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == userId);
-                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == userId).Where(i => i.IsActive.Value);
-                IQueryable<Engagement> engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTimestamp.Value.Month == monthId).Where(i => i.EngTimestamp.Value.Year == yearId);
-
-                double points = 0;
-                foreach (var item in engagements)
+                IQueryable<PointsView> pointsview = Context.PointsViews.Where(i => i.UserId == userId && i.isActive == true && i.PointTimestamp.Value.Month == monthId && i.PointTimestamp.Value.Year == yearId);
+                if (pointsview.Count() > 0)
                 {
-                    points += item.EngagementType.EngWeight.Value;
+                    return pointsview.Sum(i => i.PointTypeWeight.Value);
                 }
-                return points;
+                else
+                {
+                    return 0;
+                }
+                //RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == userId);
+                //IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == userId).Where(i => i.IsActive.Value);
+                //IQueryable<Engagement> engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTimestamp.Value.Month == monthId).Where(i => i.EngTimestamp.Value.Year == yearId);
+
+                //double points = 0;
+                //foreach (var item in pointsview)
+                //{
+                //    points += item.PointTypeWeight.Value;
+                //}
+                //return points;
             }
             else
             {
@@ -340,27 +349,45 @@ namespace RWSDataLayer.Repositories
         {
             if (Context.RWSUsers.Any(x => x.UserId == userId))
             {
-                RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == userId);
-                IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == user.UserId).Where(i => i.IsActive.Value);
-                IQueryable<Engagement> engagements;
+                //RWSUser user = Context.RWSUsers.FirstOrDefault(x => x.UserId == userId);
+                //IQueryable<Post> user_posts = Context.Posts.Where(i => i.RWSUser.UserId == userId).Where(i => i.IsActive.Value);
+                //IQueryable<Engagement> engagements;
                 if (startDate != null && endDate == null)
                 {
                     endDate = DateTime.Now;
                 }
                 if (startDate == null && endDate == null)
                 {
-                    engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value));
+                    //engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value));
+                    IQueryable<PointsView> pointsview = Context.PointsViews.Where(i => i.UserId == userId && i.isActive == true);
+                    if (pointsview.Count() > 0)
+                    {
+                        return pointsview.Sum(i => i.PointTypeWeight.Value);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
                 }
                 else
                 {
-                    engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTimestamp.Value >= startDate).Where(i => i.EngTimestamp.Value <= endDate);
+                    //engagements = Context.Engagements.Where(i => user_posts.Select(j => j.PostId).Contains(i.PostId.Value)).Where(i => i.EngTimestamp.Value >= startDate).Where(i => i.EngTimestamp.Value <= endDate);
+                    IQueryable<PointsView> pointsview = Context.PointsViews.Where(i => i.UserId == userId && i.isActive == true && i.PointTimestamp.Value >= startDate && i.PointTimestamp.Value <= endDate);
+                    if (pointsview.Count() > 0)
+                    {
+                        return pointsview.Sum(i => i.PointTypeWeight.Value);
+                    }
+                    else
+                    {
+                        return 0;
+                    }
                 }
-                double points = 0;
-                foreach (var item in engagements)
-                {
-                    points += item.EngagementType.EngWeight.Value;
-                }
-                return points;
+                //double points = 0;
+                //foreach (var item in engagements)
+                //{
+                //    points += item.EngagementType.EngWeight.Value;
+                //}
+                //return points;
             }
             else
             {

@@ -45,55 +45,10 @@ namespace RWSDataLayer.Repositories
             }
         }
 
-        /// <summary>
-        /// Add share count
-        /// </summary>
-        /// <param name="PostId">Post Id</param>
-        /// <returns></returns>
-        public void AddShareCount(int PostId, int UserId)
-        {
-            Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
-            post.SharesCount++;
-
-            Engagement eng = new Engagement();
-            eng.EngTypeId = 1;
-            eng.EngTimestamp = DateTime.Now;
-            eng.PostId = PostId;
-            eng.EngUserId = UserId;
-            Context.Engagements.Add(eng);
-
-            Context.SaveChanges();
-        }
-
-        public void AddLikeCount(int PostId, int UserId)
-        {
-            Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
-            post.LikesCount++;
-
-            Engagement eng = new Engagement();
-            eng.EngTypeId = 2;
-            eng.EngTimestamp = DateTime.Now;
-            eng.PostId = PostId;
-            eng.EngUserId = UserId;
-            Context.Engagements.Add(eng);
-
-            Context.SaveChanges();
-        }
-
         public IQueryable<Tag> GetTagsForPost(int PostId)
         {
             //return Context.Posts.Where(i => i.PostId == PostId).Select(i => (Tag)i.Tags).ToList();
             return Context.Tags.Where(i => i.Posts.Select(j => j.PostId).Contains(PostId));
-        }
-
-        /// <summary>
-        /// Get engagement type weight
-        /// <param name="EngagementTypeId">Engagement Type Id</param>
-        /// <returns></returns>
-        /// </summary>
-        public double GetEngagementTypeWeight(int EngagementTypeId)
-        {
-            return Context.EngagementTypes.Where(i => i.EngTypeId == EngagementTypeId).FirstOrDefault().EngWeight.Value;
         }
 
         /// <summary>
@@ -110,40 +65,6 @@ namespace RWSDataLayer.Repositories
                 .OrderByDescending(i => i.Engagements.Where(j => j.EngTimestamp.Value.Month == MonthId && j.EngTimestamp.Value.Year == YearId).Sum(j => j.EngagementType.EngWeight)) //order by sum of points on this post made this month
                 .Take(5);
             return posts;
-        }
-
-        public bool isPostLikedByUser(int PostId, int UserId){
-            int likes_count = Context.Engagements.Where(i => i.PostId == PostId && i.EngUserId == UserId && i.EngTypeId == 2).Count();
-            if (likes_count > 0)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        /// <summary>
-        /// Add view count
-        /// </summary>
-        /// <param name="PostId">Post Id</param>
-        /// <returns></returns>
-        public void AddViewsCount(int PostId, string UserName)
-        {
-            int? userId = null;
-            if (UserName != "")
-            {
-                userId = Context.RWSUsers.FirstOrDefault(i => i.UserName == UserName).UserId;
-            }
-            Engagement eng = new Engagement();
-            eng.EngTypeId = 3;
-            eng.EngTimestamp = DateTime.Now;
-            eng.PostId = PostId;
-            eng.EngUserId = userId;
-            Context.Engagements.Add(eng);
-
-            Context.SaveChanges();
         }
 
         /// <summary>
@@ -214,12 +135,58 @@ namespace RWSDataLayer.Repositories
         /// <returns></returns>
         public IQueryable<Post> GetAllUserPosts(int UserId, int count=5)
         {
-            List<int> postTypeIDs = new List<int>();
-            postTypeIDs.Add(1);
-            postTypeIDs.Add(2);
-
-            IQueryable<Post> articles = Context.Posts.Where(i => postTypeIDs.Contains(i.PostTypeId.Value)).Where(i => i.IsActive == true).Where(i => i.CreatedBy == UserId).OrderByDescending(i => i.CreationDate).Take(count);
+            IQueryable<Post> articles = Context.Posts.Where(i => i.IsActive == true).Where(i => i.CreatedBy == UserId).OrderByDescending(i => i.CreationDate).Take(count);
             return articles;
+        }
+
+        /// <summary>
+        /// Gets all user's articles except the current post Id
+        /// </summary>
+        /// <returns></returns>
+        public IQueryable<Post> GetAllUserPostsButOne(int UserId, int PostId, int count = 5)
+        {
+            IQueryable<Post> articles = Context.Posts.Where(i => i.IsActive == true && i.CreatedBy == UserId && i.PostId != PostId).OrderByDescending(i => i.CreationDate).Take(count);
+            return articles;
+        }
+
+        public bool SetOriginal(int PostId)
+        {
+            try
+            {
+                Post post = Context.Posts.FirstOrDefault(i => i.PostId == PostId);
+                post.isOriginal = true;
+                IQueryable<Point> points = Context.Points.Where(i => i.PostId == PostId);
+                foreach (var item in points)
+                {
+                    item.isActive = true;
+                }
+                Context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        public bool UnsetOriginal(int PostId)
+        {
+            try
+            {
+                Post post = Context.Posts.FirstOrDefault(i => i.PostId == PostId);
+                post.isOriginal = false;
+                IQueryable<Point> points = Context.Points.Where(i => i.PostId == PostId);
+                foreach (var item in points)
+                {
+                    item.isActive = false;
+                }
+                Context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
         }
 
         public bool DeactivatePost(int PostId)
@@ -280,35 +247,6 @@ namespace RWSDataLayer.Repositories
         public Post GetPostById(int id)
         {
             return Context.Posts.FirstOrDefault(i => i.PostId == id);
-        }
-
-        /// <summary>
-        /// Gets views count of a given user by user Id
-        /// </summary>
-        /// <param name="id">User id</param>
-        /// <returns></returns>
-        public int GetViewsCountByUserId(int id)
-        {
-            try
-            {
-                return Context.Posts.Where(i => i.CreatedBy == id).Where(i => i.IsActive == true).Select(i => i.ViewsCount).Sum();
-            }
-            catch (Exception ex)
-            {
-                return 0;
-            }
-        }
-
-        /// <summary>
-        /// Increment the number of views of an article
-        /// </summary>
-        /// <param name="articleId"></param>
-        public void UpdatedArticleViewsCounter(int articleId)
-        {
-            Post article = Context.Posts.FirstOrDefault(m => m.PostId == articleId);
-            article.ViewsCount += 1;
-            Context.Entry(article).State = System.Data.EntityState.Modified;
-            Context.SaveChanges();
         }
 
         /// <summary>
@@ -429,11 +367,8 @@ namespace RWSDataLayer.Repositories
 
         public IQueryable<Post> GetRecentArticlesByUserId(int UserId)
         {
-            List<int> postTypeIDs = new List<int>();
-            postTypeIDs.Add(1);
-            postTypeIDs.Add(2);
 
-            return Context.Posts.Where(i => postTypeIDs.Contains(i.PostTypeId.Value)).Where(i => i.CreatedBy == UserId).Where(i => i.IsActive == true).OrderByDescending(i => i.CreationDate).Take(5);
+            return Context.Posts.Where(i => i.CreatedBy == UserId).Where(i => i.IsActive == true).OrderByDescending(i => i.CreationDate).Take(5);
         }
 
         public bool ReportComment(int CommentId, int UserId)
@@ -480,54 +415,6 @@ namespace RWSDataLayer.Repositories
         public IQueryable<Tag> GetFeaturedTags()
         {
             return Context.Tags.Where(i => i.isFeatured == true).OrderBy(i => i.TagName);
-        }
-
-        public IQueryable<EngagementType> GetEngagementTypes(int? startIndex, int count = 10)
-        {
-            if (startIndex == null)
-                return Context.EngagementTypes;
-            else if (startIndex > Context.EngagementTypes.Count())
-                return null;
-            else
-                return Context.EngagementTypes.OrderByDescending(i => i.EngType).Skip(startIndex.Value).Take(count);
-        }
-
-        public EngagementType GetEngagementTypeById(int EngTypeId)
-        {
-            return Context.EngagementTypes.FirstOrDefault(i => i.EngTypeId == EngTypeId);
-        }
-
-        public EngagementType AddEngagementType(EngagementType EngType)
-        {
-            Context.EngagementTypes.Add(EngType);
-            Context.SaveChanges();
-            return EngType;
-        }
-
-        public EngagementType UpdateEngagementType(EngagementType EngType)
-        {
-            Context.Entry(EngType).State = System.Data.EntityState.Modified;
-            Context.SaveChanges();
-            return EngType;
-        }
-
-        public EngagementType UpdateEngagementType(int EngTypeId, string EngName, double EngWeight, int EngNewId)
-        {
-            EngagementType EngType = Context.EngagementTypes.FirstOrDefault(i => i.EngTypeId == EngTypeId);
-            DeleteEngagementType(EngType);
-            EngType = new EngagementType();
-            EngType.EngTypeId = EngNewId;
-            EngType.EngType = EngName;
-            EngType.EngWeight = EngWeight;
-            Context.EngagementTypes.Add(EngType);
-            Context.SaveChanges();
-            return EngType;
-        }
-
-        public void DeleteEngagementType(EngagementType EngType)
-        {
-            Context.EngagementTypes.Remove(EngType);
-            Context.SaveChanges();
         }
 
         /// <summary>
@@ -582,10 +469,10 @@ namespace RWSDataLayer.Repositories
         /// <returns></returns>
         public List<int> GetLeaderboardPostIds(DateTime? startDate, DateTime? endDate, int count = 3)
         {
-            List<int> leaderPostIds = Context.UserPointsViews.ToList()
+            List<int> leaderPostIds = Context.PointsViews
                 .GroupBy(i => new { i.PostId })
-                .OrderByDescending(sum => sum.Sum(i => i.EngWeight.Value))
-                .Select(i => i.Key.PostId)
+                .OrderByDescending(sum => sum.Sum(i => i.PointTypeWeight.Value))
+                .Select(i => i.Key.PostId.Value)
                 .Take(count).ToList();
 
             return leaderPostIds;

@@ -1,0 +1,46 @@
+﻿@model RWSDataLayer.Context.Post
+@using RayaWSoffara.Helpers
+
+<div class="single_article col-xs-12">
+    @if ((@Model.FeaturedImage == null || @Model.FeaturedImage == "") && (@Model.FeaturedVideo == null || @Model.FeaturedVideo == ""))
+    {
+        <div class="abstract">
+            @{ string text = @Html.Raw(@Model.Content).ToString(); }
+            @Html.ActionLink(TrimTextHelper.TrimText(@text, 180), "ArticleDisplay", new { id = @Model.PostId })
+        </div>
+    }
+    else
+    {
+        <div class="col-xs-5">
+            <div class="other_articles_img">
+                <a href="../../Article/ArticleDisplay/@Model.PostId">
+                    @if (@Model.HasImage == true)
+                    {
+                        <img class="img" id="" src="~/Content/Article_Images/@Model.FeaturedImage?w=135&h=90&mode=crop" />
+                    }
+                    else
+                    {
+                        <img class="video_img" src="http://img.youtube.com/vi/@Model.FeaturedVideo/0.jpg?w=135&h=90&mode=crop">
+                    }
+
+                </a>
+            </div>
+        </div>
+        <div class="col-xs-7">
+            @if (@Model.Title != null && @Model.Title != "")
+            {
+                <div class="title">
+                    @Html.ActionLink(@Model.Title, "ArticleDisplay", new { id = @Model.PostId })
+                </div>
+            }
+            else if (@Model.Content != null && @Model.Content != "")
+            {
+                <div class="abstract">
+                    @{ string text = @Html.Raw(@Model.Content).ToString(); }
+                    @Html.ActionLink(TrimTextHelper.TrimText(@text, 90), "ArticleDisplay", new { id = @Model.PostId })
+                </div>
+            }
+        </div>
+    }
+</div>
+<div class="clear-fix"></div>
