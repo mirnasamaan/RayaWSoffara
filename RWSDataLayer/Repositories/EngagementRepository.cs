@@ -35,7 +35,7 @@ namespace RWSDataLayer.Repositories
 
             Point point = new Point();
             point.UserId = _postRepo.GetPostById(PostId).CreatedBy; //UserId;  // Id of the user who will take the points
-            point.isActive = true;
+            point.isActive = _postRepo.GetPostById(PostId).isOriginal;
             point.PointTimestamp = DateTime.Now;
             point.PointTypeId = 1;
             point.PostId = PostId;
@@ -65,7 +65,7 @@ namespace RWSDataLayer.Repositories
 
             Point point = new Point();
             point.UserId = _postRepo.GetPostById(PostId).CreatedBy; //UserId;  // Id of the user who will take the points
-            point.isActive = true;
+            point.isActive = _postRepo.GetPostById(PostId).isOriginal;
             point.PointTimestamp = DateTime.Now;
             point.PointTypeId = 2;
             point.PostId = PostId;
@@ -97,7 +97,7 @@ namespace RWSDataLayer.Repositories
 
             Point point = new Point();
             point.UserId = _postRepo.GetPostById(PostId).CreatedBy; //userId;  // Id of the user who will take the points
-            point.isActive = true;
+            point.isActive = _postRepo.GetPostById(PostId).isOriginal;
             point.PointTimestamp = DateTime.Now;
             point.PointTypeId = 3;
             point.PostId = PostId;
@@ -185,13 +185,52 @@ namespace RWSDataLayer.Repositories
         /// <summary>
         /// Gets views count of a given user by user Id
         /// </summary>
-        /// <param name="id">User id</param>
+        /// <param name="userId">User id</param>
+        /// <param name="typeId">Engagement Type id</param>
         /// <returns></returns>
-        public int GetViewsCountByUserId(int id)
+        public int GetEngCountByUserId(int userId, int typeId)
         {
             try
             {
-                return Context.Posts.Where(i => i.CreatedBy == id).Where(i => i.IsActive == true).Select(i => i.ViewsCount).Sum();
+                IQueryable<int> postids = Context.Posts.Where(i => i.CreatedBy == userId && i.IsActive == true).Select(i => i.PostId);
+                return Context.Engagements.Where(i => postids.Contains(i.PostId.Value) && i.EngTypeId == typeId).Count();
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets views count of a given post by post Id
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="typeId">Engagement Type id</param>
+        /// <returns></returns>
+        public int GetEngCountByPostId(int postId, int typeId)
+        {
+            try
+            {
+                return Context.Engagements.Where(i => i.PostId.Value == postId && i.EngTypeId == typeId).Count();
+            }
+            catch (Exception ex)
+            {
+                return 0;
+            }
+        }
+
+        /// <summary>
+        /// Gets views count of a given post by post Id
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <param name="typeId">Engagement Type id</param>
+        /// <returns></returns>
+        public double GetEngValueByPostId(int postId, int typeId)
+        {
+            try
+            {
+                IQueryable<int> postids = Context.Points.Where(i => i.PostId.Value == postId && i.PointTypeId.Value == typeId).Select(i => i.PostId.Value);
+                return Context.PointsViews.Where(i => postids.Contains(i.PostId.Value) && i.PointTypeWeight != null).Sum(i => i.PointTypeWeight.Value);
             }
             catch (Exception ex)
             {
@@ -201,6 +240,11 @@ namespace RWSDataLayer.Repositories
         #endregion
 
         #region Points
+        /// <summary>
+        /// Add invitation points to user
+        /// </summary>
+        /// <param name="userEmail">Friend email</param>
+        /// <returns></returns>
         public bool AddInvitationPoints(string userEmail)
         {
             try
@@ -218,6 +262,23 @@ namespace RWSDataLayer.Repositories
             catch (Exception ex)
             {
                 return false;
+            }
+        }
+
+        /// <summary>
+        /// Get total points of a post
+        /// </summary>
+        /// <param name="postId">Post id</param>
+        /// <returns></returns>
+        public IQueryable<PointsView> GetPostPoints(int postId)
+        {
+            try
+            {
+                return Context.PointsViews.Where(i => i.PostId == postId && i.isActive != null && i.isActive.Value);
+            }
+            catch (Exception ex)
+            {
+                return null;
             }
         }
         #endregion

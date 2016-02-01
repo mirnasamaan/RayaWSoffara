@@ -23,14 +23,57 @@ namespace RWSDataLayer.Repositories
             return Context.PostTypes;
         }
 
+        ///<summary>
+        ///Get posts by selected date
+        ///</summary>
+        public IQueryable<Post> GetPostsBySelectedDate(DateTime? fromDate, DateTime? toDate)
+        {
+            if (fromDate != null && toDate != null)
+            {
+                return Context.Posts.Where(i => i.CreationDate.Value >= fromDate && i.CreationDate.Value <= toDate);
+            }
+            else if (fromDate != null && toDate == null)
+            {
+                return Context.Posts.Where(i => i.CreationDate.Value >= fromDate);
+            }
+            else if (fromDate == null && toDate != null)
+            {
+                return Context.Posts.Where(i => i.CreationDate.Value <= toDate);
+            }
+            else
+            {
+                return Context.Posts;
+            }
+        }
+
         /// <summary>
-        /// Gets all articles
+        /// Gets all posts
         /// </summary>
         /// <returns></returns>
-        public IQueryable<Post> GetPosts(int tabId, int count=10)
+        public IQueryable<Post> GetPosts(int tabId, string search, string status, DateTime? from, DateTime? to, string username, int count = 10)
         {
-            int startIndex = (tabId * count) - 10;
-            return Context.Posts.OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(10);
+            int startIndex = tabId * count;
+            IQueryable<Post> posts = GetPostsBySelectedDate(from, to);
+            if (username != null && username != "")
+            {
+                posts = posts.Where(i => i.RWSUser.UserName == username);
+            }
+            if (search != null && search != "")
+            {
+                posts = posts.Where(i => (i.Title.Contains(search) || i.Content.Contains(search) || i.Tags.Where(j => j.TagName.Contains(search)).Count() > 0));
+            }
+            if (status == "Active")
+            {
+                return posts.Where(i => i.IsActive != null && i.IsActive.Value).OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
+            }
+            else if (status == "Inactive")
+            {
+                return posts.Where(i => (i.IsActive == null || i.IsActive == false)).OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
+            }
+            else
+            {
+                return posts.OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
+            }
         }
 
         public IQueryable<Post> GetPosts(int postTypeId, int? startIndex, int count = 10)
@@ -58,12 +101,27 @@ namespace RWSDataLayer.Repositories
         /// <param name="YearId">Year Id</param>
         /// <returns></returns>
         /// </summary>
-        public IQueryable<Post> GetUserPostsWithMonthId(int UserId, int MonthId, int YearId)
+        public IQueryable<Post> GetUserPostsWithMonthId(int UserId, int MonthId, int YearId, int Page, int count = 5)
         {
             IQueryable<Post> posts = Context.Posts.Where(i => i.CreatedBy == UserId) //check user id
-                .Where(i => i.Engagements.Any(j => j.EngTimestamp.Value.Month == MonthId && j.EngTimestamp.Value.Year == YearId)) //post has any engagement made this month
-                .OrderByDescending(i => i.Engagements.Where(j => j.EngTimestamp.Value.Month == MonthId && j.EngTimestamp.Value.Year == YearId).Sum(j => j.EngagementType.EngWeight)) //order by sum of points on this post made this month
-                .Take(5);
+                .Where(i => i.Points.Any(j => j.PointTimestamp.Value.Month == MonthId && j.PointTimestamp.Value.Year == YearId && i.isOriginal != null && i.isOriginal.Value)) //post has any engagement made this month
+                .OrderByDescending(i => i.Points.Where(j => j.PointTimestamp.Value.Month == MonthId && j.PointTimestamp.Value.Year == YearId).Sum(j => j.PointType.PointTypeWeight)) //order by sum of points on this post made this month
+                .Skip(Page * count).Take(count);
+            return posts;
+        }
+
+        /// <summary>
+        /// Get user posts count with engagements this month
+        /// <param name="UserId">User Id</param>
+        /// <param name="MonthId">Month Id</param>
+        /// <param name="YearId">Year Id</param>
+        /// <returns></returns>
+        /// </summary>
+        public int GetUserPostsCountWithMonthId(int UserId, int MonthId, int YearId)
+        {
+            int posts = Context.Posts.Where(i => i.CreatedBy == UserId) //check user id
+                .Where(i => i.Points.Any(j => j.PointTimestamp.Value.Month == MonthId && j.PointTimestamp.Value.Year == YearId && i.isOriginal != null && i.isOriginal.Value)) //post has any engagement made this month
+                .Count();
             return posts;
         }
 
@@ -74,6 +132,31 @@ namespace RWSDataLayer.Repositories
         public IQueryable<Post> GetActivePosts()
         {
             return Context.Posts.Where(i=>i.IsActive == true).OrderByDescending(i => i.CreationDate);
+        }
+
+        /// <summary>
+        /// Get posts count
+        /// <param name="status">Active or Inactive passed as a string</param>
+        /// </summary>
+        public int GetPostsCount(string status, DateTime? from, DateTime? to, string username)
+        {
+            IQueryable<Post> posts = GetPostsBySelectedDate(from, to);
+            if (username != null && username != "")
+            {
+                posts = posts.Where(i => i.RWSUser.UserName == username);
+            }
+            if (status == "Active")
+            {
+                return posts.Where(i => i.IsActive != null && i.IsActive.Value).Count();
+            }
+            else if (status == "Inactive")
+            {
+                return posts.Where(i => i.IsActive == null || i.IsActive.Value == false).Count();
+            }
+            else
+            {
+                return posts.Count();
+            }
         }
 
         /// <summary>

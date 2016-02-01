@@ -742,9 +742,10 @@ namespace RayaWSoffara.Controllers
             UserArticleVM articleData = new UserArticleVM();
             articleData.newArticle = _articleRepo.GetPostById(id);
             articleData.userArticles = _articleRepo.GetAllUserPostsButOne(articleData.newArticle.CreatedBy, id, 5).ToList();
-            //articleData.newArticle.article_content = _articleRepo.RemoveHTMLTags(articleData.newArticle.article_content);
-            //_articleRepo.UpdatedArticleViewsCounter(id);
-            ViewBag.userViewsCount = _engRepo.GetViewsCountByUserId(articleData.newArticle.CreatedBy);
+            articleData.newArticle.ViewsCount = _engRepo.GetEngCountByPostId(id, 3);
+            articleData.newArticle.LikesCount = _engRepo.GetEngCountByPostId(id, 2);
+            articleData.newArticle.SharesCount = _engRepo.GetEngCountByPostId(id, 1);
+            ViewBag.userViewsCount = _engRepo.GetEngCountByUserId(articleData.newArticle.CreatedBy, 3);
             List<Post> simillarArticles = _articleRepo.GetPostsWithTagIDs(articleData.newArticle.Tags.Select(i => i.TagId).ToList(), 5).ToList();
             ViewBag.simillarArticles = simillarArticles;
 

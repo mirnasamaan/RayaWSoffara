@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.IO;
 using ClosedXML.Excel;
 using System.Data;
+using RayaWSoffara.Helpers;
 
 namespace RayaWSoffara.Controllers
 {
@@ -22,12 +23,6 @@ namespace RayaWSoffara.Controllers
         CompetitionRepository _compRepo = new CompetitionRepository();
         ArticleRepository _postRepo = new ArticleRepository();
         EngagementRepository _engRepo = new EngagementRepository();
-
-        //[CustomAuthorize(Roles = "Admin")]
-        //public ActionResult Index(RWSUser user)
-        //{
-        //    return View();
-        //}
 
         public ActionResult Signin(string RedirectUrl)
         {
@@ -73,6 +68,9 @@ namespace RayaWSoffara.Controllers
         {
             public string ItemName { get; set; }
             public double articlesCount { get; set; }
+            public double Points { get; set; }
+            public string ActivePosts { get; set; }
+            public string InactivePosts { get; set; }
             public string DT_RowId { get; set; }
             public string Status { get; set; }
             public string Actions { get; set; }
@@ -81,6 +79,16 @@ namespace RayaWSoffara.Controllers
             public string CommentsCount { get; set; }
             public string ReportedCommentsCount { get; set; }
             public string isOriginal { get; set; }
+            public string CreationDate { get; set; }
+            public string ActivationDate { get; set; }
+            public string Email { get; set; }
+            public string ViewsCount { get; set; }
+            public string LikesCount { get; set; }
+            public string SharesCount { get; set; }
+            public string ViewsValue { get; set; }
+            public string LikesValue { get; set; }
+            public string SharesValue { get; set; }
+            public string Description { get; set; }
         }
 
         public static string GetMd5Hash(string value)
@@ -177,7 +185,7 @@ namespace RayaWSoffara.Controllers
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            int total_rows = _userRepo.GetAllUsers().Count();
+            int total_rows = _userRepo.GetUsersCount("");
             if (length == -1)
             {
                 length = total_rows;
@@ -203,11 +211,11 @@ namespace RayaWSoffara.Controllers
             IQueryable<RWSUser> users = null;
             if (search == "")
             {
-                users = _userRepo.GetAllUsers(pageNum, length, out displayedNum);
+                users = _userRepo.GetAllUsers(pageNum, length, "", null, null, out displayedNum);
             }
             else
             {
-                users = _userRepo.GetUsersBySearchTerm(start, length, search);
+                users = _userRepo.GetUsersBySearchTerm(start, length, "", search, null, null);
             }
             foreach (var item in users)
             {
@@ -221,7 +229,7 @@ namespace RayaWSoffara.Controllers
                     status = "<span onclick='Activate(this)' class='status-action label label-danger'>Inactive</span>";
                 }
 
-                userprofiles.Add(new DataItem { ItemName = item.UserName, articlesCount = _userRepo.GetUserActivePosts(item.UserId).Count(), Actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>", DT_RowId = item.UserName, Status = status });
+                userprofiles.Add(new DataItem { ItemName = item.UserName, articlesCount = _userRepo.GetUserPostsCount(item.UserId, "Active"), Actions = "<a href='#' onclick='Edit(this);return false;'<i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>", DT_RowId = item.UserName, Status = status });
             }
             dataTableData.data = userprofiles;
             //dataTableData.data = FilterData(ref recordsFiltered, start, length, search, sortColumn, sortDirection);
@@ -3034,6 +3042,408 @@ namespace RayaWSoffara.Controllers
             return Json(dataTableData, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult ReportUsers()
+        {
+            ViewBag.SubSidebarItem = "report-users";
+            ViewBag.SidebarItem = "reports-management";
+            ViewBag.PageHeader = "Reports";
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AjaxGetReportUsers(int draw, int start, int length, string status, string fromDate, string toDate)
+        {
+            string search = Request.Form["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.Form["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.Form["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            int displayedNum, recordsFiltered;
+            List<DataItem> userprofiles = new List<DataItem>();
+            int pageNum = start / length;
+
+            IQueryable<RWSUser> users = null;
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != "" && fromDate != null)
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != "" && toDate != null)
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+            if (search == "" || search == null)
+            {
+                users = _userRepo.GetAllUsers(pageNum, length, status, from, to, out displayedNum);
+            }
+            else
+            {
+                users = _userRepo.GetUsersBySearchTerm(start, length, search, status, from, to);
+            }
+
+            int total_rows = _userRepo.GetUsersCount(status);
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+            dataTableData.recordsTotal = total_rows;
+            recordsFiltered = total_rows;
+
+            foreach (var item in users)
+            {
+                string creation = "", activation = "", active = "", inactive = "";
+                string userstatus = "Inactive";
+
+                if(item.ConfirmationDate != null){
+                    activation = item.ConfirmationDate.Value.ToShortDateString();
+                }
+                if (item.CreationDate != null)
+                {
+                    creation = item.CreationDate.Value.ToShortDateString();
+                }
+                if(item.IsConfirmed != null){
+                    userstatus = (item.IsConfirmed.Value ? "Active" : "Inactive");
+                }
+                active = "<a href='/Admin/ReportPosts?username=" + item.UserName + "&status=Active'>" + _userRepo.GetUserPostsCount(item.UserId, "Active") + "</a>";
+                inactive = "<a href='/Admin/ReportPosts?username=" + item.UserName + "&status=Inactive'>" + _userRepo.GetUserPostsCount(item.UserId, "Inactive") + "</a>";
+                userprofiles.Add(new DataItem { ItemName = item.UserName, 
+                    CreationDate = creation,
+                    ActivationDate = activation, 
+                    Email = item.Email, 
+                    Status = userstatus, 
+                    Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null), 
+                    ActivePosts = active,  
+                    InactivePosts = inactive, 
+                    DT_RowId = item.UserName });
+            }
+
+            dataTableData.data = userprofiles;
+            dataTableData.recordsFiltered = recordsFiltered;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public void ExportUsers(string status, string fromDate, string toDate, int size)
+        {
+            List<DataItem> data = new List<DataItem>();
+            XLWorkbook wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("RWS Users");
+            string fileNamePrefix = "";
+
+            ws.Cell("B2").Value = "Raya W Soffara " + status + " Users";
+
+            fileNamePrefix = "Users_";
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != null && fromDate != "")
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != null && toDate != "")
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+            IQueryable<RWSUser> users;
+            int displayedNum;
+            users = _userRepo.GetAllUsers(null, size, status, from, to, out displayedNum);
+
+            foreach (var item in users)
+            {
+                string activation = "";
+                if (item.ConfirmationDate != null)
+                {
+                    activation = item.ConfirmationDate.Value.ToShortDateString();
+                }
+                data.Add(new DataItem { ItemName = item.UserName, ActivationDate = activation, Email = item.Email, Status = (item.IsConfirmed.Value ? "Active" : "Inactive"), Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null), ActivePosts = _userRepo.GetUserPostsCount(item.UserId, "Active").ToString(), InactivePosts = _userRepo.GetUserPostsCount(item.UserId, "Inactive").ToString(), DT_RowId = item.UserName });
+            }
+
+            ws.Cell("C3").Value = "From:  " + from;
+            ws.Cell("D3").Value = "To:  " + to;
+          
+            ws.Cell("A4").Value = "User Name";
+            ws.Cell("B4").Value = "Activation Date";
+            ws.Cell("C4").Value = "Email";
+            ws.Cell("D4").Value = "Status"; 
+            ws.Cell("E4").Value = "Total Points";
+            ws.Cell("F4").Value = "Active Posts";
+            ws.Cell("G4").Value = "Active Posts";
+            int rowNum = 5;
+
+            foreach (var item in data)
+            {
+                ws.Cell("A" + rowNum).Value = item.ItemName;
+                ws.Cell("B" + rowNum).Value = item.ActivationDate;
+                ws.Cell("C" + rowNum).Value = item.Email;
+                ws.Cell("D" + rowNum).Value = item.Status;
+                ws.Cell("E" + rowNum).Value = item.Points;
+                ws.Cell("F" + rowNum).Value = item.ActivePosts;
+                ws.Cell("G" + rowNum).Value = item.InactivePosts;
+                rowNum++;
+            }
+
+            // From worksheet
+            var rngTable = ws.Range("B2:C6");
+
+            var rngHeaders = ws.Range("B2:C2"); // The address is relative to rngTable (NOT the worksheet)
+            rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rngHeaders.Style.Font.Bold = true;
+            rngHeaders.Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
+
+            ws.Range("A3:G3").Style.Font.Bold = true;
+            ws.Range("A3:G3").Style.Fill.BackgroundColor = XLColor.Aqua;
+            ws.Range("A3:G3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+                         
+            ws.Range("A4:G4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
+
+            ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
+            ws.Row(2).Merge();
+
+            ws.Columns(2, 6).AdjustToContents();
+
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            MemoryStream stream = GetStream(wb);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.ms-excel";
+            Response.BinaryWrite(stream.ToArray());
+            Response.End();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult ReportPosts()
+        {
+            ViewBag.SubSidebarItem = "report-posts";
+            ViewBag.SidebarItem = "reports-management";
+            ViewBag.PageHeader = "Reports";
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AjaxGetReportPosts(int draw, int start, int length, string status, string fromDate, string toDate, string username)
+        {
+            string search = Request.Form["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.Form["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.Form["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            int displayedNum, recordsFiltered;
+            List<DataItem> postprofiles = new List<DataItem>();
+            int pageNum = start / length;
+
+            IQueryable<Post> posts = null;
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != "" && fromDate != null)
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != "" && toDate != null)
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+            
+            int total_rows = _postRepo.GetPostsCount(status, from, to, username);
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+            dataTableData.recordsTotal = total_rows;
+            recordsFiltered = total_rows;
+            posts = _postRepo.GetPosts(pageNum, search, status, from, to, username, length);
+            foreach (var item in posts)
+            {
+                string activation = "", creation = "";
+                double points = 0;
+                string description = item.Title;
+                string poststatus = "Inactive";
+                string isOriginal = "Copied";
+
+                if (item.ActivationDate != null)
+                {
+                    activation = item.ActivationDate.Value.ToShortDateString();
+                }
+                if (item.CreationDate != null)
+                {
+                    creation = item.CreationDate.Value.ToShortDateString();
+                }
+                if (description == "")
+                {
+                    description = TrimTextHelper.TrimText(item.Content, 50);
+                    if (description == "")
+                    {
+                        description = item.FeaturedVideo;
+                        if (description == "")
+                        {
+                            description = item.FeaturedImage;
+                        }
+                    }
+                }
+                string viewsValue = _engRepo.GetEngValueByPostId(item.PostId, 3).ToString();
+                string likesValue = _engRepo.GetEngValueByPostId(item.PostId, 2).ToString();
+                string sharesValue = _engRepo.GetEngValueByPostId(item.PostId, 1).ToString();
+                string views = _engRepo.GetEngCountByPostId(item.PostId, 3).ToString();
+                string likes = _engRepo.GetEngCountByPostId(item.PostId, 2).ToString();
+                string shares = _engRepo.GetEngCountByPostId(item.PostId, 1).ToString();
+                IQueryable<PointsView> pointviews = _engRepo.GetPostPoints(item.PostId);
+                if (pointviews.Count() > 0)
+                {
+                    points = pointviews.Sum(i => i.PointTypeWeight.Value);
+                }
+                if (item.IsActive != null)
+                {
+                    poststatus = item.IsActive.Value ? "Active" : "Inactive";
+                }
+                if (item.isOriginal != null)
+                {
+                    isOriginal = item.isOriginal.Value ? "Original" : "Copied";
+                }
+                postprofiles.Add(new DataItem { 
+                    ItemName = item.Title, 
+                    Description = description,
+                    Actions = item.PostType.PostTypeName, 
+                    CreationDate = creation,
+                    ActivationDate = activation,
+                    Status = poststatus,
+                    ViewsCount = views,
+                    LikesCount = likes,
+                    SharesCount = shares,
+                    ViewsValue = viewsValue,
+                    LikesValue = likesValue,
+                    SharesValue = sharesValue,
+                    isOriginal = isOriginal,
+                    Points = points, 
+                    DT_RowId = item.PostId.ToString() });
+            }
+
+            dataTableData.data = postprofiles;
+            dataTableData.recordsFiltered = recordsFiltered;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public void ExportPosts(string status, string fromDate, string toDate, int page, int size)
+        {
+            List<DataItem> data = new List<DataItem>();
+            XLWorkbook wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("RWS Users");
+            string fileNamePrefix = "";
+
+            ws.Cell("B2").Value = "Raya W Soffara " + status + " Users";
+
+            fileNamePrefix = "Users_";
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != null && fromDate != "")
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != null && toDate != "")
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+            IQueryable<RWSUser> users;
+            int displayedNum;
+            int pageNum = page - 1;
+            users = _userRepo.GetAllUsers(pageNum, size, status, from, to, out displayedNum);
+
+            foreach (var item in users)
+            {
+                string activation = "";
+                if (item.ConfirmationDate != null)
+                {
+                    activation = item.ConfirmationDate.Value.ToShortDateString();
+                }
+                data.Add(new DataItem { ItemName = item.UserName, ActivationDate = activation, Email = item.Email, Status = (item.IsConfirmed.Value ? "Active" : "Inactive"), Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null), articlesCount = _userRepo.GetUserPostsCount(item.UserId, "Active"), DT_RowId = item.UserName });
+            }
+
+            ws.Cell("C3").Value = "From:  " + from;
+            ws.Cell("D3").Value = "To:  " + to;
+
+            ws.Cell("A4").Value = "User Name";
+            ws.Cell("B4").Value = "Activation Date";
+            ws.Cell("C4").Value = "Email";
+            ws.Cell("D4").Value = "Status";
+            ws.Cell("E4").Value = "Total Points";
+            ws.Cell("F4").Value = "Active Posts";
+            int rowNum = 5;
+
+            foreach (var item in data)
+            {
+                ws.Cell("A" + rowNum).Value = item.ItemName;
+                ws.Cell("B" + rowNum).Value = item.ActivationDate;
+                ws.Cell("C" + rowNum).Value = item.Email;
+                ws.Cell("D" + rowNum).Value = item.Status;
+                ws.Cell("E" + rowNum).Value = item.Points;
+                ws.Cell("F" + rowNum).Value = item.articlesCount;
+                rowNum++;
+            }
+
+            // From worksheet
+            var rngTable = ws.Range("B2:C6");
+
+            var rngHeaders = ws.Range("B2:C2"); // The address is relative to rngTable (NOT the worksheet)
+            rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rngHeaders.Style.Font.Bold = true;
+            rngHeaders.Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
+
+            ws.Range("A3:F3").Style.Font.Bold = true;
+            ws.Range("A3:F3").Style.Fill.BackgroundColor = XLColor.Aqua;
+            ws.Range("A3:F3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Range("A4:F4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
+
+            ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
+            ws.Row(2).Merge();
+
+            ws.Columns(2, 6).AdjustToContents();
+
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            MemoryStream stream = GetStream(wb);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.ms-excel";
+            Response.BinaryWrite(stream.ToArray());
+            Response.End();
+        }
         #endregion
     }
 }

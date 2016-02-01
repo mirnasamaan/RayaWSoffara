@@ -317,7 +317,7 @@
     
     // start of adding a new comment //
     function addComment() {
-        if ($("#add_comment").val() == "") {
+        if ($("#add_comment").val().trim() == "") {
             $(".comment-validation").removeClass("hidden");
         } else {
             $(".new-comment button").attr('disabled', 'disabled');

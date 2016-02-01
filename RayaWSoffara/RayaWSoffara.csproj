@@ -1207,6 +1207,9 @@
     <Content Include="Views\Admin\PostComments.cshtml" />
     <Content Include="Views\Admin\_PostCommentPartial.cshtml" />
     <Content Include="Views\Account\Invitation.cshtml" />
+    <Content Include="Views\Account\_PointsPartial.cshtml" />
+    <Content Include="Views\Admin\ReportUsers.cshtml" />
+    <Content Include="Views\Admin\ReportPosts.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">

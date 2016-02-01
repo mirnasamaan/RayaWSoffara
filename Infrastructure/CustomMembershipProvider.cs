@@ -114,7 +114,7 @@ namespace RWSInfrastructure
         {
             MembershipUserCollection users = new MembershipUserCollection();
             UserRepository _repo = new UserRepository();
-            List<RWSUser> usersList = _repo.GetAllUsers(pageIndex, pageSize, out totalRecords).ToList();
+            List<RWSUser> usersList = _repo.GetAllUsers(pageIndex, pageSize, "", null, null, out totalRecords).ToList();
             foreach (var item in usersList)
             {
                 users.Add(UserToMembershipUser(item));

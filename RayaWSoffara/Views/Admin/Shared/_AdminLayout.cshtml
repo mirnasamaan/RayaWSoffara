@@ -94,6 +94,9 @@
           <ul class="children" style="@(ViewBag.SidebarItem == "reports-management"?"display:block;":"")">
             <li class="@(ViewBag.SubSidebarItem == "user-points"?"active":"")"><a href="/Admin/UserPoints"><i class="fa fa-caret-right"></i>User Points</a></li>
             <li class="@(ViewBag.SubSidebarItem == "leaderboard"?"active":"")"><a href="/Admin/Leaderboard"><i class="fa fa-caret-right"></i>Leaderboard</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "report-users"?"active":"")"><a href="/Admin/ReportUsers"><i class="fa fa-caret-right"></i>Users</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "report-posts"?"active":"")"><a href="/Admin/ReportPosts"><i class="fa fa-caret-right"></i>Posts</a></li>
+            <li class="@(ViewBag.SubSidebarItem == "report-comments"?"active":"")"><a href="/Admin/ReportComments"><i class="fa fa-caret-right"></i>Comments</a></li>
           </ul>
         </li>
       </ul>

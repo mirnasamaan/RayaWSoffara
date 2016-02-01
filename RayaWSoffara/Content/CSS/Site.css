@@ -3635,6 +3635,7 @@ input {
 .achievement-content {
     margin: 30px 0;
     color: black;
+    text-align: right;
 }
 
 .achievements .achievement-item {

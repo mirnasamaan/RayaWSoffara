@@ -400,7 +400,7 @@ namespace RayaWSoffara.Controllers
             userProfile.UserName = user.UserName;
             userProfile.FirstName = user.FirstName;
             userProfile.LastName = user.LastName;
-            userProfile.articlesCount = _userRepo.GetUserActivePosts(user.UserId).Count(); //user.Posts.Where(i => i.IsActive == true).Count();
+            userProfile.articlesCount = _userRepo.GetUserPostsCount(user.UserId, "Active"); //user.Posts.Where(i => i.IsActive == true).Count();
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
             if(user.FavComp != null){
@@ -415,7 +415,7 @@ namespace RayaWSoffara.Controllers
 
             ArticleRepository _articleRepo = new ArticleRepository();
             userProfile.recentArticles = _articleRepo.GetRecentArticlesByUserId(user.UserId).ToList();
-            userProfile.viewsCount = _engRepo.GetViewsCountByUserId(user.UserId);
+            userProfile.viewsCount = _engRepo.GetEngCountByUserId(user.UserId, 3);
 
             List<UserPointsVM> Points = new List<UserPointsVM>();
             Points = GetUserAchievements(user.UserId, Page);
@@ -448,9 +448,12 @@ namespace RayaWSoffara.Controllers
                 UserPointsVM points = new UserPointsVM();
                 points.UserId = UserId;
                 points.UserName = user.UserName;
-                points.ViewsCount = _userRepo.GetUserViewsByMonthId(UserId, monthId, yearId);
-                points.LikesCount = _userRepo.GetUserLikesByMonthId(UserId, monthId, yearId);
-                points.SharesCount = _userRepo.GetUserSharesByMonthId(UserId, monthId, yearId);
+                double[] views = _userRepo.GetUserViewsByMonthId(UserId, monthId, yearId);
+                double[] likes = _userRepo.GetUserLikesByMonthId(UserId, monthId, yearId);
+                double[] shares = _userRepo.GetUserSharesByMonthId(UserId, monthId, yearId);
+                points.ViewsCount = Convert.ToInt32(views[0]);
+                points.LikesCount = Convert.ToInt32(likes[0]);
+                points.SharesCount = Convert.ToInt32(shares[0]);
                 points.MonthId = monthId;
                 switch (monthId)
                 {
@@ -498,11 +501,11 @@ namespace RayaWSoffara.Controllers
             userProfile.UserName = user.UserName;
             userProfile.FirstName = user.FirstName;
             userProfile.LastName = user.LastName;
-            userProfile.articlesCount = _userRepo.GetUserActivePosts(user.UserId).Count(); //user.Posts.Where(i => i.IsActive == true).Count();
+            userProfile.articlesCount = _userRepo.GetUserPostsCount(user.UserId, "Active");
             userProfile.profileImgUrl = user.ProfileImagePath;
             userProfile.DisplayName = user.DisplayName;
 
-            userProfile.viewsCount = _engRepo.GetViewsCountByUserId(user.UserId);
+            userProfile.viewsCount = _userRepo.GetAlltimeUserViews(user.UserId);
 
             UserPointsDetailsVM points = new UserPointsDetailsVM();
             points.UserId = userProfile.UserId;
@@ -528,7 +531,8 @@ namespace RayaWSoffara.Controllers
             points.TotalPointsValue = _userRepo.GetUserPointsByMonthId(userProfile.UserId, MonthId, YearId);
             points.PostsPoints = new List<PostPointsVM>();
 
-            IQueryable<Post> posts = _articleRepo.GetUserPostsWithMonthId(userProfile.UserId, MonthId, YearId);
+            IQueryable<Post> posts = _articleRepo.GetUserPostsWithMonthId(userProfile.UserId, MonthId, YearId, 0);
+            ViewBag.AllPostsCount = _articleRepo.GetUserPostsCountWithMonthId(userProfile.UserId, MonthId, YearId);
 
             foreach (var item in posts)
             {
@@ -539,12 +543,15 @@ namespace RayaWSoffara.Controllers
                 post_points.PostFeaturedVideo = item.FeaturedVideo;
                 post_points.PostContent = item.Content;
 
-                post_points.PostSharesCount = _userRepo.GetPostSharesByMonthId(item.PostId, MonthId, YearId);
-                post_points.PostSharesValue = post_points.PostSharesCount * _engRepo.GetEngagementTypeWeight(1);
-                post_points.PostLikesCount = _userRepo.GetPostLikesByMonthId(item.PostId, MonthId, YearId);
-                post_points.PostLikesValue = post_points.PostLikesCount * _engRepo.GetEngagementTypeWeight(2);
-                post_points.PostViewsCount = _userRepo.GetPostViewsByMonthId(item.PostId, MonthId, YearId);
-                post_points.PostViewsValue = post_points.PostViewsCount * _engRepo.GetEngagementTypeWeight(3);
+                double[] shares = _userRepo.GetPostSharesByMonthId(item.PostId, MonthId, YearId);
+                double[] likes = _userRepo.GetPostLikesByMonthId(item.PostId, MonthId, YearId);
+                double[] views = _userRepo.GetPostViewsByMonthId(item.PostId, MonthId, YearId);
+                post_points.PostSharesCount = Convert.ToInt32(shares[0]);
+                post_points.PostSharesValue = shares[1];
+                post_points.PostLikesCount = Convert.ToInt32(likes[0]);
+                post_points.PostLikesValue = likes[1];
+                post_points.PostViewsCount = Convert.ToInt32(views[0]);
+                post_points.PostViewsValue = views[1];
                 points.PostsPoints.Add(post_points);
             }
 
@@ -552,6 +559,38 @@ namespace RayaWSoffara.Controllers
             ViewBag.EngagementTypes = _compRepo.GetAllEngagementTypesWithWeight();
 
             return View(userProfile);
+        }
+
+        [HttpPost]
+        public ActionResult PointsPartial(int UserId, int MonthId, int YearId, int Page)
+        {
+            ArticleRepository _articleRepo = new ArticleRepository();
+            CompetitionRepository _compRepo = new CompetitionRepository();
+            IQueryable<Post> posts = _articleRepo.GetUserPostsWithMonthId(UserId, MonthId, YearId, Page);
+
+            List<PostPointsVM> postsPoints = new List<PostPointsVM>();
+            foreach (var item in posts)
+            {
+                PostPointsVM post_points = new PostPointsVM();
+                post_points.PostId = item.PostId;
+                post_points.PostTitle = item.Title;
+                post_points.PostFeaturedImage = item.FeaturedImage;
+                post_points.PostFeaturedVideo = item.FeaturedVideo;
+                post_points.PostContent = item.Content;
+
+                double[] shares = _userRepo.GetPostSharesByMonthId(item.PostId, MonthId, YearId);
+                double[] likes = _userRepo.GetPostLikesByMonthId(item.PostId, MonthId, YearId);
+                double[] views = _userRepo.GetPostViewsByMonthId(item.PostId, MonthId, YearId);
+                post_points.PostSharesCount = Convert.ToInt32(shares[0]);
+                post_points.PostSharesValue = shares[1];
+                post_points.PostLikesCount = Convert.ToInt32(likes[0]);
+                post_points.PostLikesValue = likes[1];
+                post_points.PostViewsCount = Convert.ToInt32(views[0]);
+                post_points.PostViewsValue = views[1];
+                postsPoints.Add(post_points);
+            }
+            ViewBag.EngagementTypes = _compRepo.GetAllEngagementTypesWithWeight();
+            return PartialView("_PointsPartial", postsPoints);
         }
 
         public class GraphData

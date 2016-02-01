@@ -1,5 +1,4 @@
 ﻿@model RayaWSoffara.Models.UserProfileVM
-@using RayaWSoffara.Helpers
 @{
     ViewBag.Title = "نقاط الكاتب";
 }
@@ -75,63 +74,44 @@
         {
             <div class="no-results pull-left">لا توجد مقالات لهذا الكاتب.</div>
         }
-        @foreach (var item in @ViewBag.PointsDetails.PostsPoints)
-        {
-            <div class="recent-articles">
-                <div class="col-md-4 col-xs-12">
-                    <a href="/Post/@item.PostId">
-                        @if (@item.PostFeaturedImage != null)
-                        {
-                            <img class="" id="article_img" src="~/Content/Article_Images/@item.PostFeaturedImage?w=210&h=140&mode=crop" /> 
-                        }
-                        else if (@item.PostFeaturedVideo != null)
-                        {
-                            <iframe width="210" height="140" src="https://www.youtube.com/embed/@item.PostFeaturedVideo" frameborder="0" allowfullscreen></iframe>
-                        }
-                        else if (@item.PostContent != null)
-                        {
-                            <div class="achievement-content">@TrimTextHelper.TrimText(item.PostContent, 180)</div>
-                        }
-                    </a>
-                </div>
-                <div class="col-md-8 points-stat">
-                    <div class="article_title pull-left">@TrimTextHelper.TrimText(item.PostTitle, 40)</div>
-                    <div class="clear-fix"></div>
-
-                    <div class="achievements">
-                        @foreach(var type in ViewBag.EngagementTypes){
-                        <div class="achievement-item pull-left col-lg-2">
-                            @if(type.EngTypeId == 3){
-                                <div class="month-value">@item.PostViewsCount</div>
-                                <div class="icon"><i class="fa fa-eye"></i></div>
-                                <div class="points-value">
-                                    <div>@item.PostViewsValue</div>
-                                    <div>نقطة</div>
-                                </div>
-                            }
-                            else if (type.EngTypeId == 2)
-                            {
-                                <div class="month-value">@item.PostLikesCount</div>
-                                <div class="icon"><i class="fa fa-thumbs-up"></i></div>
-                                <div class="points-value">
-                                    <div>@item.PostLikesValue</div>
-                                    <div>نقطة</div>
-                                </div>
-                            }
-                            else if (type.EngTypeId == 1)
-                            {
-                                <div class="month-value">@item.PostSharesCount</div>
-                                <div class="icon"><i class="fa fa-share"></i></div>
-                                <div class="points-value">
-                                    <div>@item.PostSharesValue</div>
-                                    <div>نقطة</div>
-                                </div>
-                            }
-                        </div>
-                        }
-                    </div>
-                </div>
-            </div>
-        }
+        @Html.Partial("_PointsPartial", (List<RayaWSoffara.Models.PostPointsVM>)@ViewBag.PointsDetails.PostsPoints)
     </div>
+    <button class="" id="viewMore" onclick="viewMoreButton(@Model.UserId)">View More</button>
 </div>
+<input type="hidden" id="AllPointsCount" value="@ViewBag.AllPostsCount" />
+
+@Html.Partial("_LoadingPartial", "overall")
+
+<script>
+    var displayed_points_count = parseInt($(".recent-articles").length);
+    var all_points_count = parseInt($("#AllPointsCount").val());
+    if (displayed_points_count >= all_points_count) {
+        $("#viewMore").addClass("hidden");
+    }
+
+    var page = 1;
+    function viewMoreButton(userid) {
+        $.ajax({
+            type: "POST",
+            url: "/Account/PointsPartial",
+            data: { UserId: userid, MonthId: "@ViewBag.PointsDetails.MonthId", YearId: "@ViewBag.PointsDetails.YearId", Page: page },
+            beforeSend: function () {
+                $(".loading").removeClass("hidden");
+            },
+            success: function (points) {
+                page++;
+                $('.profile').append(points);
+                var displayed_points_count = parseInt($(".recent-articles").length);
+                var all_points_count = parseInt($("#AllPointsCount").val());
+                if (displayed_points_count >= all_points_count) {
+                    $("#viewMore").addClass("hidden");
+                }
+            },
+            complete: function () {
+                $(".loading").addClass("hidden");
+            }
+        });
+
+        return false;
+    }
+</script>
