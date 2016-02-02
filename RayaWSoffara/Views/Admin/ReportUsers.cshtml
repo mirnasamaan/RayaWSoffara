@@ -48,6 +48,7 @@
         <table id="table" class="table table-primary">
             <thead>
                 <tr style="text-align: left;">
+                    <th>Id</th>
                     <th>User Name</th>
                     <th>Creation Date</th>
                     <th>Activation Date</th>
@@ -65,8 +66,37 @@
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
 <script type="text/javascript">
-    $('#fromDate').datepicker();
-    $('#toDate').datepicker();
+    // start of getting data from query string //
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    var status = (vars["status"] == null) ? "" : vars["status"];
+    var fromDate = (vars["from"] == null) ? "" : vars["from"];
+    var toDate = (vars["to"] == null) ? "" : vars["to"];
+
+    if (status == "Active") {
+        $("#active").attr("checked", true);
+        $("#active").val("true");
+    } else if (status == "Inactive") {
+        $("#inactive").attr("checked", true);
+        $("#inactive").val("true");
+    }
+
+    $("#fromDate").datepicker();
+    $("#toDate").datepicker();
+    if (fromDate != "") {
+        var from_date = fromDate.split('/');
+        $("#fromDate").datepicker("setDate", new Date(from_date[2], parseInt(from_date[0]-1), from_date[1]));
+    } 
+    if (toDate != "") {
+        var to_date = toDate.split('/');
+        $("#toDate").datepicker("setDate", new Date(to_date[2], parseInt(to_date[0]-1), to_date[1]));
+    } 
+    // end of getting data from query string //
 
     var dt;
 
@@ -83,6 +113,9 @@
                 "data": { "status": status, "fromDate": fromDate, "toDate": toDate }
             },
             "columns": [
+                {
+                    "data": "DT_RowId"
+                },
                 {
                     "data": "ItemName"
                 },
@@ -112,7 +145,7 @@
         });
     }
 
-    getTableData("", "", "");
+    getTableData(status, fromDate, toDate);
 
     $('.status').change(function () {
         if ($(this).is(":checked")) {
@@ -137,10 +170,10 @@
     });
 
     function submit() {
-        var fromDate = $("#fromDate").val();
-        var toDate = $("#toDate").val();
+        fromDate = $("#fromDate").val();
+        toDate = $("#toDate").val();
 
-        var status = "";
+        status = "";
         if ($("#inactive").val() == "true" && $("#active").val() == "false") {
             status = "Inactive";
         } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
@@ -155,15 +188,15 @@
     }
 
     function Export() {
-        var status = "";
+        status = "";
         if ($("#inactive").val() == "true" && $("#active").val() == "false") {
             status = "Inactive";
         } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
             status = "Active";
         }
 
-        var fromDate = $("#fromDate").val();
-        var toDate = $("#toDate").val();
+        fromDate = $("#fromDate").val();
+        toDate = $("#toDate").val();
         var page = $(".paginate_button.current").text();
         var size = $('select[name="table_length"] option:selected').val();
 

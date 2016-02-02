@@ -693,7 +693,7 @@ namespace RayaWSoffara.Controllers
 
         public ActionResult GetComments(int Index, int PostId)
         {
-            List<Comment> comments = _articleRepo.GetComments(Index, PostId).ToList();
+            List<Comment> comments = _articleRepo.GetComments(Index, PostId, null, null, null, null).ToList();
             UserArticleVM result = new UserArticleVM();
             result.Comments = comments;
             if (Request.IsAjaxRequest())
@@ -750,7 +750,7 @@ namespace RayaWSoffara.Controllers
             ViewBag.simillarArticles = simillarArticles;
 
             ViewBag.AllCommentsCount = _articleRepo.GetAllComments(id).Count();
-            articleData.Comments = _articleRepo.GetComments(0, id).OrderBy(i => i.CommentCreationDate).ToList();
+            articleData.Comments = _articleRepo.GetComments(0, id, null, null, null, null).OrderBy(i => i.CommentCreationDate).ToList();
 
             ViewBag.ArticleTopXes = articleData.newArticle.ArticleTopXes;
 

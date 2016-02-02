@@ -68,7 +68,7 @@ namespace RayaWSoffara.Controllers
         {
             public string ItemName { get; set; }
             public double articlesCount { get; set; }
-            public double Points { get; set; }
+            public string Points { get; set; }
             public string ActivePosts { get; set; }
             public string InactivePosts { get; set; }
             public string DT_RowId { get; set; }
@@ -115,17 +115,32 @@ namespace RayaWSoffara.Controllers
             return Json(imgPath, JsonRequestBehavior.AllowGet);
         }
 
+        public ActionResult GetSidebarData()
+        {
+            Sidebar sidebar = new Sidebar();
+            sidebar.ActiveUsers = _userRepo.GetUsersCount("Active");
+            sidebar.PendingUsers = _userRepo.GetUsersCount("Inactive");
+            sidebar.ActivePosts = _postRepo.GetPostsCount("Active", null, null, null);
+            sidebar.PendingPosts = _postRepo.GetPostsCount("Inactive", null, null, null);
+            sidebar.CleanComments = _postRepo.GetAllCommentsCount(null, "Clean", null, null);
+            sidebar.ReportedComments = _postRepo.GetAllCommentsCount(null, "Reported", null, null);
+            return Json(sidebar, JsonRequestBehavior.AllowGet);
+        }
+
         #region Dashboard
         public ActionResult Dashboard()
         {
             ViewBag.SidebarItem = "dashboard";
             ViewBag.PageHeader = "Dashboard";
             ViewBag.SubSidebarItem = "dashboard";
-            ViewBag.TotalUsers = _userRepo.GetAllActiveUsers().Count();
-            ViewBag.UsersThisMonth = _userRepo.GetUsersByActivationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
-            ViewBag.UsersToday = _userRepo.GetUsersByActivationDate(DateTime.Now).Count();
-            ViewBag.InactiveUsers = _userRepo.GetInactiveUsers().Count();
-            return View();
+            Dashboard dashboard = new Dashboard();
+            dashboard.RegisterdUsersThisMonth = _userRepo.GetUsersByCreationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
+            dashboard.ActivatedUsersThisMonth = _userRepo.GetUsersByActivationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
+            dashboard.PendingUsersThisMonth = _userRepo.GetPendingUsersByMonth(DateTime.Now.Month, DateTime.Now.Year).Count();
+            dashboard.RegisteredUsersToday = _userRepo.GetUsersByCreationDate(DateTime.Now).Count();
+            dashboard.ActivatedUsersToday = _userRepo.GetUsersByActivationDate(DateTime.Now).Count();
+            dashboard.PendingUsersToday = _userRepo.GetPendingUsersByDate(DateTime.Now).Count();
+            return View(dashboard);
         }
 
         public static long GetJavascriptTimestamp(DateTime input)
@@ -135,6 +150,7 @@ namespace RayaWSoffara.Controllers
             return (long)(time.Ticks / 10000);
 
         }
+      
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult GetUsersGraphPoints()
         {
@@ -2617,9 +2633,9 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.SidebarItem = "posts-management";
             ViewBag.PageHeader = "Posts Management";
-            ViewBag.AllCommentsCount = _postRepo.GetComments(null, PostId).Count();
+            ViewBag.AllCommentsCount = _postRepo.GetAllCommentsCount(PostId, null, null, null);
             if (Page == null) Page = 0;
-            List<Comment> comments = _postRepo.GetComments(Page.Value, PostId).ToList();
+            List<Comment> comments = _postRepo.GetComments(Page.Value, PostId, null, null, null, null).ToList();
             comments.Reverse();
             if (Request.IsAjaxRequest())
             {
@@ -3105,7 +3121,7 @@ namespace RayaWSoffara.Controllers
 
             foreach (var item in users)
             {
-                string creation = "", activation = "", active = "", inactive = "";
+                string creation = "", activation = "", active = "", inactive = "", points = "";
                 string userstatus = "Inactive";
 
                 if(item.ConfirmationDate != null){
@@ -3118,6 +3134,8 @@ namespace RayaWSoffara.Controllers
                 if(item.IsConfirmed != null){
                     userstatus = (item.IsConfirmed.Value ? "Active" : "Inactive");
                 }
+
+                points = "<a href='/Admin/ReportPosts?username=" + item.UserName + "&status=Points'>" + _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null) + "</a>";
                 active = "<a href='/Admin/ReportPosts?username=" + item.UserName + "&status=Active'>" + _userRepo.GetUserPostsCount(item.UserId, "Active") + "</a>";
                 inactive = "<a href='/Admin/ReportPosts?username=" + item.UserName + "&status=Inactive'>" + _userRepo.GetUserPostsCount(item.UserId, "Inactive") + "</a>";
                 userprofiles.Add(new DataItem { ItemName = item.UserName, 
@@ -3125,10 +3143,10 @@ namespace RayaWSoffara.Controllers
                     ActivationDate = activation, 
                     Email = item.Email, 
                     Status = userstatus, 
-                    Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null), 
+                    Points = points,
                     ActivePosts = active,  
                     InactivePosts = inactive, 
-                    DT_RowId = item.UserName });
+                    DT_RowId = item.UserId.ToString() });
             }
 
             dataTableData.data = userprofiles;
@@ -3172,30 +3190,32 @@ namespace RayaWSoffara.Controllers
                 {
                     activation = item.ConfirmationDate.Value.ToShortDateString();
                 }
-                data.Add(new DataItem { ItemName = item.UserName, ActivationDate = activation, Email = item.Email, Status = (item.IsConfirmed.Value ? "Active" : "Inactive"), Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null), ActivePosts = _userRepo.GetUserPostsCount(item.UserId, "Active").ToString(), InactivePosts = _userRepo.GetUserPostsCount(item.UserId, "Inactive").ToString(), DT_RowId = item.UserName });
+                data.Add(new DataItem { ItemName = item.UserName, ActivationDate = activation, Email = item.Email, Status = (item.IsConfirmed.Value ? "Active" : "Inactive"), Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null).ToString(), ActivePosts = _userRepo.GetUserPostsCount(item.UserId, "Active").ToString(), InactivePosts = _userRepo.GetUserPostsCount(item.UserId, "Inactive").ToString(), DT_RowId = item.UserId.ToString() });
             }
 
             ws.Cell("C3").Value = "From:  " + from;
             ws.Cell("D3").Value = "To:  " + to;
-          
-            ws.Cell("A4").Value = "User Name";
-            ws.Cell("B4").Value = "Activation Date";
-            ws.Cell("C4").Value = "Email";
-            ws.Cell("D4").Value = "Status"; 
-            ws.Cell("E4").Value = "Total Points";
-            ws.Cell("F4").Value = "Active Posts";
+
+            ws.Cell("A4").Value = "Id";
+            ws.Cell("B4").Value = "User Name";
+            ws.Cell("C4").Value = "Activation Date";
+            ws.Cell("D4").Value = "Email";
+            ws.Cell("E4").Value = "Status"; 
+            ws.Cell("F4").Value = "Total Points";
             ws.Cell("G4").Value = "Active Posts";
+            ws.Cell("H4").Value = "Active Posts";
             int rowNum = 5;
 
             foreach (var item in data)
             {
-                ws.Cell("A" + rowNum).Value = item.ItemName;
-                ws.Cell("B" + rowNum).Value = item.ActivationDate;
-                ws.Cell("C" + rowNum).Value = item.Email;
-                ws.Cell("D" + rowNum).Value = item.Status;
-                ws.Cell("E" + rowNum).Value = item.Points;
-                ws.Cell("F" + rowNum).Value = item.ActivePosts;
-                ws.Cell("G" + rowNum).Value = item.InactivePosts;
+                ws.Cell("A" + rowNum).Value = item.DT_RowId;
+                ws.Cell("B" + rowNum).Value = item.ItemName;
+                ws.Cell("C" + rowNum).Value = item.ActivationDate;
+                ws.Cell("D" + rowNum).Value = item.Email;
+                ws.Cell("E" + rowNum).Value = item.Status;
+                ws.Cell("F" + rowNum).Value = item.Points;
+                ws.Cell("G" + rowNum).Value = item.ActivePosts;
+                ws.Cell("H" + rowNum).Value = item.InactivePosts;
                 rowNum++;
             }
 
@@ -3207,11 +3227,11 @@ namespace RayaWSoffara.Controllers
             rngHeaders.Style.Font.Bold = true;
             rngHeaders.Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
 
-            ws.Range("A3:G3").Style.Font.Bold = true;
-            ws.Range("A3:G3").Style.Fill.BackgroundColor = XLColor.Aqua;
-            ws.Range("A3:G3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-                         
-            ws.Range("A4:G4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
+            ws.Range("A3:H3").Style.Font.Bold = true;
+            ws.Range("A3:H3").Style.Fill.BackgroundColor = XLColor.Aqua;
+            ws.Range("A3:H3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Range("A4:H4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
 
             ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
             ws.Row(2).Merge();
@@ -3257,7 +3277,8 @@ namespace RayaWSoffara.Controllers
             dataTableData.draw = draw;
             int displayedNum, recordsFiltered;
             List<DataItem> postprofiles = new List<DataItem>();
-            int pageNum = start / length;
+            int pageNum = (start / length) - 1;
+            pageNum = pageNum < 0 ? 0 : pageNum;
 
             IQueryable<Post> posts = null;
             DateTime? from = null;
@@ -3286,7 +3307,7 @@ namespace RayaWSoffara.Controllers
             {
                 string activation = "", creation = "";
                 double points = 0;
-                string description = item.Title;
+                string description = TrimTextHelper.TrimText(item.Content, 50);
                 string poststatus = "Inactive";
                 string isOriginal = "Copied";
 
@@ -3298,16 +3319,15 @@ namespace RayaWSoffara.Controllers
                 {
                     creation = item.CreationDate.Value.ToShortDateString();
                 }
-                if (description == "")
+                if (description == "" || description == null)
                 {
-                    description = TrimTextHelper.TrimText(item.Content, 50);
-                    if (description == "")
+                    if (item.FeaturedVideo != "" && item.FeaturedVideo != null)
                     {
-                        description = item.FeaturedVideo;
-                        if (description == "")
-                        {
-                            description = item.FeaturedImage;
-                        }
+                        description = "<a target='_blank' href='https://www.youtube.com/watch?v=" + item.FeaturedVideo + "'>" + item.FeaturedVideo + "</a>";
+                    }
+                    else if (item.FeaturedImage != "" || item.FeaturedImage != null)
+                    {
+                        description = "<a target='_blank' href='/Content/Article_Images/" + item.FeaturedImage + "'>" + item.FeaturedImage + "</a>";
                     }
                 }
                 string viewsValue = _engRepo.GetEngValueByPostId(item.PostId, 3).ToString();
@@ -3316,6 +3336,7 @@ namespace RayaWSoffara.Controllers
                 string views = _engRepo.GetEngCountByPostId(item.PostId, 3).ToString();
                 string likes = _engRepo.GetEngCountByPostId(item.PostId, 2).ToString();
                 string shares = _engRepo.GetEngCountByPostId(item.PostId, 1).ToString();
+                string comments = "<a href='/Admin/ReportComments?PostId=" + item.PostId + "'>" + _postRepo.GetAllComments(item.PostId) + "</a>";
                 IQueryable<PointsView> pointviews = _engRepo.GetPostPoints(item.PostId);
                 if (pointviews.Count() > 0)
                 {
@@ -3324,6 +3345,10 @@ namespace RayaWSoffara.Controllers
                 if (item.IsActive != null)
                 {
                     poststatus = item.IsActive.Value ? "Active" : "Inactive";
+                    if (item.isDeleted == true)
+                    {
+                        poststatus = "Deleted";
+                    }
                 }
                 if (item.isOriginal != null)
                 {
@@ -3343,7 +3368,8 @@ namespace RayaWSoffara.Controllers
                     LikesValue = likesValue,
                     SharesValue = sharesValue,
                     isOriginal = isOriginal,
-                    Points = points, 
+                    Points = points.ToString(), 
+                    CommentsCount = comments,
                     DT_RowId = item.PostId.ToString() });
             }
 
@@ -3390,7 +3416,186 @@ namespace RayaWSoffara.Controllers
                 {
                     activation = item.ConfirmationDate.Value.ToShortDateString();
                 }
-                data.Add(new DataItem { ItemName = item.UserName, ActivationDate = activation, Email = item.Email, Status = (item.IsConfirmed.Value ? "Active" : "Inactive"), Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null), articlesCount = _userRepo.GetUserPostsCount(item.UserId, "Active"), DT_RowId = item.UserName });
+                data.Add(new DataItem { ItemName = item.UserName, ActivationDate = activation, Email = item.Email, Status = (item.IsConfirmed.Value ? "Active" : "Inactive"), Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null).ToString(), articlesCount = _userRepo.GetUserPostsCount(item.UserId, "Active"), DT_RowId = item.UserName });
+            }
+
+            ws.Cell("C3").Value = "From:  " + from;
+            ws.Cell("D3").Value = "To:  " + to;
+
+            ws.Cell("A4").Value = "User Name";
+            ws.Cell("B4").Value = "Activation Date";
+            ws.Cell("C4").Value = "Email";
+            ws.Cell("D4").Value = "Status";
+            ws.Cell("E4").Value = "Total Points";
+            ws.Cell("F4").Value = "Active Posts";
+            int rowNum = 5;
+
+            foreach (var item in data)
+            {
+                ws.Cell("A" + rowNum).Value = item.ItemName;
+                ws.Cell("B" + rowNum).Value = item.ActivationDate;
+                ws.Cell("C" + rowNum).Value = item.Email;
+                ws.Cell("D" + rowNum).Value = item.Status;
+                ws.Cell("E" + rowNum).Value = item.Points;
+                ws.Cell("F" + rowNum).Value = item.articlesCount;
+                rowNum++;
+            }
+
+            // From worksheet
+            var rngTable = ws.Range("B2:C6");
+
+            var rngHeaders = ws.Range("B2:C2"); // The address is relative to rngTable (NOT the worksheet)
+            rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rngHeaders.Style.Font.Bold = true;
+            rngHeaders.Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
+
+            ws.Range("A3:F3").Style.Font.Bold = true;
+            ws.Range("A3:F3").Style.Fill.BackgroundColor = XLColor.Aqua;
+            ws.Range("A3:F3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Range("A4:F4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
+
+            ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
+            ws.Row(2).Merge();
+
+            ws.Columns(2, 6).AdjustToContents();
+
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            MemoryStream stream = GetStream(wb);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.ms-excel";
+            Response.BinaryWrite(stream.ToArray());
+            Response.End();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult ReportComments()
+        {
+            ViewBag.SubSidebarItem = "report-comments";
+            ViewBag.SidebarItem = "reports-management";
+            ViewBag.PageHeader = "Reports";
+            return View();
+        }
+
+        [HttpPost]
+        public ActionResult AjaxGetReportComments(int draw, int start, int length, string status, string fromDate, string toDate, int? PostId)
+        {
+            string search = Request.Form["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.Form["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.Form["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            int displayedNum, recordsFiltered;
+            List<DataItem> commentsprofile = new List<DataItem>();
+            int pageNum = (start / length) - 1;
+            pageNum = pageNum < 0?0:pageNum;
+
+            IQueryable<Comment> comments = null;
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != "" && fromDate != null)
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != "" && toDate != null)
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+
+            int total_rows = _postRepo.GetAllCommentsCount(PostId, status, from, to);
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+            dataTableData.recordsTotal = total_rows;
+            recordsFiltered = total_rows;
+            comments = _postRepo.GetComments(pageNum, PostId, search, status, from, to, length);
+            foreach (var item in comments)
+            {
+                string postData = item.Post.Title;
+                if (postData == "" || postData == null)
+                {
+                    if (item.Post.FeaturedVideo != "" && item.Post.FeaturedVideo != null)
+                    {
+                        postData = "<a target='_blank' href='https://www.youtube.com/watch?v=" + item.Post.FeaturedVideo + "'>" + item.Post.FeaturedVideo + "</a>";
+                    }
+                    else if (item.Post.FeaturedImage != "" || item.Post.FeaturedImage != null)
+                    {
+                        postData = "<a target='_blank' href='/Content/Article_Images/" + item.Post.FeaturedImage + "'>" + item.Post.FeaturedImage + "</a>";
+                    }
+                }
+
+                commentsprofile.Add(new DataItem
+                {
+                    ItemName = item.CommentId.ToString(),
+                    Description = item.CommentContent,
+                    CreationDate = item.CommentCreationDate.Value.ToShortDateString(),
+                    ActivePosts = postData,
+                    Email = _userRepo.GetUserByUserId(item.CommentUserId.Value).UserName,
+                    ReportedCommentsCount = item.CommentReportCount.ToString(),
+                    DT_RowId = item.CommentId.ToString()
+                });
+            }
+
+            dataTableData.data = commentsprofile;
+            dataTableData.recordsFiltered = recordsFiltered;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public void ExportComments(string status, string fromDate, string toDate, int page, int size)
+        {
+            List<DataItem> data = new List<DataItem>();
+            XLWorkbook wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("RWS Users");
+            string fileNamePrefix = "";
+
+            ws.Cell("B2").Value = "Raya W Soffara " + status + " Users";
+
+            fileNamePrefix = "Users_";
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != null && fromDate != "")
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != null && toDate != "")
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+            IQueryable<RWSUser> users;
+            int displayedNum;
+            int pageNum = page - 1;
+            users = _userRepo.GetAllUsers(pageNum, size, status, from, to, out displayedNum);
+
+            foreach (var item in users)
+            {
+                string activation = "";
+                if (item.ConfirmationDate != null)
+                {
+                    activation = item.ConfirmationDate.Value.ToShortDateString();
+                }
+                data.Add(new DataItem { ItemName = item.UserName, ActivationDate = activation, Email = item.Email, Status = (item.IsConfirmed.Value ? "Active" : "Inactive"), Points = _userRepo.GetUserPointsBySelectedDate(item.UserId, null, null).ToString(), articlesCount = _userRepo.GetUserPostsCount(item.UserId, "Active"), DT_RowId = item.UserName });
             }
 
             ws.Cell("C3").Value = "From:  " + from;

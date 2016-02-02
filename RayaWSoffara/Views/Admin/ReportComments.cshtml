@@ -1,5 +1,5 @@
 ﻿@{
-    ViewBag.Title = "Posts";
+    ViewBag.Title = "Comments";
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
 }
 <link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
@@ -13,16 +13,16 @@
         <div class="add-user-btn pull-right">
             <a class="btn btn-primary" href="javascript:void(0)" onclick="Export()">Export to Excel</a>
         </div>
-        <h4 class="panel-title">Posts</h4>
+        <h4 class="panel-title">Comments</h4>
     </div>
     <div class="panel-body">
         <div class="username"></div>
         <div class="checkbox block">
             <label>
-                <input type="checkbox" class="status" name="status" id="active" value="false">Active &nbsp;
+                <input type="checkbox" class="status" name="status" id="clean" value="false">Clean &nbsp;
             </label>
             <label>
-                <input type="checkbox" class="status" name="status" id="inactive" value="false">Inactive
+                <input type="checkbox" class="status" name="status" id="reported" value="false">Reported
             </label>
         </div>
 
@@ -49,21 +49,12 @@
         <table id="table" class="table table-primary">
             <thead>
                 <tr style="text-align: left;">
-                    <th>Title</th>
+                    <th>Id</th>
                     <th>Description</th>
-                    <th>Type</th>
                     <th>Creation Date</th>
-                    <th>Activation Date</th>
-                    <th>Status</th>
-                    <th>Views Value</th>
-                    <th>Likes Value</th>
-                    <th>Shares Value</th>
-                    <th>Views</th>
-                    <th>Likes</th>
-                    <th>Shares</th>
-                    <th>Original</th>
-                    <th>Points</th>
-                    <th>Comments</th>
+                    <th>Post</th>
+                    <th>User</th>
+                    <th>Reports Count</th>
                 </tr>
             </thead>
         </table>
@@ -81,18 +72,15 @@
         vars.push(hash[0]);
         vars[hash[0]] = hash[1];
     }
-    var username = (vars["username"] == null) ? "" : vars["username"];
+    var postid = (vars["PostId"] == null) ? "" : vars["PostId"];
     var status = (vars["status"] == null) ? "" : vars["status"];
 
-    if (username != "") {
-        $(".username").html("Posts created by: " + username);
-    }
-    if (status == "Active") {
-        $("#active").attr("checked", true);
-        $("#active").val("true");
-    } else if (status == "Inactive") {
-        $("#inactive").attr("checked", true);
-        $("#inactive").val("true");
+    if (status == "Clean") {
+        $("#clean").attr("checked", true);
+        $("#clean").val("true");
+    } else if (status == "Reported") {
+        $("#reported").attr("checked", true);
+        $("#reported").val("true");
     }
 
     $('#fromDate').datepicker();
@@ -109,9 +97,9 @@
             "stateSave": true,
             "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
             "ajax": {
-                "url": "/Admin/AjaxGetReportPosts",
+                "url": "/Admin/AjaxGetReportComments",
                 "type": "POST",
-                "data": { "status": status, "fromDate": fromDate, "toDate": toDate, "username": username }
+                "data": { "status": status, "fromDate": fromDate, "toDate": toDate, "PostId": postid }
             },
             "columns": [
                 {
@@ -121,43 +109,16 @@
                     "data": "Description"
                 },
                 {
-                    "data": "Actions"
-                },
-                {
                     "data": "CreationDate"
                 },
                 {
-                    "data": "ActivationDate"
+                    "data": "ActivePosts"
                 },
                 {
-                    "data": "Status"
+                    "data": "Email"
                 },
                 {
-                    "data": "ViewsValue"
-                },
-                {
-                    "data": "LikesValue"
-                },
-                {
-                    "data": "SharesValue"
-                },
-                {
-                    "data": "ViewsCount"
-                },
-                {
-                    "data": "LikesCount"
-                },
-                {
-                    "data": "SharesCount"
-                },
-                {
-                    "data": "isOriginal"
-                },
-                {
-                    "data": "Points"
-                },
-                {
-                    "data": "CommentsCount"
+                    "data": "ReportedCommentsCount"
                 }
             ],
             "order": [[0, "asc"]]
@@ -175,10 +136,10 @@
             $(this).val("false");
         }
         var status = "";
-        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
-            status = "Inactive";
-        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
-            status = "Active";
+        if ($("#reported").val() == "true" && $("#clean").val() == "false") {
+            status = "Reported";
+        } else if ($("#reported").val() == "false" && $("#clean").val() == "true") {
+            status = "Clean";
         }
 
         var fromDate = $("#fromDate").val();
@@ -193,10 +154,10 @@
         var toDate = $("#toDate").val();
 
         var status = "";
-        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
-            status = "Inactive";
-        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
-            status = "Active";
+        if ($("#reported").val() == "true" && $("#clean").val() == "false") {
+            status = "Reported";
+        } else if ($("#reported").val() == "false" && $("#clean").val() == "true") {
+            status = "Clean";
         }
 
         if ($.fn.DataTable.isDataTable('#table')) {
@@ -208,10 +169,10 @@
 
     function Export() {
         var status = "";
-        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
-            status = "Inactive";
-        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
-            status = "Active";
+        if ($("#reported").val() == "true" && $("#clean").val() == "false") {
+            status = "Reported";
+        } else if ($("#reported").val() == "false" && $("#clean").val() == "true") {
+            status = "Clean";
         }
 
         var fromDate = $("#fromDate").val();

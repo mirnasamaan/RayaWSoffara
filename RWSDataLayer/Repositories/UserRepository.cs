@@ -162,6 +162,18 @@ namespace RWSDataLayer.Repositories
             }
         }
 
+        public IQueryable<RWSUser> GetUsersByCreationDate(DateTime day)
+        {
+            try
+            {
+                return Context.RWSUsers.Where(i => i.CreationDate == day);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public IQueryable<RWSUser> GetUsersByActivationDate(DateTime day)
         {
             try
@@ -174,11 +186,47 @@ namespace RWSDataLayer.Repositories
             }
         }
 
+        public IQueryable<RWSUser> GetPendingUsersByDate(DateTime day)
+        {
+            try
+            {
+                return Context.RWSUsers.Where(i => i.CreationDate == day && i.IsConfirmed != true);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public IQueryable<RWSUser> GetUsersByCreationDate(int month, int year)
+        {
+            try
+            {
+                return Context.RWSUsers.Where(i => i.CreationDate.Value.Month == month && i.CreationDate.Value.Year == year);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
         public IQueryable<RWSUser> GetUsersByActivationDate(int month, int year)
         {
             try
             {
                 return Context.RWSUsers.Where(i => i.IsConfirmed == true).Where(i => i.ConfirmationDate.Value.Month == month && i.ConfirmationDate.Value.Year == year);
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        public IQueryable<RWSUser> GetPendingUsersByMonth(int month, int year)
+        {
+            try
+            {
+                return Context.RWSUsers.Where(i => i.CreationDate.Value.Month == month && i.CreationDate.Value.Year == year && i.IsConfirmed != true);
             }
             catch (Exception ex)
             {

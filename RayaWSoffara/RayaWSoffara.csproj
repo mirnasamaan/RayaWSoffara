@@ -238,6 +238,7 @@
     <Compile Include="Helpers\ImageHelper.cs" />
     <Compile Include="Models\AccountModels.cs" />
     <Compile Include="Models\CompetitionModels.cs" />
+    <Compile Include="Models\DashboardModel.cs" />
     <Compile Include="Models\PostPointsVM.cs" />
     <Compile Include="Models\UserPointsDetailsVM.cs" />
     <Compile Include="Models\UserPointsVM.cs" />
@@ -1210,6 +1211,7 @@
     <Content Include="Views\Account\_PointsPartial.cshtml" />
     <Content Include="Views\Admin\ReportUsers.cshtml" />
     <Content Include="Views\Admin\ReportPosts.cshtml" />
+    <Content Include="Views\Admin\ReportComments.cshtml" />
     <None Include="Views\Admin\Signin.cshtml" />
     <None Include="Views\Admin\Shared\_AdminLayout.cshtml" />
     <Content Include="Web.config">

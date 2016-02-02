@@ -520,6 +520,16 @@
     -webkit-animation-delay: -0.1s;
     animation-delay: -0.1s;
 }
+
+.stat a div {
+    color: white;
+}
+
+.infosummary li i {
+    font-size: 25px;
+    line-height: 38px;
+}
+
 @-webkit-keyframes sk-circleFadeDelay {
     0%, 39%, 100% {
         opacity: 0;

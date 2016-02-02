@@ -70,6 +70,12 @@ namespace RWSDataLayer.Repositories
             {
                 return posts.Where(i => (i.IsActive == null || i.IsActive == false)).OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
             }
+            else if (status == "Points")
+            {
+                IQueryable<int> postids = posts.Select(i => i.PostId);
+                postids = Context.PointsViews.Where(i => postids.Contains(i.PostId.Value) && i.isActive == true).Select(i => i.PostId.Value);
+                return posts.Where(i => postids.Contains(i.PostId)).Distinct();
+            }
             else
             {
                 return posts.OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
@@ -152,6 +158,14 @@ namespace RWSDataLayer.Repositories
             else if (status == "Inactive")
             {
                 return posts.Where(i => i.IsActive == null || i.IsActive.Value == false).Count();
+            }
+            else if (status == "Points")
+            {
+                IQueryable<int> postids = posts.Select(i => i.PostId);
+                postids = Context.PointsViews.Where(i => postids.Contains(i.PostId.Value) && i.isActive == true).Select(i => i.PostId.Value);
+                IQueryable<Post> result = posts.Where(i => postids.Contains(i.PostId));
+                int count = result.Select(i => i.PostId).Distinct().Count();
+                return 0;
             }
             else
             {
@@ -357,9 +371,64 @@ namespace RWSDataLayer.Repositories
             return updatedArticle;
         }
 
+        /// <summary>
+        /// Get all comments of a certain post
+        /// </summary>
+        /// <param name="PostId">Post Id</param>
+        /// <returns></returns>
         public IQueryable<Comment> GetAllComments(int PostId)
         {
             return Context.Comments.Where(i => i.CommentPostId == PostId);
+        }
+
+        /// <summary>
+        /// Get all comments count
+        /// </summary>
+        /// <param name="PostId">Post Id</param>
+        /// <param name="status">Status string ('Clean' or 'Reported')</param>
+        /// <param name="from">Start date filter</param>
+        /// <param name="to">To date filter</param>
+        /// <returns></returns>
+        public int GetAllCommentsCount(int? PostId, string status, DateTime? from, DateTime? to)
+        {
+            IQueryable<Comment> comments = GetCommentsBySelectedDate(from, to);
+            if (Context.Posts.Any(i => i.PostId == PostId))
+            {
+                comments = Context.Comments.Where(i => i.CommentPostId == PostId);
+            }
+            else
+            {
+                comments = Context.Comments;
+            }
+            if (status == "Reported")
+            {
+                comments = comments.Where(i => i.CommentReportCount > 0);
+            }
+            else if (status == "Clean")
+            {
+                comments = comments.Where(i => i.CommentReportCount == 0);
+            }
+            return comments.Count();
+        }
+
+        public IQueryable<Comment> GetCommentsBySelectedDate(DateTime? fromDate, DateTime? toDate)
+        {
+            if (fromDate != null && toDate != null)
+            {
+                return Context.Comments.Where(i => i.CommentCreationDate.Value >= fromDate && i.CommentCreationDate.Value <= toDate);
+            }
+            else if (fromDate != null && toDate == null)
+            {
+                return Context.Comments.Where(i => i.CommentCreationDate.Value >= fromDate);
+            }
+            else if (fromDate == null && toDate != null)
+            {
+                return Context.Comments.Where(i => i.CommentCreationDate.Value <= toDate);
+            }
+            else
+            {
+                return Context.Comments;
+            }
         }
 
         /// <summary>
@@ -398,15 +467,29 @@ namespace RWSDataLayer.Repositories
         /// <param name="PostId">The post id</param>
         /// <param name="index">Start index</param>
         /// <returns></returns>
-        public IQueryable<Comment> GetComments(int? index, int PostId)
+        public IQueryable<Comment> GetComments(int tabId, int? PostId, string search, string status, DateTime? from, DateTime? to, int count = 10)
         {
-            if (index == null)
+            int startIndex = tabId * count;
+            IQueryable<Comment> comments = GetCommentsBySelectedDate(from, to);
+            if (PostId != null && Context.Posts.Any(i => i.PostId == PostId))
             {
-                return Context.Comments.Where(i => i.CommentPostId == PostId);
+                comments = comments.Where(i => i.CommentPostId == PostId.Value);
+            }
+            if (search != null && search != "")
+            {
+                comments = comments.Where(i => i.CommentContent.Contains(search));
+            }
+            if (status == "Clean")
+            {
+                return comments.Where(i => i.CommentReportCount == 0).OrderByDescending(i => i.CommentCreationDate).Skip(startIndex).Take(count);
+            }
+            else if (status == "Reported")
+            {
+                return comments.Where(i => i.CommentReportCount > 0).OrderByDescending(i => i.CommentCreationDate).Skip(startIndex).Take(count);
             }
             else
             {
-                return Context.Comments.Where(i => i.CommentPostId == PostId).OrderByDescending(i => i.CommentCreationDate).Skip(index.Value * 10).Take(10);
+                return comments.OrderByDescending(i => i.CommentCreationDate).Skip(startIndex).Take(count);
             }
         }
 

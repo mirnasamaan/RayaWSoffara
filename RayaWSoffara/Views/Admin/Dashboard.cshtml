@@ -1,4 +1,4 @@
-﻿@model RWSDataLayer.Context.RWSUser
+﻿@model RayaWSoffara.Models.Dashboard
 @{
     ViewBag.Title = "Home";
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
@@ -10,36 +10,41 @@
     <div class="col-sm-6 col-md-3">
         <div class="panel panel-success panel-stat">
             <div class="panel-heading">
-
                 <div class="stat">
                     <div class="row">
-                        <div class="col-xs-4">
-                            <img src="/Content/Images/is-user.png" alt="" />
-                        </div>
-                        <div class="col-xs-8">
-                            <small class="stat-label">Registered Users</small>
-                            <h1>@ViewBag.TotalUsers</h1>
-                        </div>
+                        @{ var firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+                           var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
+                        }
+                        <a href="/Admin/ReportUsers?from=@firstDayOfMonth.ToShortDateString()&to=@lastDayOfMonth.ToShortDateString()">
+                            <div class="col-xs-4">
+                                <img src="/Content/Images/is-user.png" alt="" />
+                            </div>
+                            <div class="col-xs-8">
+                                <small class="stat-label">Registered Users This Month</small>
+                                <h1>@Model.RegisterdUsersThisMonth</h1>
+                            </div>
+                        </a>
                     </div>
                     <!-- row -->
 
                     <div class="mb15"></div>
 
                     <div class="row">
-                        <div class="col-xs-6">
-                            <small class="stat-label">This Month</small>
-                            <h4>@ViewBag.UsersThisMonth</h4>
-                        </div>
+                        <a href="/Admin/ReportUsers?from=@firstDayOfMonth.ToShortDateString()&to=@lastDayOfMonth.ToShortDateString()&status=Active">
+                            <div class="col-xs-6">
+                                <small class="stat-label">Active</small>
+                                <h4>@Model.ActivatedUsersThisMonth</h4>
+                            </div>
+                        </a>
 
-                        <div class="col-xs-6">
-                            <small class="stat-label">Today</small>
-                            <h4>@ViewBag.UsersToday</h4>
-                        </div>
+                        <a href="/Admin/ReportUsers?from=@firstDayOfMonth.ToShortDateString()&to=@lastDayOfMonth.ToShortDateString()&status=Inactive">
+                            <div class="col-xs-6">
+                                <small class="stat-label">Pending</small>
+                                <h4>@Model.PendingUsersThisMonth</h4>
+                            </div>
+                        </a>
                     </div>
-                    <!-- row -->
                 </div>
-                <!-- stat -->
-
             </div>
             <!-- panel-heading -->
         </div>
@@ -50,24 +55,38 @@
     <div class="col-sm-6 col-md-3">
         <div class="panel panel-danger panel-stat">
             <div class="panel-heading">
-
                 <div class="stat">
                     <div class="row">
-                        <div class="col-xs-4">
-                            <img src="/Content/Images/is-user.png" alt="" />
-                        </div>
-                        <div class="col-xs-8">
-                            <small class="stat-label">Inactive Users</small>
-                            <h1>@ViewBag.InactiveUsers</h1>
-                        </div>
+                        <a href="/Admin/ReportUsers?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()">
+                            <div class="col-xs-4">
+                                <img src="/Content/Images/is-user.png" alt="" />
+                            </div>
+                            <div class="col-xs-8">
+                                <small class="stat-label">Registered Users Today</small>
+                                <h1>@Model.RegisteredUsersToday</h1>
+                            </div>
+                        </a>
                     </div>
                     <!-- row -->
 
                     <div class="mb15"></div>
 
-                </div>
-                <!-- stat -->
+                    <div class="row">
+                        <a href="/Admin/ReportUsers?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Active">
+                            <div class="col-xs-6">
+                                <small class="stat-label">Active</small>
+                                <h4>@Model.ActivatedUsersToday</h4>
+                            </div>
+                        </a>
 
+                        <a href="/Admin/ReportUsers?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Inactive">
+                            <div class="col-xs-6">
+                                <small class="stat-label">Pending</small>
+                                <h4>@Model.PendingUsersToday</h4>
+                            </div>
+                        </a>
+                    </div>
+                </div>
             </div>
             <!-- panel-heading -->
         </div>
@@ -457,7 +476,7 @@
                 { label: "Europe", data: 727080000, color: "#DE000F" },
                 { label: "North America", data: 344120000, color: "#ED7B00" }
             ];
-            
+
             $.plot($("#donut-chart"), dataSet, {
                 series: {
                     pie: {
