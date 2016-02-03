@@ -90,7 +90,7 @@ namespace RayaWSoffara.Controllers
                 }
                 else
                 {
-                    articles = _articleRepo.GetActivePosts();
+                    articles = _articleRepo.GetActivePosts(null, null);
                 }
 
                 if (TagIDs != null && TagIDs != "")
@@ -150,7 +150,7 @@ namespace RayaWSoffara.Controllers
                 return result;
             }
 
-            articles = _articleRepo.GetActivePosts();
+            articles = _articleRepo.GetActivePosts(null, null);
             if (Username != null)
             {
                 UserRepository _userRepo = new UserRepository();

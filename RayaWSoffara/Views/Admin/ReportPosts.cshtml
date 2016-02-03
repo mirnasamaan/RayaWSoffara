@@ -49,9 +49,13 @@
         <table id="table" class="table table-primary">
             <thead>
                 <tr style="text-align: left;">
+                    <th>Id</th>
                     <th>Title</th>
                     <th>Description</th>
+                    <th>Media</th>
                     <th>Type</th>
+                    <th>Created by</th>
+                    <th>Tags</th>
                     <th>Creation Date</th>
                     <th>Activation Date</th>
                     <th>Status</th>
@@ -64,6 +68,7 @@
                     <th>Original</th>
                     <th>Points</th>
                     <th>Comments</th>
+                    <th>Reported Comments</th>
                 </tr>
             </thead>
         </table>
@@ -115,13 +120,25 @@
             },
             "columns": [
                 {
+                    "data": "DT_RowId"
+                },
+                {
                     "data": "ItemName"
                 },
                 {
                     "data": "Description"
                 },
                 {
+                    "data": "Media"
+                },
+                {
                     "data": "Actions"
+                },
+                {
+                    "data": "Email"
+                },
+                {
+                    "data": "Tags"
                 },
                 {
                     "data": "CreationDate"
@@ -158,6 +175,9 @@
                 },
                 {
                     "data": "CommentsCount"
+                },
+                {
+                    "data": "ReportedCommentsCount"
                 }
             ],
             "order": [[0, "asc"]]

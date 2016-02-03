@@ -168,7 +168,6 @@
                 <span class="caret"></span>
               </button>
               <ul class="dropdown-menu dropdown-menu-usermenu">
-                <li><a href="profile.html"><i class="glyphicon glyphicon-user"></i> My Profile</a></li>
                 <li><a href="/Admin/Signout"><i class="glyphicon glyphicon-log-out"></i> Sign Out</a></li>
               </ul>
             </div>
@@ -251,7 +250,7 @@
                 $("#pending-users").html(data.PendingUsers);
                 $("#active-posts").html(data.ActivePosts);
                 $("#pending-posts").html(data.PendingPosts);
-                $("#nonreported-comments").html(data.CleanComments);
+                $("#nonreported-comments").html(data.NonReportedComments);
                 $("#reported-comments").html(data.ReportedComments);
             }
         });

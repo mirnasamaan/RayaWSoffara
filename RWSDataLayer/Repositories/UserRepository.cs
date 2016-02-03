@@ -8,6 +8,7 @@ using RWSDataLayer.Context;
 using RWSDataLayer.Interfaces;
 using System.Data.Entity;
 using System.Security.Cryptography;
+using System.Data.Objects.SqlClient;
 
 namespace RWSDataLayer.Repositories
 {
@@ -18,17 +19,22 @@ namespace RWSDataLayer.Repositories
         /// Get all users
         /// </summary>
         /// <returns></returns>
-        public int GetUsersCount(string status)
+        public int GetUsersCount(string status, string search, DateTime? from, DateTime? to)
         {
+            IQueryable<RWSUser> users = GetUsersBySelectedDate(from, to);
             if (status == "Active")
             {
-                return Context.RWSUsers.Where(i => i.IsConfirmed.Value).Count();
+                users = users.Where(i => i.IsConfirmed.Value);
             }
             else if (status == "Inactive")
             {
-                return Context.RWSUsers.Where(i => !i.IsConfirmed.Value).Count();
+                users = users.Where(i => !i.IsConfirmed.Value);
             }
-            return Context.RWSUsers.Count();
+            if (search != null && search != "")
+            {
+                users = users.Where(i => i.UserName.Contains(search) || SqlFunctions.StringConvert((double)i.UserId).Contains(search) || i.Email.Contains(search));
+            }
+            return users.Count();
         }
 
         /// <summary>
@@ -137,7 +143,8 @@ namespace RWSDataLayer.Repositories
                 else
                 {
                     IQueryable<RWSUser> users = GetUsersBySelectedDate(fromDate, toDate);
-                    return users.Where(i => i.UserName.Contains(term) && (i.IsConfirmed.Value)).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
+                    users = users.Where(i => i.UserName.Contains(term) || SqlFunctions.StringConvert((double)i.UserId).Contains(term) || i.Email.Contains(term));
+                    return users.Where(i => i.IsConfirmed.Value).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
                 }
             }
             else if (status == "Inactive")
@@ -147,7 +154,8 @@ namespace RWSDataLayer.Repositories
                 else
                 {
                     IQueryable<RWSUser> users = GetUsersBySelectedDate(fromDate, toDate);
-                    return users.Where(i => i.UserName.Contains(term) && (!i.IsConfirmed.Value)).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
+                    users = users.Where(i => i.UserName.Contains(term) || SqlFunctions.StringConvert((double)i.UserId).Contains(term) || i.Email.Contains(term));
+                    return users.Where(i => !i.IsConfirmed.Value).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
                 }
             }
             else
@@ -157,7 +165,8 @@ namespace RWSDataLayer.Repositories
                 else
                 {
                     IQueryable<RWSUser> users = GetUsersBySelectedDate(fromDate, toDate);
-                    return users.Where(i => i.UserName.Contains(term)).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
+                    users = users.Where(i => i.UserName.Contains(term) || SqlFunctions.StringConvert((double)i.UserId).Contains(term) || i.Email.Contains(term));
+                    return users.OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
                 }
             }
         }
@@ -235,12 +244,29 @@ namespace RWSDataLayer.Repositories
         }
 
         /// <summary>
-        /// Get all active users
+        /// Get all active users.
         /// </summary>
+        /// <param name="from">Start date</param>
+        /// <param name="to">End date</param>
         /// <returns></returns>
-        public IQueryable<RWSUser> GetAllActiveUsers()
+        public IQueryable<RWSUser> GetAllActiveUsers(DateTime? from, DateTime? to)
         {
-            return Context.RWSUsers.Where(i => i.IsConfirmed == true);
+            if (from != null && to != null)
+            {
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true && i.ConfirmationDate >= from && i.ConfirmationDate <= to);
+            }
+            else if (from != null && to == null)
+            {
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true && i.ConfirmationDate >= from);
+            }
+            else if (from == null && to != null)
+            {
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true && i.ConfirmationDate <= to);
+            }
+            else
+            {
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true);
+            }
         }
 
         public IQueryable<RWSUser> GetInactiveUsers(){
@@ -826,7 +852,6 @@ namespace RWSDataLayer.Repositories
             try
             {
                 user.CreationDate = DateTime.Now;
-                user.IsConfirmed = false;
                 user.ConfirmationToken = new Guid().ToString();
                 user.IsBanned = false;
                 //user.RWSRoles.Add(GetRoleByName("User"));

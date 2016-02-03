@@ -19,7 +19,7 @@
         <div class="username"></div>
         <div class="checkbox block">
             <label>
-                <input type="checkbox" class="status" name="status" id="clean" value="false">Clean &nbsp;
+                <input type="checkbox" class="status" name="status" id="nonreported" value="false">Non Reported &nbsp;
             </label>
             <label>
                 <input type="checkbox" class="status" name="status" id="reported" value="false">Reported
@@ -75,9 +75,9 @@
     var postid = (vars["PostId"] == null) ? "" : vars["PostId"];
     var status = (vars["status"] == null) ? "" : vars["status"];
 
-    if (status == "Clean") {
-        $("#clean").attr("checked", true);
-        $("#clean").val("true");
+    if (status == "Nonreported") {
+        $("#nonreported").attr("checked", true);
+        $("#nonreported").val("true");
     } else if (status == "Reported") {
         $("#reported").attr("checked", true);
         $("#reported").val("true");
@@ -136,10 +136,10 @@
             $(this).val("false");
         }
         var status = "";
-        if ($("#reported").val() == "true" && $("#clean").val() == "false") {
+        if ($("#reported").val() == "true" && $("#nonreported").val() == "false") {
             status = "Reported";
-        } else if ($("#reported").val() == "false" && $("#clean").val() == "true") {
-            status = "Clean";
+        } else if ($("#reported").val() == "false" && $("#nonreported").val() == "true") {
+            status = "Nonreported";
         }
 
         var fromDate = $("#fromDate").val();
@@ -154,10 +154,10 @@
         var toDate = $("#toDate").val();
 
         var status = "";
-        if ($("#reported").val() == "true" && $("#clean").val() == "false") {
+        if ($("#reported").val() == "true" && $("#nonreported").val() == "false") {
             status = "Reported";
-        } else if ($("#reported").val() == "false" && $("#clean").val() == "true") {
-            status = "Clean";
+        } else if ($("#reported").val() == "false" && $("#nonreported").val() == "true") {
+            status = "Nonreported";
         }
 
         if ($.fn.DataTable.isDataTable('#table')) {
@@ -169,10 +169,10 @@
 
     function Export() {
         var status = "";
-        if ($("#reported").val() == "true" && $("#clean").val() == "false") {
+        if ($("#reported").val() == "true" && $("#nonreported").val() == "false") {
             status = "Reported";
-        } else if ($("#reported").val() == "false" && $("#clean").val() == "true") {
-            status = "Clean";
+        } else if ($("#reported").val() == "false" && $("#nonreported").val() == "true") {
+            status = "Nonreported";
         }
 
         var fromDate = $("#fromDate").val();

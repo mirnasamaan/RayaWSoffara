@@ -14,9 +14,12 @@ using System.IO;
 using ClosedXML.Excel;
 using System.Data;
 using RayaWSoffara.Helpers;
+using System.Web.Script.Serialization;
+using Newtonsoft.Json;
 
 namespace RayaWSoffara.Controllers
 {
+    [CustomAuthorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         UserRepository _userRepo = new UserRepository();
@@ -41,7 +44,7 @@ namespace RayaWSoffara.Controllers
                 password = GetMd5Hash(password);
                 //var result = FormsAuthentication.Authenticate(username, password);
                 FormsAuthentication.SetAuthCookie(username, true);
-                return Redirect("/Admin/Users");
+                return Redirect("/Admin/Dashboard");
             }
             else
             {
@@ -89,6 +92,8 @@ namespace RayaWSoffara.Controllers
             public string LikesValue { get; set; }
             public string SharesValue { get; set; }
             public string Description { get; set; }
+            public string Media { get; set; }
+            public string Tags { get; set; }
         }
 
         public static string GetMd5Hash(string value)
@@ -118,11 +123,11 @@ namespace RayaWSoffara.Controllers
         public ActionResult GetSidebarData()
         {
             Sidebar sidebar = new Sidebar();
-            sidebar.ActiveUsers = _userRepo.GetUsersCount("Active");
-            sidebar.PendingUsers = _userRepo.GetUsersCount("Inactive");
-            sidebar.ActivePosts = _postRepo.GetPostsCount("Active", null, null, null);
-            sidebar.PendingPosts = _postRepo.GetPostsCount("Inactive", null, null, null);
-            sidebar.CleanComments = _postRepo.GetAllCommentsCount(null, "Clean", null, null);
+            sidebar.ActiveUsers = _userRepo.GetUsersCount("Active", null, null, null);
+            sidebar.PendingUsers = _userRepo.GetUsersCount("Inactive", null, null, null);
+            sidebar.ActivePosts = _postRepo.GetPostsCount("Active", null, null, null, null);
+            sidebar.PendingPosts = _postRepo.GetPostsCount("Inactive", null, null, null, null);
+            sidebar.NonReportedComments = _postRepo.GetAllCommentsCount(null, "Nonreported", null, null);
             sidebar.ReportedComments = _postRepo.GetAllCommentsCount(null, "Reported", null, null);
             return Json(sidebar, JsonRequestBehavior.AllowGet);
         }
@@ -134,12 +139,28 @@ namespace RayaWSoffara.Controllers
             ViewBag.PageHeader = "Dashboard";
             ViewBag.SubSidebarItem = "dashboard";
             Dashboard dashboard = new Dashboard();
+            DateTime firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
             dashboard.RegisterdUsersThisMonth = _userRepo.GetUsersByCreationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
             dashboard.ActivatedUsersThisMonth = _userRepo.GetUsersByActivationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
             dashboard.PendingUsersThisMonth = _userRepo.GetPendingUsersByMonth(DateTime.Now.Month, DateTime.Now.Year).Count();
             dashboard.RegisteredUsersToday = _userRepo.GetUsersByCreationDate(DateTime.Now).Count();
             dashboard.ActivatedUsersToday = _userRepo.GetUsersByActivationDate(DateTime.Now).Count();
             dashboard.PendingUsersToday = _userRepo.GetPendingUsersByDate(DateTime.Now).Count();
+
+            dashboard.TotalPostsThisMonth = _postRepo.GetPostsCount("", null, firstDayOfMonth, lastDayOfMonth, "");
+            dashboard.ActivatedPostsThisMonth = _postRepo.GetPostsCount("Active", null, firstDayOfMonth, lastDayOfMonth, "");
+            dashboard.PendingPostsThisMonth = _postRepo.GetPostsCount("Inactive", null, firstDayOfMonth, lastDayOfMonth, "");
+            dashboard.TotalPostsToday = _postRepo.GetPostsCount("", null, DateTime.Now, DateTime.Now, "");
+            dashboard.ActivatedPostsToday = _postRepo.GetPostsCount("Active", null, DateTime.Now, DateTime.Now, "");
+            dashboard.PendingPostsThisMonth = _postRepo.GetPostsCount("Inactive", null, DateTime.Now, DateTime.Now, "");
+
+            dashboard.TotalCommentsThisMonth = _postRepo.GetAllCommentsCount(null, "", firstDayOfMonth, lastDayOfMonth);
+            dashboard.NonReportedCommentsThisMonth = _postRepo.GetAllCommentsCount(null, "NonReported", firstDayOfMonth, lastDayOfMonth);
+            dashboard.ReportedCommentsThisMonth = _postRepo.GetAllCommentsCount(null, "Reported", firstDayOfMonth, lastDayOfMonth);
+            dashboard.TotalCommentsToday = _postRepo.GetAllCommentsCount(null, "", DateTime.Now, DateTime.Now);
+            dashboard.NonreportedCommentsToday = _postRepo.GetAllCommentsCount(null, "Nonreported", DateTime.Now, DateTime.Now);
+            dashboard.ReportedCommentsToday = _postRepo.GetAllCommentsCount(null, "Reported", DateTime.Now, DateTime.Now);
             return View(dashboard);
         }
 
@@ -179,10 +200,33 @@ namespace RayaWSoffara.Controllers
 
                 active[i] = new double[2];
                 active[i][0] = GetJavascriptTimestamp(new DateTime(year, month, 1));
-                active[i][1] = _userRepo.GetUsersByActivationDate(month, year).Count();
+                //active[i][1] = _userRepo.GetUsersByActivationDate(month, year).Count();
+                active[i][1] = _userRepo.GetAllActiveUsers(null, new DateTime(year, month, 1).AddMonths(1).AddDays(-1)).Count();
             }
 
             return Json(active, JsonRequestBehavior.AllowGet);
+        }
+
+        public class GraphData
+        {
+            public string label { get; set; }
+            public int value { get; set; }
+        }
+
+        public ActionResult GetTopTags()
+        {
+            IQueryable<Tag> topTags = _postRepo.GetTopTags(5);
+
+            List<GraphData> dataList = new List<GraphData>();
+            foreach (var item in topTags)
+            {
+                GraphData details = new GraphData();
+                details.label = _postRepo.GetTagById(item.TagId).TagName;
+                details.value = _postRepo.GetPostsWithTagIDs(new List<int> { item.TagId }, null).Count();
+
+                dataList.Add(details);
+            }
+            return Json(dataList, JsonRequestBehavior.AllowGet);
         }
         #endregion
 
@@ -201,7 +245,7 @@ namespace RayaWSoffara.Controllers
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            int total_rows = _userRepo.GetUsersCount("");
+            int total_rows = _userRepo.GetUsersCount(null, null, null, null);
             if (length == -1)
             {
                 length = total_rows;
@@ -279,6 +323,7 @@ namespace RayaWSoffara.Controllers
             user.RWSRoles.Add(role);
             user.Password = GetMd5Hash(user.Password);
             user.IsConfirmed = true;
+            user.ConfirmationDate = DateTime.Now;
             _userRepo.AddUser(user);
             ViewBag.AddSuccess = true;
             return View("Users");
@@ -2992,7 +3037,7 @@ namespace RayaWSoffara.Controllers
         public ActionResult GetUserNames()
         {
             List<Item> users = new List<Item>();
-            IQueryable<RWSUser> usersList = _userRepo.GetAllActiveUsers();
+            IQueryable<RWSUser> usersList = _userRepo.GetAllActiveUsers(null, null);
             foreach (var item in usersList)
             {
                 users.Add(new Item { ItemId = item.UserId, ItemName = item.UserName });
@@ -3111,7 +3156,7 @@ namespace RayaWSoffara.Controllers
                 users = _userRepo.GetUsersBySearchTerm(start, length, search, status, from, to);
             }
 
-            int total_rows = _userRepo.GetUsersCount(status);
+            int total_rows = _userRepo.GetUsersCount(status, search, from, to);
             if (length == -1)
             {
                 length = total_rows;
@@ -3277,8 +3322,8 @@ namespace RayaWSoffara.Controllers
             dataTableData.draw = draw;
             int displayedNum, recordsFiltered;
             List<DataItem> postprofiles = new List<DataItem>();
-            int pageNum = (start / length) - 1;
-            pageNum = pageNum < 0 ? 0 : pageNum;
+            int pageNum = start / length;
+            //pageNum = pageNum < 0 ? 0 : pageNum;
 
             IQueryable<Post> posts = null;
             DateTime? from = null;
@@ -3295,7 +3340,7 @@ namespace RayaWSoffara.Controllers
                 to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
             }
             
-            int total_rows = _postRepo.GetPostsCount(status, from, to, username);
+            int total_rows = _postRepo.GetPostsCount(status, search, from, to, username);
             if (length == -1)
             {
                 length = total_rows;
@@ -3305,7 +3350,7 @@ namespace RayaWSoffara.Controllers
             posts = _postRepo.GetPosts(pageNum, search, status, from, to, username, length);
             foreach (var item in posts)
             {
-                string activation = "", creation = "";
+                string activation = "", creation = "", media = "", tags = "";
                 double points = 0;
                 string description = TrimTextHelper.TrimText(item.Content, 50);
                 string poststatus = "Inactive";
@@ -3319,24 +3364,34 @@ namespace RayaWSoffara.Controllers
                 {
                     creation = item.CreationDate.Value.ToShortDateString();
                 }
-                if (description == "" || description == null)
+                IQueryable<Tag> posttags = _postRepo.GetTagsForPost(item.PostId);
+                foreach (var posttag in posttags)
                 {
+                    tags += posttag.TagName + ",";
+                }
+                if (tags != null && tags != "")
+                {
+                    tags = tags.Substring(0, tags.Length - 1);
+                }
+                //if (description == "" || description == null)
+                //{
                     if (item.FeaturedVideo != "" && item.FeaturedVideo != null)
                     {
-                        description = "<a target='_blank' href='https://www.youtube.com/watch?v=" + item.FeaturedVideo + "'>" + item.FeaturedVideo + "</a>";
+                        media = "<a target='_blank' href='https://www.youtube.com/watch?v=" + item.FeaturedVideo + "'>" + item.FeaturedVideo + "</a>";
                     }
                     else if (item.FeaturedImage != "" || item.FeaturedImage != null)
                     {
-                        description = "<a target='_blank' href='/Content/Article_Images/" + item.FeaturedImage + "'>" + item.FeaturedImage + "</a>";
+                        media = "<a target='_blank' href='/Content/Article_Images/" + item.FeaturedImage + "'>" + item.FeaturedImage + "</a>";
                     }
-                }
+                //}
                 string viewsValue = _engRepo.GetEngValueByPostId(item.PostId, 3).ToString();
                 string likesValue = _engRepo.GetEngValueByPostId(item.PostId, 2).ToString();
                 string sharesValue = _engRepo.GetEngValueByPostId(item.PostId, 1).ToString();
                 string views = _engRepo.GetEngCountByPostId(item.PostId, 3).ToString();
                 string likes = _engRepo.GetEngCountByPostId(item.PostId, 2).ToString();
                 string shares = _engRepo.GetEngCountByPostId(item.PostId, 1).ToString();
-                string comments = "<a href='/Admin/ReportComments?PostId=" + item.PostId + "'>" + _postRepo.GetAllComments(item.PostId) + "</a>";
+                string comments = "<a href='/Admin/ReportComments?PostId=" + item.PostId + "&status=Nonreported'>" + _postRepo.GetAllComments(item.PostId).Count() + "</a>";
+                string reportedcomments = "<a href='/Admin/ReportComments?PostId=" + item.PostId + "&status=Reported'>" + _postRepo.GetAllCommentsCount(item.PostId, "Reported", null, null) + "</a>";
                 IQueryable<PointsView> pointviews = _engRepo.GetPostPoints(item.PostId);
                 if (pointviews.Count() > 0)
                 {
@@ -3357,7 +3412,10 @@ namespace RayaWSoffara.Controllers
                 postprofiles.Add(new DataItem { 
                     ItemName = item.Title, 
                     Description = description,
-                    Actions = item.PostType.PostTypeName, 
+                    Media = media,
+                    Actions = item.PostType.PostTypeName,
+                    Email = item.RWSUser.UserName,
+                    Tags = tags,
                     CreationDate = creation,
                     ActivationDate = activation,
                     Status = poststatus,
@@ -3370,6 +3428,7 @@ namespace RayaWSoffara.Controllers
                     isOriginal = isOriginal,
                     Points = points.ToString(), 
                     CommentsCount = comments,
+                    ReportedCommentsCount = reportedcomments,
                     DT_RowId = item.PostId.ToString() });
             }
 
@@ -3499,8 +3558,8 @@ namespace RayaWSoffara.Controllers
             dataTableData.draw = draw;
             int displayedNum, recordsFiltered;
             List<DataItem> commentsprofile = new List<DataItem>();
-            int pageNum = (start / length) - 1;
-            pageNum = pageNum < 0?0:pageNum;
+            int pageNum = start / length;
+            //pageNum = pageNum < 0?0:pageNum;
 
             IQueryable<Comment> comments = null;
             DateTime? from = null;

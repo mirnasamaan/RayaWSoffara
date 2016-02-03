@@ -8,6 +8,7 @@ using System.Data.Entity;
 using System.Data;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Web.Mvc;
+using System.Data.Objects.SqlClient;
 
 namespace RWSDataLayer.Repositories
 {
@@ -60,7 +61,7 @@ namespace RWSDataLayer.Repositories
             }
             if (search != null && search != "")
             {
-                posts = posts.Where(i => (i.Title.Contains(search) || i.Content.Contains(search) || i.Tags.Where(j => j.TagName.Contains(search)).Count() > 0));
+                posts = posts.Where(i => (i.Title.Contains(search) || i.Content.Contains(search) || SqlFunctions.StringConvert((double)i.PostId).Contains(search) || i.Tags.Where(j => j.TagName.Contains(search)).Count() > 0));
             }
             if (status == "Active")
             {
@@ -132,24 +133,48 @@ namespace RWSDataLayer.Repositories
         }
 
         /// <summary>
-        /// Gets all active articles
+        /// Gets active posts.
         /// </summary>
+        /// <param name="from">Start Date</param>
+        /// <param name="to">End Date</param>
         /// <returns></returns>
-        public IQueryable<Post> GetActivePosts()
+        public IQueryable<Post> GetActivePosts(DateTime? from, DateTime? to)
         {
-            return Context.Posts.Where(i=>i.IsActive == true).OrderByDescending(i => i.CreationDate);
+            if (from != null && to != null)
+            {
+                return Context.Posts.Where(i => i.IsActive == true && i.ActivationDate >= from && i.ActivationDate <= to).OrderByDescending(i => i.ActivationDate);
+            }
+            else if (from != null && to == null)
+            {
+                return Context.Posts.Where(i => i.IsActive == true && i.ActivationDate >= from).OrderByDescending(i => i.ActivationDate);
+            }
+            else if (from == null && to != null)
+            {
+                return Context.Posts.Where(i => i.IsActive == true && i.ActivationDate <= to).OrderByDescending(i => i.ActivationDate);
+            }
+            else
+            {
+                return Context.Posts.Where(i => i.IsActive == true).OrderByDescending(i => i.ActivationDate);
+            }
         }
 
         /// <summary>
         /// Get posts count
-        /// <param name="status">Active or Inactive passed as a string</param>
+        /// <param name="status">Active or Inactive passed as a string. Empty string gets all posts</param>
+        /// <param name="from">Start Date</param>
+        /// <param name="to">End Date</param>
+        /// <param name="username">Gets posts count of a certain user. Empty string gets all posts regardless of the user</param>
         /// </summary>
-        public int GetPostsCount(string status, DateTime? from, DateTime? to, string username)
+        public int GetPostsCount(string status, string search, DateTime? from, DateTime? to, string username)
         {
             IQueryable<Post> posts = GetPostsBySelectedDate(from, to);
             if (username != null && username != "")
             {
                 posts = posts.Where(i => i.RWSUser.UserName == username);
+            }
+            if (search != null && search != "")
+            {
+                posts = posts.Where(i => (i.Title.Contains(search) || i.Content.Contains(search) || SqlFunctions.StringConvert((double)i.PostId).Contains(search) || i.Tags.Where(j => j.TagName.Contains(search)).Count() > 0));
             }
             if (status == "Active")
             {
@@ -385,7 +410,7 @@ namespace RWSDataLayer.Repositories
         /// Get all comments count
         /// </summary>
         /// <param name="PostId">Post Id</param>
-        /// <param name="status">Status string ('Clean' or 'Reported')</param>
+        /// <param name="status">Status string ('Nonreported' or 'Reported')</param>
         /// <param name="from">Start date filter</param>
         /// <param name="to">To date filter</param>
         /// <returns></returns>
@@ -394,17 +419,13 @@ namespace RWSDataLayer.Repositories
             IQueryable<Comment> comments = GetCommentsBySelectedDate(from, to);
             if (Context.Posts.Any(i => i.PostId == PostId))
             {
-                comments = Context.Comments.Where(i => i.CommentPostId == PostId);
-            }
-            else
-            {
-                comments = Context.Comments;
+                comments = comments.Where(i => i.CommentPostId == PostId);
             }
             if (status == "Reported")
             {
                 comments = comments.Where(i => i.CommentReportCount > 0);
             }
-            else if (status == "Clean")
+            else if (status == "Nonreported")
             {
                 comments = comments.Where(i => i.CommentReportCount == 0);
             }
@@ -479,7 +500,7 @@ namespace RWSDataLayer.Repositories
             {
                 comments = comments.Where(i => i.CommentContent.Contains(search));
             }
-            if (status == "Clean")
+            if (status == "Nonreported")
             {
                 return comments.Where(i => i.CommentReportCount == 0).OrderByDescending(i => i.CommentCreationDate).Skip(startIndex).Take(count);
             }
@@ -575,12 +596,31 @@ namespace RWSDataLayer.Repositories
         }
 
         /// <summary>
-        /// Get featured tags
+        /// Get featured tags.
         /// </summary>
         /// <returns></returns>
         public IQueryable<Tag> GetFeaturedTags()
         {
             return Context.Tags.Where(i => i.isFeatured == true).OrderBy(i => i.TagName);
+        }
+
+        /// <summary>
+        /// Get Top used tags in users posts.
+        /// </summary>
+        /// <param name="from">Start Date</param>
+        /// <param name="to">End Date</param>
+        /// <param name="count">Number of tags returned</param>
+        /// <returns></returns>
+        public IQueryable<Tag> GetTopTags(int count = 10)
+        {
+            IQueryable<Tag> topTags = Context.Tags.Where(i => i.Posts.Where(j => j.IsActive == true).Count() > 0).OrderByDescending(i => i.Posts.Where(j => j.IsActive == true).Count()).Take(count);
+            return topTags;
+        }
+
+        public IQueryable<Tag> GetTopTagsThisMonth(int count = 10)
+        {
+            IQueryable<Tag> topTags = Context.Tags.Where(i => i.Posts.Where(j => j.IsActive == true && j.ActivationDate != null && j.ActivationDate.Value.Month == DateTime.Now.Month && j.ActivationDate.Value.Year == DateTime.Now.Year).Count() > 0).OrderByDescending(i => i.Posts.Where(j => j.IsActive == true && j.ActivationDate != null && j.ActivationDate.Value.Month == DateTime.Now.Month && j.ActivationDate.Value.Year == DateTime.Now.Year).Count()).Take(count);
+            return topTags;
         }
 
         /// <summary>

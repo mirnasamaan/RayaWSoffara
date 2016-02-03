@@ -46,7 +46,7 @@ namespace RayaWSoffara.Controllers
                 return PartialView("_PostPartial", result);
             }
 
-            ViewBag.AllActiveUsers = _userRepo.GetAllActiveUsers().Count();
+            ViewBag.AllActiveUsers = _userRepo.GetAllActiveUsers(null, null).Count();
 
             List<int> LeaderIdsAllTime = GetLeaderboardAuthorIds(null, null);
             List<UserPointsVM> AllTimeLeadersPoints = new List<UserPointsVM>();
