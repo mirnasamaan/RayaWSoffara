@@ -261,6 +261,7 @@
     <EntitySetMapping Name="PointsViews">
       <EntityTypeMapping TypeName="RWS_DevelopmentModel.PointsView">
         <MappingFragment StoreEntitySet="PointsView">
+          <ScalarProperty Name="PointTypeId" ColumnName="PointTypeId" />
           <ScalarProperty Name="isActive" ColumnName="isActive" />
           <ScalarProperty Name="UserId" ColumnName="UserId" />
           <ScalarProperty Name="PointTypeWeight" ColumnName="PointTypeWeight" />

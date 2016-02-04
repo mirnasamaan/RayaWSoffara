@@ -52,7 +52,9 @@
                     <th>Id</th>
                     <th>Description</th>
                     <th>Creation Date</th>
-                    <th>Post</th>
+                    <th>Post Title</th>
+                    <th>Post Content</th>
+                    <th>Post Media</th>
                     <th>User</th>
                     <th>Reports Count</th>
                 </tr>
@@ -60,7 +62,8 @@
         </table>
     </div>
 </div>
-@*<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>*@
+@Html.Partial("_LoadingPartial", "overall")
+
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
 <script type="text/javascript">
@@ -99,11 +102,17 @@
             "ajax": {
                 "url": "/Admin/AjaxGetReportComments",
                 "type": "POST",
-                "data": { "status": status, "fromDate": fromDate, "toDate": toDate, "PostId": postid }
+                "data": { "status": status, "fromDate": fromDate, "toDate": toDate, "PostId": postid },
+                "beforeSend": function () {
+                    $(".loading").removeClass("hidden");
+                },
+                "complete": function () {
+                    $(".loading").addClass("hidden");
+                }
             },
             "columns": [
                 {
-                    "data": "ItemName"
+                    "data": "DT_RowId"
                 },
                 {
                     "data": "Description"
@@ -113,6 +122,12 @@
                 },
                 {
                     "data": "ActivePosts"
+                },
+                {
+                    "data": "PostContent"
+                },
+                {
+                    "data": "Media"
                 },
                 {
                     "data": "Email"
@@ -177,9 +192,10 @@
 
         var fromDate = $("#fromDate").val();
         var toDate = $("#toDate").val();
-        var page = $(".paginate_button.current").text();
-        var size = $('select[name="table_length"] option:selected').val();
+        var search = $('#table_filter input').val();
+        //var page = $(".paginate_button.current").text();
+        //var size = $('select[name="table_length"] option:selected').val();
 
-        window.location = "/Admin/ExportPosts?status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate + "&page=" + page + "&size=" + size;
+        window.location = "/Admin/ExportComments?status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate + "&search=" + search;
     };
 </script>

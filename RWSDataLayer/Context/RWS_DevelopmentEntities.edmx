@@ -39,7 +39,8 @@
       [PointsView].[PointTypeWeight] AS [PointTypeWeight], 
       [PointsView].[PointTimestamp] AS [PointTimestamp], 
       [PointsView].[PostId] AS [PostId], 
-      [PointsView].[isActive] AS [isActive]
+      [PointsView].[isActive] AS [isActive], 
+      [PointsView].[PointTypeId] AS [PointTypeId]
       FROM [marvot].[PointsView] AS [PointsView]</DefiningQuery>
           </EntitySet>
           <AssociationSet Name="FK_Article_ArticleType" Association="RWS_DevelopmentModel.Store.FK_Article_ArticleType">
@@ -448,6 +449,7 @@
           <Property Name="PointTimestamp" Type="datetime" />
           <Property Name="PostId" Type="int" />
           <Property Name="isActive" Type="bit" />
+          <Property Name="PointTypeId" Type="int" />
         </EntityType>
         <Association Name="FK_Article_ArticleType">
           <End Role="PostType" Type="RWS_DevelopmentModel.Store.PostType" Multiplicity="0..1">
@@ -1317,6 +1319,7 @@
           <Property Name="PointTimestamp" Type="DateTime" Precision="3" />
           <Property Name="PostId" Type="Int32" />
           <Property Type="Boolean" Name="isActive" />
+          <Property Type="Int32" Name="PointTypeId" />
         </EntityType>
         <Association Name="FK_ArticleTopX_Article">
           <End Role="Post" Type="RWS_DevelopmentModel.Post" Multiplicity="0..1">
@@ -1863,6 +1866,7 @@
           <EntitySetMapping Name="PointsViews">
             <EntityTypeMapping TypeName="RWS_DevelopmentModel.PointsView">
               <MappingFragment StoreEntitySet="PointsView">
+                <ScalarProperty Name="PointTypeId" ColumnName="PointTypeId" />
                 <ScalarProperty Name="isActive" ColumnName="isActive" />
                 <ScalarProperty Name="UserId" ColumnName="UserId" />
                 <ScalarProperty Name="PointTypeWeight" ColumnName="PointTypeWeight" />

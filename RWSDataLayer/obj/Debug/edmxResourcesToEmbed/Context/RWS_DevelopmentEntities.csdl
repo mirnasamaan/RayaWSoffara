@@ -445,6 +445,7 @@
     <Property Name="PointTimestamp" Type="DateTime" Precision="3" />
     <Property Name="PostId" Type="Int32" />
     <Property Type="Boolean" Name="isActive" />
+    <Property Type="Int32" Name="PointTypeId" />
   </EntityType>
   <Association Name="FK_ArticleTopX_Article">
     <End Role="Post" Type="RWS_DevelopmentModel.Post" Multiplicity="0..1">

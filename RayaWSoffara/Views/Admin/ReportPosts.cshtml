@@ -22,7 +22,10 @@
                 <input type="checkbox" class="status" name="status" id="active" value="false">Active &nbsp;
             </label>
             <label>
-                <input type="checkbox" class="status" name="status" id="inactive" value="false">Inactive
+                <input type="checkbox" class="status" name="status" id="inactive" value="false">Inactive &nbsp;
+            </label>
+            <label>
+                <input type="checkbox" class="status" name="status" id="deleted" value="false">Deleted &nbsp;
             </label>
         </div>
 
@@ -74,7 +77,8 @@
         </table>
     </div>
 </div>
-@*<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>*@
+@Html.Partial("_LoadingPartial", "overall")
+
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
 <script type="text/javascript">
@@ -87,17 +91,20 @@
         vars[hash[0]] = hash[1];
     }
     var username = (vars["username"] == null) ? "" : vars["username"];
-    var status = (vars["status"] == null) ? "" : vars["status"];
+    var status = (vars["status"] == null) ? "" : "&" + vars["status"];
 
     if (username != "") {
         $(".username").html("Posts created by: " + username);
     }
-    if (status == "Active") {
+    if (status == "&Active") {
         $("#active").attr("checked", true);
         $("#active").val("true");
-    } else if (status == "Inactive") {
+    } else if (status == "&Inactive") {
         $("#inactive").attr("checked", true);
         $("#inactive").val("true");
+    } else if (status == "&Deleted") {
+        $("#deleted").attr("checked", true);
+        $("#deleted").val("true");
     }
 
     $('#fromDate').datepicker();
@@ -111,12 +118,18 @@
             "processing": true,
             "serverSide": true,
             "info": true,
-            "stateSave": true,
+            "stateSave": false,
             "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
             "ajax": {
                 "url": "/Admin/AjaxGetReportPosts",
                 "type": "POST",
-                "data": { "status": status, "fromDate": fromDate, "toDate": toDate, "username": username }
+                "data": { "status": status, "fromDate": fromDate, "toDate": toDate, "username": username },
+                "beforeSend": function () {
+                    $(".loading").removeClass("hidden");
+                },
+                "complete": function () {
+                    $(".loading").addClass("hidden");
+                }
             },
             "columns": [
                 {
@@ -195,10 +208,14 @@
             $(this).val("false");
         }
         var status = "";
-        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
-            status = "Inactive";
-        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
-            status = "Active";
+        if ($("#inactive").val() == "true") {
+            status += "&Inactive";
+        }
+        if ($("#active").val() == "true") {
+            status += "&Active";
+        }
+        if ($("#deleted").val() == "true") {
+            status += "&Deleted";
         }
 
         var fromDate = $("#fromDate").val();
@@ -213,10 +230,14 @@
         var toDate = $("#toDate").val();
 
         var status = "";
-        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
-            status = "Inactive";
-        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
-            status = "Active";
+        if ($("#inactive").val() == "true") {
+            status += "&Inactive";
+        }
+        if ($("#active").val() == "true") {
+            status += "&Active";
+        }
+        if ($("#deleted").val() == "true") {
+            status += "&Deleted";
         }
 
         if ($.fn.DataTable.isDataTable('#table')) {
@@ -228,17 +249,22 @@
 
     function Export() {
         var status = "";
-        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
-            status = "Inactive";
-        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
-            status = "Active";
+        if ($("#inactive").val() == "true") {
+            status += "&Inactive";
+        }
+        if ($("#active").val() == "true") {
+            status += "&Active";
+        }
+        if ($("#deleted").val() == "true") {
+            status += "&Deleted";
         }
 
         var fromDate = $("#fromDate").val();
         var toDate = $("#toDate").val();
-        var page = $(".paginate_button.current").text();
-        var size = $('select[name="table_length"] option:selected').val();
+        var search = $('#table_filter input').val();
+        //var page = $(".paginate_button.current").text();
+        //var size = $('select[name="table_length"] option:selected').val();
 
-        window.location = "/Admin/ExportPosts?status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate + "&page=" + page + "&size=" + size;
+        window.location = "/Admin/ExportPosts?status=" + status + "&fromDate=" + fromDate + "&search=" + search;
     };
 </script>

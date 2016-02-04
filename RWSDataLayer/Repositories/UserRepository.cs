@@ -94,21 +94,21 @@ namespace RWSDataLayer.Repositories
         /// Get all users
         /// </summary>
         /// <returns></returns>
-        public IQueryable<RWSUser> GetAllUsers(int? page, int size, string status, DateTime? fromDate, DateTime? toDate, out int totalNo)
+        public IQueryable<RWSUser> GetAllUsers(int? page, int? size, string status, DateTime? fromDate, DateTime? toDate, out int totalNo)
         {
             int noOfItems = 0;
-            if (page != null)
+            if (page != null && size != null)
             {
-                noOfItems = page.Value * size;
+                noOfItems = page.Value * size.Value;
             }
             IQueryable<RWSUser> users = GetUsersBySelectedDate(fromDate, toDate);
             if (status == "Active")
             {
                 totalNo = Context.RWSUsers.Where(i => i.IsConfirmed.Value).Count();
                 users = users.Where(i => i.IsConfirmed.Value).OrderBy(i => i.UserName);
-                if (page != null)
+                if (page != null && size != null)
                 {
-                    return users.Skip(noOfItems).Take(size);
+                    return users.Skip(noOfItems).Take(size.Value);
                 }
                 return users;
             }
@@ -116,9 +116,9 @@ namespace RWSDataLayer.Repositories
             {
                 totalNo = Context.RWSUsers.Where(i => !i.IsConfirmed.Value).Count();
                 users = users.Where(i => !i.IsConfirmed.Value).OrderBy(i => i.UserName);
-                if (page != null)
+                if (page != null && size != null)
                 {
-                    return users.Skip(noOfItems).Take(size);
+                    return users.Skip(noOfItems).Take(size.Value);
                 }
                 return users;
             }
@@ -126,47 +126,64 @@ namespace RWSDataLayer.Repositories
             {
                 totalNo = Context.RWSUsers.Count();
                 users = users.OrderBy(i => i.UserName);
-                if (page != null)
+                if (page != null && size != null)
                 {
-                    return users.Skip(noOfItems).Take(size);
+                    return users.Skip(noOfItems).Take(size.Value);
                 }
                 return users;
             }
         }
 
-        public IQueryable<RWSUser> GetUsersBySearchTerm(int startIndex, int count, string term, string status, DateTime? fromDate, DateTime? toDate)
+        public IQueryable<RWSUser> GetUsersBySearchTerm(int? startIndex, int? count, string term, string status, DateTime? fromDate, DateTime? toDate)
         {
             if (status == "Active")
             {
-                if (startIndex > Context.RWSUsers.Where(i => i.IsConfirmed.Value).Count())
+                if (startIndex != null && startIndex > Context.RWSUsers.Where(i => i.IsConfirmed.Value).Count())
                     return null;
                 else
                 {
                     IQueryable<RWSUser> users = GetUsersBySelectedDate(fromDate, toDate);
                     users = users.Where(i => i.UserName.Contains(term) || SqlFunctions.StringConvert((double)i.UserId).Contains(term) || i.Email.Contains(term));
-                    return users.Where(i => i.IsConfirmed.Value).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
+                    if (startIndex != null && count != null)
+                    {
+                        return users.Where(i => i.IsConfirmed.Value).OrderByDescending(i => i.UserName).Skip(startIndex.Value).Take(count.Value);
+                    }
+                    else
+                    {
+                        return users.Where(i => i.IsConfirmed.Value).OrderByDescending(i => i.UserName);
+                    }
                 }
             }
             else if (status == "Inactive")
             {
-                if (startIndex > Context.RWSUsers.Where(i => !i.IsConfirmed.Value).Count())
+                if (startIndex != null && startIndex > Context.RWSUsers.Where(i => !i.IsConfirmed.Value).Count())
                     return null;
                 else
                 {
                     IQueryable<RWSUser> users = GetUsersBySelectedDate(fromDate, toDate);
                     users = users.Where(i => i.UserName.Contains(term) || SqlFunctions.StringConvert((double)i.UserId).Contains(term) || i.Email.Contains(term));
-                    return users.Where(i => !i.IsConfirmed.Value).OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
+                    if (startIndex != null && count != null)
+                    {
+                        return users.Where(i => !i.IsConfirmed.Value).OrderByDescending(i => i.UserName).Skip(startIndex.Value).Take(count.Value);
+                    } else {
+                        return users.Where(i => !i.IsConfirmed.Value).OrderByDescending(i => i.UserName);
+                    }
                 }
             }
             else
             {
-                if (startIndex > Context.RWSUsers.Count())
+                if (startIndex != null && startIndex > Context.RWSUsers.Count())
                     return null;
                 else
                 {
                     IQueryable<RWSUser> users = GetUsersBySelectedDate(fromDate, toDate);
                     users = users.Where(i => i.UserName.Contains(term) || SqlFunctions.StringConvert((double)i.UserId).Contains(term) || i.Email.Contains(term));
-                    return users.OrderByDescending(i => i.UserName).Skip(startIndex).Take(count);
+                    if (startIndex != null && count != null)
+                    {
+                        return users.OrderByDescending(i => i.UserName).Skip(startIndex.Value).Take(count.Value);
+                    }else {
+                        return users.OrderByDescending(i => i.UserName).Skip(startIndex.Value);
+                    }
                 }
             }
         }

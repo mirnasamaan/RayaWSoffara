@@ -51,9 +51,14 @@ namespace RWSDataLayer.Repositories
         /// Gets all posts
         /// </summary>
         /// <returns></returns>
-        public IQueryable<Post> GetPosts(int tabId, string search, string status, DateTime? from, DateTime? to, string username, int count = 10)
+        public IQueryable<Post> GetPosts(int? tabId, string search, string status, DateTime? from, DateTime? to, string username, int? count = 10)
         {
-            int startIndex = tabId * count;
+            IEnumerable<string> statusArr = status.Split('&').Skip(1);
+            int? startIndex = null;
+            if (tabId != null && count != null)
+            {
+                startIndex = tabId.Value * count.Value;
+            }
             IQueryable<Post> posts = GetPostsBySelectedDate(from, to);
             if (username != null && username != "")
             {
@@ -63,23 +68,74 @@ namespace RWSDataLayer.Repositories
             {
                 posts = posts.Where(i => (i.Title.Contains(search) || i.Content.Contains(search) || SqlFunctions.StringConvert((double)i.PostId).Contains(search) || i.Tags.Where(j => j.TagName.Contains(search)).Count() > 0));
             }
-            if (status == "Active")
+
+            if (!(statusArr.Contains("") || statusArr.Count() == 0))
             {
-                return posts.Where(i => i.IsActive != null && i.IsActive.Value).OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
+                IQueryable<Post> active = new Post[] { }.AsQueryable();
+                IQueryable<Post> inactive = new Post[] { }.AsQueryable();
+                IQueryable<Post> deleted = new Post[] { }.AsQueryable();
+                if (statusArr.Contains("Active"))
+                {
+                    active = posts.Where(i => i.IsActive != null && i.IsActive.Value);
+                }
+                if (statusArr.Contains("Inactive"))
+                {
+                    inactive = posts.Where(i => (i.IsActive == null || i.IsActive == false) && (i.isDeleted == null || i.isDeleted.Value == false));
+                }
+                if (statusArr.Contains("Deleted"))
+                {
+                    deleted = posts.Where(i => (i.IsActive == null || i.IsActive.Value == false) && (i.isDeleted.Value == true));
+                }
+
+                if (statusArr.Contains("Active") && !statusArr.Contains("Inactive") && !statusArr.Contains("Deleted"))
+                {
+                    posts = active;
+                }
+                else if (statusArr.Contains("Active") && statusArr.Contains("Inactive") && !statusArr.Contains("Deleted"))
+                {
+                    posts = active.Union(inactive);
+                }
+                else if (statusArr.Contains("Active") && statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = active.Union(inactive).Union(deleted);
+                }
+                else if (!statusArr.Contains("Active") && statusArr.Contains("Inactive") && !statusArr.Contains("Deleted"))
+                {
+                    posts = inactive;
+                }
+                else if (!statusArr.Contains("Active") && statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = inactive.Union(deleted);
+                }
+                else if (!statusArr.Contains("Active") && !statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = deleted;
+                }
+                else if (statusArr.Contains("Active") && !statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = active.Union(deleted);
+                }
+                else if (!statusArr.Contains("Active") && statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = inactive.Union(deleted);
+                }
             }
-            else if (status == "Inactive")
+
+            if (statusArr.Contains("Points"))
             {
-                return posts.Where(i => (i.IsActive == null || i.IsActive == false)).OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
+                posts = posts.Where(i => i.Points.Select(j => j.isActive).Contains(true));
+                //IQueryable<int> postids = posts.Select(i => i.PostId);
+                //postids = Context.PointsViews.Where(i => postids.Contains(i.PostId.Value) && i.isActive == true).Select(i => i.PostId.Value);
+                //posts = posts.Where(i => postids.Contains(i.PostId)).Distinct();
             }
-            else if (status == "Points")
+
+            if (startIndex != null)
             {
-                IQueryable<int> postids = posts.Select(i => i.PostId);
-                postids = Context.PointsViews.Where(i => postids.Contains(i.PostId.Value) && i.isActive == true).Select(i => i.PostId.Value);
-                return posts.Where(i => postids.Contains(i.PostId)).Distinct();
+                return posts.OrderByDescending(i => i.CreationDate).Skip(startIndex.Value).Take(count.Value);
             }
             else
             {
-                return posts.OrderByDescending(i => i.CreationDate).Skip(startIndex).Take(count);
+                return posts.OrderByDescending(i => i.CreationDate);
             }
         }
 
@@ -168,6 +224,7 @@ namespace RWSDataLayer.Repositories
         public int GetPostsCount(string status, string search, DateTime? from, DateTime? to, string username)
         {
             IQueryable<Post> posts = GetPostsBySelectedDate(from, to);
+            IEnumerable<string> statusArr = status.Split('&').Skip(1);
             if (username != null && username != "")
             {
                 posts = posts.Where(i => i.RWSUser.UserName == username);
@@ -176,26 +233,67 @@ namespace RWSDataLayer.Repositories
             {
                 posts = posts.Where(i => (i.Title.Contains(search) || i.Content.Contains(search) || SqlFunctions.StringConvert((double)i.PostId).Contains(search) || i.Tags.Where(j => j.TagName.Contains(search)).Count() > 0));
             }
-            if (status == "Active")
+
+            if (!(statusArr.Contains("") || statusArr.Count() == 0))
             {
-                return posts.Where(i => i.IsActive != null && i.IsActive.Value).Count();
+                IQueryable<Post> active = new Post[] { }.AsQueryable();
+                IQueryable<Post> inactive = new Post[] { }.AsQueryable();
+                IQueryable<Post> deleted = new Post[] { }.AsQueryable();
+                if (statusArr.Contains("Active"))
+                {
+                    active = posts.Where(i => i.IsActive != null && i.IsActive.Value);
+                }
+                if (statusArr.Contains("Inactive"))
+                {
+                    inactive = posts.Where(i => (i.IsActive == null || i.IsActive == false) && (i.isDeleted == null || i.isDeleted.Value == false));
+                }
+                if (statusArr.Contains("Deleted"))
+                {
+                    deleted = posts.Where(i => (i.IsActive == null || i.IsActive.Value == false) && (i.isDeleted.Value == true));
+                }
+
+                if (statusArr.Contains("Active") && !statusArr.Contains("Inactive") && !statusArr.Contains("Deleted"))
+                {
+                    posts = active;
+                }
+                else if (statusArr.Contains("Active") && statusArr.Contains("Inactive") && !statusArr.Contains("Deleted"))
+                {
+                    posts = active.Union(inactive);
+                }
+                else if (statusArr.Contains("Active") && statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = active.Union(inactive).Union(deleted);
+                }
+                else if (!statusArr.Contains("Active") && statusArr.Contains("Inactive") && !statusArr.Contains("Deleted"))
+                {
+                    posts = inactive;
+                }
+                else if (!statusArr.Contains("Active") && statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = inactive.Union(deleted);
+                }
+                else if (!statusArr.Contains("Active") && !statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = deleted;
+                }
+                else if (statusArr.Contains("Active") && !statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = active.Union(deleted);
+                }
+                else if (!statusArr.Contains("Active") && statusArr.Contains("Inactive") && statusArr.Contains("Deleted"))
+                {
+                    posts = inactive.Union(deleted);
+                }
             }
-            else if (status == "Inactive")
+
+            if (statusArr.Contains("Points"))
             {
-                return posts.Where(i => i.IsActive == null || i.IsActive.Value == false).Count();
+                posts = posts.Where(i => i.Points.Select(j => j.isActive).Contains(true));
+                int count = posts.Count();
+                return count;
             }
-            else if (status == "Points")
-            {
-                IQueryable<int> postids = posts.Select(i => i.PostId);
-                postids = Context.PointsViews.Where(i => postids.Contains(i.PostId.Value) && i.isActive == true).Select(i => i.PostId.Value);
-                IQueryable<Post> result = posts.Where(i => postids.Contains(i.PostId));
-                int count = result.Select(i => i.PostId).Distinct().Count();
-                return 0;
-            }
-            else
-            {
-                return posts.Count();
-            }
+               
+            return posts.Count();
         }
 
         /// <summary>
@@ -414,12 +512,16 @@ namespace RWSDataLayer.Repositories
         /// <param name="from">Start date filter</param>
         /// <param name="to">To date filter</param>
         /// <returns></returns>
-        public int GetAllCommentsCount(int? PostId, string status, DateTime? from, DateTime? to)
+        public int GetAllCommentsCount(int? PostId, string search, string status, DateTime? from, DateTime? to)
         {
             IQueryable<Comment> comments = GetCommentsBySelectedDate(from, to);
             if (Context.Posts.Any(i => i.PostId == PostId))
             {
                 comments = comments.Where(i => i.CommentPostId == PostId);
+            }
+            if (search != null && search != "")
+            {
+                comments = comments.Where(i => i.CommentContent.Contains(search) || SqlFunctions.StringConvert((double)i.CommentId).Contains(search));
             }
             if (status == "Reported")
             {
@@ -488,9 +590,13 @@ namespace RWSDataLayer.Repositories
         /// <param name="PostId">The post id</param>
         /// <param name="index">Start index</param>
         /// <returns></returns>
-        public IQueryable<Comment> GetComments(int tabId, int? PostId, string search, string status, DateTime? from, DateTime? to, int count = 10)
+        public IQueryable<Comment> GetComments(int? tabId, int? PostId, string search, string status, DateTime? from, DateTime? to, int? count = 10)
         {
-            int startIndex = tabId * count;
+            int? startIndex = null;
+            if (tabId != null && count != null)
+            {
+                startIndex = tabId.Value * count.Value;
+            }
             IQueryable<Comment> comments = GetCommentsBySelectedDate(from, to);
             if (PostId != null && Context.Posts.Any(i => i.PostId == PostId))
             {
@@ -498,19 +604,23 @@ namespace RWSDataLayer.Repositories
             }
             if (search != null && search != "")
             {
-                comments = comments.Where(i => i.CommentContent.Contains(search));
+                comments = comments.Where(i => i.CommentContent.Contains(search) || SqlFunctions.StringConvert((double)i.CommentId).Contains(search));
             }
             if (status == "Nonreported")
             {
-                return comments.Where(i => i.CommentReportCount == 0).OrderByDescending(i => i.CommentCreationDate).Skip(startIndex).Take(count);
+                comments = comments.Where(i => i.CommentReportCount == 0);
             }
             else if (status == "Reported")
             {
-                return comments.Where(i => i.CommentReportCount > 0).OrderByDescending(i => i.CommentCreationDate).Skip(startIndex).Take(count);
+                comments = comments.Where(i => i.CommentReportCount > 0);
+            }
+            if (startIndex != null)
+            {
+                return comments.OrderByDescending(i => i.CommentCreationDate).Skip(startIndex.Value).Take(count.Value);
             }
             else
             {
-                return comments.OrderByDescending(i => i.CommentCreationDate).Skip(startIndex).Take(count);
+                return comments.OrderByDescending(i => i.CommentCreationDate);
             }
         }
 

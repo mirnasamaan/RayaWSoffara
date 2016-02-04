@@ -530,6 +530,10 @@
     line-height: 38px;
 }
 
+.panel-custom-margin {
+    margin: 30px 0;
+}
+
 @-webkit-keyframes sk-circleFadeDelay {
     0%, 39%, 100% {
         opacity: 0;

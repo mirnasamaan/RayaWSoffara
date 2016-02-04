@@ -62,7 +62,8 @@
         </table>
     </div>
 </div>
-@*<script src="//code.jquery.com/jquery-1.11.3.min.js"></script>*@
+@Html.Partial("_LoadingPartial", "overall")
+
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
 <script type="text/javascript">
@@ -110,7 +111,13 @@
             "ajax": {
                 "url": "/Admin/AjaxGetReportUsers",
                 "type": "POST",
-                "data": { "status": status, "fromDate": fromDate, "toDate": toDate }
+                "data": { "status": status, "fromDate": fromDate, "toDate": toDate },
+                "beforeSend": function () {
+                    $(".loading").removeClass("hidden");
+                },
+                "complete": function () {
+                    $(".loading").addClass("hidden");
+                }
             },
             "columns": [
                 {
@@ -197,9 +204,10 @@
 
         fromDate = $("#fromDate").val();
         toDate = $("#toDate").val();
-        var page = $(".paginate_button.current").text();
-        var size = $('select[name="table_length"] option:selected').val();
+        var search = $('#table_filter input').val();
+        //var page = $(".paginate_button.current").text();
+        //var size = $('select[name="table_length"] option:selected').val();
 
-        window.location = "/Admin/ExportUsers?status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate + "&page=" + page + "&size=" + size;
+        window.location = "/Admin/ExportUsers?status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate + "&search=" + search;
     };
 </script>

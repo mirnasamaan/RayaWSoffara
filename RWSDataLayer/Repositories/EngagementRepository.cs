@@ -229,8 +229,7 @@ namespace RWSDataLayer.Repositories
         {
             try
             {
-                IQueryable<int> postids = Context.Points.Where(i => i.PostId.Value == postId && i.PointTypeId.Value == typeId).Select(i => i.PostId.Value);
-                return Context.PointsViews.Where(i => postids.Contains(i.PostId.Value) && i.PointTypeWeight != null).Sum(i => i.PointTypeWeight.Value);
+                return Context.PointsViews.Where(i => i.PostId.Value == postId && i.PointTypeId.Value == typeId && i.isActive == true).Sum(i => i.PointTypeWeight.Value);
             }
             catch (Exception ex)
             {

@@ -19,5 +19,6 @@ namespace RWSDataLayer.Context
         public Nullable<System.DateTime> PointTimestamp { get; set; }
         public Nullable<int> PostId { get; set; }
         public Nullable<bool> isActive { get; set; }
+        public Nullable<int> PointTypeId { get; set; }
     }
 }

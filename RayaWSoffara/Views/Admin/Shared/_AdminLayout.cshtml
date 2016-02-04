@@ -100,54 +100,6 @@
           </ul>
         </li>
       </ul>
-
-        <div class="infosummary">
-        <h5 class="sidebartitle">Information Summary</h5>    
-        <ul>
-            <li>
-                <div class="datainfo">
-                    <span class="text-muted">Active Users</span>
-                    <h4 id="active-users"></h4>
-                </div>
-                <div class="pull-right"><i class="fa fa-users"></i></div>
-            </li>
-            <li>
-                <div class="datainfo">
-                    <span class="text-muted">Pending Users</span>
-                    <h4 id="pending-users"></h4>
-                </div>
-                <div class="pull-right"><i class="fa fa-users"></i></div>
-            </li>
-            <li>
-                <div class="datainfo">
-                    <span class="text-muted">Active Posts</span>
-                    <h4 id="active-posts"></h4>
-                </div>
-                <div class="pull-right"><i class="fa fa-newspaper-o"></i></div>
-            </li>
-            <li>
-                <div class="datainfo">
-                    <span class="text-muted">Pending Posts</span>
-                    <h4 id="pending-posts"></h4>
-                </div>
-                <div class="pull-right"><i class="fa fa-newspaper-o"></i></div>
-            </li>
-            <li>
-                <div class="datainfo">
-                    <span class="text-muted">Non Reported Comments</span>
-                    <h4 id="nonreported-comments"></h4>
-                </div>
-                <div class="pull-right"><i class="fa fa-comment"></i></div>
-            </li>
-            <li>
-                <div class="datainfo">
-                    <span class="text-muted">Reported Comments</span>
-                    <h4 id="reported-comments"></h4>
-                </div>
-                <div class="pull-right"><i class="fa fa-comment"></i></div>
-            </li>
-        </ul>
-      </div><!-- infosummary -->
     </div><!-- leftpanelinner -->
   </div><!-- leftpanel -->
   
@@ -239,19 +191,6 @@
             url: "/Admin/GetUserImage",
             success: function (imagePath) {
                 $(".userImagePath").attr("src", imagePath+"?w=50&h=50&mode=crop");
-            }
-        });
-
-        $.ajax({
-            type: "GET",
-            url: "/Admin/GetSidebarData",
-            success: function (data) {
-                $("#active-users").html(data.ActiveUsers);
-                $("#pending-users").html(data.PendingUsers);
-                $("#active-posts").html(data.ActivePosts);
-                $("#pending-posts").html(data.PendingPosts);
-                $("#nonreported-comments").html(data.NonReportedComments);
-                $("#reported-comments").html(data.ReportedComments);
             }
         });
     </script>
