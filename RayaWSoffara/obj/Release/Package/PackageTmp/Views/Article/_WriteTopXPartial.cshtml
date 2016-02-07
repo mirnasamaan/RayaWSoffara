@@ -1,0 +1,103 @@
+﻿@model RayaWSoffara.Models.UserArticleVM
+
+@if (Model != null)
+{
+    <form enctype="multipart/form-data" method="post" id="lists_form" action="/WriteTopX">
+        @if (@ViewBag.ErrorMsg == 1)
+        {
+            <div class="ErrorMsg">من فضلك تأكد من إدخال كل البيانات المطلوبة.</div>
+        }
+        else if (@ViewBag.ErrorMsg == 2)
+        {
+            <div class="ErrorMsg">Error: captcha is not valid.</div>
+        }
+        <div>
+            <div class="input-group full_width input_margin">
+                @Html.TextBoxFor(m => m.newArticle.Title, new { @class = "form-control dark_border", placeholder = "أضف عنوان" })
+                <input type="hidden" name="article_picture_path[0]" id="article_picture_path_0" value="" />
+                <input type="hidden" name="video_url[0]" id="video_url_0" value="" />
+            </div>
+            <div class="input-group full_width input_margin">
+                <div class="media dark_border" id="media_0">
+                    <button type="button" class="btn btn-primary btn-sm edit-image-btn hidden" data-toggle="modal" data-target="#image_edit">
+                        <i class="fa fa-pencil-square-o"></i>
+                    </button>
+                    <button type="button" class="btn btn-danger btn-sm delete-image-btn hidden">
+                        <i class="fa fa-trash-o"></i>
+                    </button>
+                    <img class="media_img img-responsive" src="" />
+                    <input id="originalimage_0" type="hidden" />
+                    <section class="image-upload-drop-target media_dropbox">
+                        <button type="button" class="btn btn-primary btn-lg addimage-btn" onclick="addImageBtn(this)" @*id="pictureModal_toggle_btn"*@ data-toggle="modal" data-target="#image_edit">
+                            أضف صورة أو فيديو
+                        </button>
+                    </section>
+                </div>
+            </div>
+            <div class="input-group full_width input_margin">
+                @Html.TextAreaFor(m => m.newArticle.Content, new { id = "topX_Content_0", @class = "article_content ckeditor" })
+            </div>
+
+            <!--Start of TopX Tags-->
+
+            <button id="add_topX_item">إضافة</button>
+            <div class="vertical_space"></div>
+
+            <div id="topX_container">
+                @for (var i = 3; i > 0; i--)
+                {
+                    <div class="topX_item">
+                        <div class="input-group full_width input_margin col-sm-10">
+                            <input type="text" name="newArticle.ArticleTopXes[@(i - 1)].TopXTitle" class="col-sm-11 pull-right topX-title dark_border" id="topX_title_@i" placeholder = "أضف عنوان" />
+                            <input type="text" class="col-sm-1 topX-order pull-right" id="topX_order_@i" disabled />
+                            <input type="hidden" name="newArticle.ArticleTopXes[@(i - 1)].TopXOrder" value="@i" />
+                            <input type="hidden" name="article_picture_path[@i]" id="article_picture_path_@i" value="" />
+                            <input type="hidden" name="video_url[@i]" id="video_url_@i" value="" />
+                            <div class="arrows-div">
+                                <button class="up-button pull-left" onclick="upclick(@i);return false;" id="up_button_@i"></button>
+                                <button class="down-button pull-left" onclick="downclick(@i);return false;" id="down_button_@i"></button>
+                            </div>
+                        </div>
+                        <div class="input-group full_width input_margin">
+                            <div class="media dark_border" id="media_@i">
+                                <button type="button" class="btn btn-primary btn-sm edit-image-btn hidden" data-toggle="modal" data-target="#image_edit">
+                                    <i class="fa fa-pencil-square-o"></i>
+                                </button>
+                                <button type="button" class="btn btn-danger btn-sm delete-image-btn hidden">
+                                    <i class="fa fa-trash-o"></i>
+                                </button>
+                                <img class="media_img img-responsive" src="" />
+                                <input name="newArticle.ArticleTopXes[@(i - 1)].TopXImage" class="TopXImage_@(i)" type="hidden" />
+                                <input id="originalimage_@i" type="hidden" />
+                                <section class="image-upload-drop-target media_dropbox">
+                                    <button type="button" class="btn btn-primary btn-lg addimage-btn" onclick="addImageBtn(this)" @*id="pictureModal_toggle_btn"*@ data-toggle="modal" data-target="#image_edit">
+                                        أضف صورة أو فيديو
+                                    </button>
+                                </section>
+                            </div>
+                        </div>
+                        <div class="input-group full_width input_margin">
+                            <textarea name="newArticle.ArticleTopXes[@(i - 1)].TopXContent" id="topX_Content_@i" class="ckeditor"></textarea>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <!--End of TopX Tags-->
+
+            <div class="input-group full_width input_margin">
+                <div>
+                    <input name="mySelect" type="hidden" class="tagsCount" />
+                    <ul class="articleTags"></ul>
+                </div>
+            </div>
+            <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
+            <input name="recaptcha" type="hidden" />
+            <div id="submit-btn">
+                <input type="submit" value="نشر المقال" class="buttons full_width btn_add_article" />
+            </div>
+        </div>
+    </form>
+    
+    @Html.Partial("_PostMediaModalPartial", "Lists")
+}

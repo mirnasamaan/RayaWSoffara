@@ -404,7 +404,9 @@ namespace RWSDataLayer.Repositories
         /// <param name="userId">UserId</param>
         /// <param name="monthId">Month</param>
         /// <param name="yearId">Year</param>
-        /// <returns></returns>
+        /// <returns>
+        /// views count and value
+        /// </returns>
         public double[] GetUserViewsByMonthId(int UserId, int MonthId, int YearId)
         {
             if (Context.RWSUsers.Any(x => x.UserId == UserId))
@@ -415,7 +417,9 @@ namespace RWSDataLayer.Repositories
                 result[0] = views.Count();
                 if (result[0] > 0)
                 {
-                    result[1] = views.Where(i => i.isActive.Value).Sum(i => i.PointType.PointTypeWeight.Value);
+                    var y = views.ToList();
+                    //var x = y.Sum(i => i.PointType.PointTypeWeight.Value);
+                    result[1] = views.Where(i => i.isActive.Value && i.PointType != null).Sum(i => i.PointType.PointTypeWeight.Value);
                 }
                 return result;
             }
@@ -423,6 +427,17 @@ namespace RWSDataLayer.Repositories
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Get users engagement type count (views, like, shares)
+        /// </summary>
+        /// <param name="userId"></param>
+        /// <param name="engType"></param>
+        /// <returns></returns>
+        public int GetUserEngTypeCount(int userId, int engType)
+        {
+            return 0;
         }
 
         /// <summary>

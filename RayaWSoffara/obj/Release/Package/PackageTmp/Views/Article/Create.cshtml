@@ -1,162 +1,124 @@
-﻿@model RayaWSoffara.Models.UserArticleVM
+﻿<link href="~/Content/CSS/html5imageupload.css" rel="stylesheet" />
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src="~/Content/Scripts/script.js"></script>
+@model RayaWSoffara.Models.UserArticleVM
 
 @{
     ViewBag.Title = "إكتب مقالك";
 }
 
-<form enctype="multipart/form-data" method="post">
-    <div class="container full_width" id="createArticle_container">
-        <div class="row">
-            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
-                <div class="input-group full_width input_margin"> 
-                    @Html.TextBoxFor(m => m.newArticle.title, new{@class = "form-control dark_border", placeholder = "أضف عنوان"})
-                    @*<input type="text" name="newArticle.title" value="@Model.newArticle.title" class="form-control dark_border" placeholder = "أضف عنوان" />*@
-                    <input type="hidden" name="article_picture_path" id="article_picture_path" />
-                    <input type="hidden" name="video_url" id="video_url" />
-                </div>
-                <div class="input-group full_width input_margin">
-                    <div id="media" class="dark_border">
-                        <img id="media_img" src="" />
-                        <section class="image-upload-drop-target" id="media_dropbox">
-                            <span>أضف صورة أو فيديو</span>
-                            <button type="button" class="upload" id="video_embed_btn">Embed Video</button>
-                            <button type="button" class="upload" id="picture_upload_btn">Upload Image</button>
-                            <input type="file" name="article_picture" id="article_picture_btn" class="hide" onchange="readURL(this)" />
-                        </section>
-                        <div id="controls">
-                            <section>
-                                <button type="button" class="upload" id="delete_btn"><span class="glyphicon glyphicon-trash"></span></button>
-                                <button type="button" class="upload" id="edit_btn"><span class="glyphicon glyphicon-pencil"></span></button>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-                <div class="input-group full_width input_margin">
-                    @Html.TextAreaFor(m => m.newArticle.article_content, new{ id="article_content"})
-                    @*<textarea name="article_content" id="article_content">@Model.newArticle.article_content</textarea>*@
-                </div>
-                <div class="input-group full_width input_margin">
-                    @*<input type="hidden" name="newArticle.tags[0].tag_id" value="1" />*@
-                    <select multiple="multiple" id="my-select">
-                        @foreach (var item in (List<RWSDataLayer.Models.tag>)ViewBag.tags)
-                        {
-                            <option value="@item.id">@item.name</option>
-                        }
-                    </select>
-                </div>
-                <div id="btn_reg_div">
-                    <input type="submit" value="نشر المقال" id="btn_add_article" class="buttons full_width" />
-                </div>
-            </div>
-            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a href="#one" data-toggle="tab">
-                        <img class="tab_imgs" src="~/Content/Images/icon_camera.png" />صورة</a></li>
-                    <li><a href="#two" data-toggle="tab">
-                        <img class="tab_imgs" src="~/Content/Images/icon_video.png" />فيديو</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane active" id="one">
-                        <div class="container full_width">
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/sample_image1.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article2.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article3.png" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/sample_image1.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article2.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article3.png" />
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/sample_image1.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article2.png" />
-                                </div>
-                                <div class="col-lg-4">
-                                    <img src="~/Content/Images/img_article3.png" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="tab-pane" id="two">
-                        <div class="container">
-                            <div class="row">
-                                <div class="col-lg-12">
-                                    <textarea id="video_embed_txt" rows="3" placeholder="رجاءً ضع الرابط هنا"></textarea>
-                                    <button type="button" id="embed_btn" class="btn btn-default">أدخل</button>
-                                    <div id="video_viewport">
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+<input type="hidden" id="AllImagesCount" value="@ViewBag.AllImagesCount" />
+<div class="clear-fix"></div>
+<div class="container" id="createArticle_container">
+    <div class="col-md-8 col-md-offset-2 col-xs-12">
+        <ul id="tabs2" class="nav nav-tabs" data-tabs="tabs">
+            <li class="@(ViewBag.Type == "Article" ? "active" : "")"><a href="#article" data-toggle="tab">مقالة<i class="fa fa-newspaper-o"></i></a></li>
+            <li class="@(ViewBag.Type == "Lists" ? "active" : "")"><a href="#lists" data-toggle="tab">قوائم<i class="fa fa-list-ol"></i></a></li>
+            <li class="@(ViewBag.Type == "Opinion" ? "active" : "")"><a href="#opinion" data-toggle="tab">رأى<i class="fa fa-exclamation"></i></a></li>
+            <li class="@(ViewBag.Type == "Image" ? "active" : "")"><a href="#image" data-toggle="tab">صورة<i class="fa fa-picture-o"></i></a></li>
+            <li class="@(ViewBag.Type == "Video" ? "active" : "")"><a href="#video" data-toggle="tab">فيديو<i class="fa fa-video-camera"></i></a></li>
+        </ul>
 
-        <button type="button" class="btn btn-primary btn-lg hide" id="pictureModal_toggle_btn" data-toggle="modal" data-target="#image_edit">
-            Launch demo modal
-        </button>
-
-        <button type="button" class="btn btn-primary btn-lg hide" id="videoModal_toggle_btn" data-toggle="modal" data-target="#video_embed">
-            Launch demo modal
-        </button>
-
-        <div class="modal fade" id="video_embed" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="modalLabel">إدخال الفيديو</h4>
-                    </div>
-                    <div class="modal-body" id="video_modal_body">
-                        <textarea id="embedded_video_link" class="full_width" placeholder="رجاءً ضع الرابط هنا"></textarea>
-                        <div id="modal_video_viewport">
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary buttons" id="embed_confirm">إدخال</button>
-                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
-                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
-                        <button type="button" class="btn btn-default" id="embed_cancel">إلغاء</button>
-                    </div>
-                </div>
+        @*<div class="tab-pane active">
+            <iframe id="iframe" frameborder="0" scrolling="no" onload="resizeIframe(this)"></iframe>
+        </div>*@
+        @if (ViewBag.Type == "Article")
+        {
+            <div class="tab-pane active" id="article">
+                @Html.Partial("_WriteArticlePartial", Model)
             </div>
-        </div>
-
-        <div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-            <div class="modal-dialog">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                        <h4 class="modal-title" id="myModalLabel">ظبط الصورة</h4>
-                    </div>
-                    <div class="modal-body" id="edit_modal_body">
-                        <button type="button" id="crop_btn" class="btn btn-default">قص الصورة</button>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-primary buttons" id="hl-crop-image">قص الصورة</button>
-                        @*<a href="#" id="hl-crop-image">Crop Image</a>*@
-                        @*<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>*@
-                        <button type="button" class="btn btn-default" id="crop_cancel">إلغاء</button>
-                    </div>
-                </div>
+        }
+        @if (ViewBag.Type == "Lists")
+        {
+            <div class="tab-pane active" id="lists">
+                @Html.Partial("_WriteTopXPartial", Model)
             </div>
-        </div>
+        }
+        @if (ViewBag.Type == "Opinion")
+        {
+            <div class="tab-pane active" id="opinion">
+                @Html.Partial("_WriteOpinionPartial", Model)
+            </div>
+        }
+        @if (ViewBag.Type == "Image")
+        {
+            <div class="tab-pane active" id="image">
+                @Html.Partial("_WriteImagePartial", Model)
+            </div>
+        }
+        @if (ViewBag.Type == "Video")
+        {
+            <div class="tab-pane active" id="video">
+                @Html.Partial("_WriteVideoPartial", Model)
+            </div>
+        }
     </div>
-</form>
+</div>
+
+@Html.Partial("_LoadingPartial", "overall")
+
+<script src="~/Content/Scripts/ckeditor/ckeditor.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+@*<script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.5.js&#8221;" type="text/javascript"></script>*@
+<script src='https://www.google.com/recaptcha/api.js'></script>
+<script src="~/Content/Scripts/html5imageupload.min.js"></script>
+<script src="~/Content/Scripts/jquery.visible.min.js"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/CreatePostScript.js"></script>
+<script>
+
+    var allImagesCount = $("#AllImagesCount").val();
+    var page = 1;
+    var processing = false;
+    var done = false;
+
+    LoadScript();
+    GetImageTags();
+
+    // start of loading partial views according to tab click //
+    $('#tabs2 li').click(function (e) {
+        $(".articleTags").tagit("removeAll");
+        $(".media_img ").attr("src", "");
+        $(".media_dropbox").removeClass("hidden");
+        $(".edit-image-btn").addClass("hidden");
+        $(".delete-image-btn").addClass("hidden");
+        $(".tagsCount").val("");
+        var elem = $(this).children("a").attr("href");
+        var post_type = elem.split('#')[1];
+        $.ajax({
+            type: 'POST',
+            url: '/Article/GetWritePartial',
+            data: { Type: post_type },
+            beforeSend: function () {
+                    $(".loading").removeClass("hidden");
+                },
+            success: function (data) {
+                $('#createArticle_container .tab-pane').attr("id", post_type);
+                $('#createArticle_container .tab-pane').html(data);
+                if (post_type != "Video") {
+                    GetImageTags();
+                    GetImagesWhenChangingTabs();
+                }
+                var id = grecaptcha.render($('.g-recaptcha')[0], { sitekey: '6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI' });
+                grecaptcha.reset(id);
+                LoadScript();
+                $(".loading").addClass("hidden");
+            },
+            error: function () {
+                $(".loading").addClass("hidden");
+            }
+        });
+    });
+    // end of loading partial views according to tab click //
+
+    // start of disabling add button in images modal when dropzone image is deleted //
+    $('#image_edit').on('shown.bs.modal', function (e) {
+        $("#uploadimage .tools .btn-cancel").click(function () {
+            alert("test");
+            $("#uploadimage .addImage").attr("disabled");
+        });
+    });
+    // end of disabling add button in images modal when dropzone image is deleted //
+
+</script>

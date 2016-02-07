@@ -1,0 +1,35 @@
+﻿<div class="topX_item added">
+    <div class="input-group full_width input_margin col-sm-10">
+        <button class="pull-right" id="topX_del_@ViewBag.Order" onclick="removeTopX(this)"><i class="fa fa-times"></i></button>
+        <input type="text" name="newArticle.ArticleTopXes[@(int.Parse(ViewBag.Order) - 1)].TopXTitle" class="col-sm-11 pull-right topX-title dark_border" id="topX_title_@ViewBag.Order" placeholder="أضف عنوان" />
+        <input type="text" class="col-sm-1 topX-order pull-right" id="topX_order_@ViewBag.Order" value="@ViewBag.Order" disabled />
+        <input type="hidden" name="newArticle.ArticleTopXes[@(int.Parse(ViewBag.Order) - 1)].TopXOrder" value="@ViewBag.Order" />
+        <input type="hidden" name="article_picture_path[@ViewBag.Order]" id="article_picture_path_@ViewBag.Order" value="" />
+        <input type="hidden" name="video_url[@ViewBag.Order]" id="video_url_@ViewBag.Order" value="" />
+        <div class="arrows-div">
+            <button class="up-button pull-left" onclick="upclick(@ViewBag.Order);return false;" id="up_button_@ViewBag.Order"></button>
+            <button class="down-button pull-left" onclick="downclick(@ViewBag.Order);return false;" id="down_button_@ViewBag.Order"></button>
+        </div>
+    </div>
+    <div class="input-group full_width input_margin">
+        <div class="media dark_border" id="media_@ViewBag.Order">
+            <button type="button" class="btn btn-primary btn-sm edit-image-btn hidden" data-toggle="modal" data-target="#image_edit">
+                <i class="fa fa-pencil-square-o"></i>
+            </button>
+            <button type="button" class="btn btn-danger btn-sm delete-image-btn hidden">
+                <i class="fa fa-trash-o"></i>
+            </button>
+            <img class="media_img img-responsive" src="" />
+            <input name="newArticle.ArticleTopXes[@(int.Parse(ViewBag.Order) - 1)].TopXImage" class="TopXImage_@ViewBag.Order" type="hidden" />
+            <input id="originalimage_@ViewBag.Count" type="hidden" />
+            <section class="image-upload-drop-target media_dropbox">
+                <button type="button" class="btn btn-primary btn-lg addimage-btn" onclick="addImageBtn(this)" data-toggle="modal" data-target="#image_edit">
+                    أضف صورة أو فيديو
+                </button>
+            </section>
+        </div>
+    </div>
+    <div class="input-group full_width input_margin">
+        <textarea name="newArticle.ArticleTopXes[@(int.Parse(ViewBag.Order) - 1)].TopXContent" id="topX_Content_@ViewBag.Order"></textarea>
+    </div>
+</div>

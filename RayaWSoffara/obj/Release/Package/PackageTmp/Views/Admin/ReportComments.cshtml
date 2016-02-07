@@ -1,0 +1,201 @@
+﻿@{
+    ViewBag.Title = "Comments";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="javascript:void(0)" onclick="Export()">Export to Excel</a>
+        </div>
+        <h4 class="panel-title">Comments</h4>
+    </div>
+    <div class="panel-body">
+        <div class="username"></div>
+        <div class="checkbox block">
+            <label>
+                <input type="checkbox" class="status" name="status" id="nonreported" value="false">Non Reported &nbsp;
+            </label>
+            <label>
+                <input type="checkbox" class="status" name="status" id="reported" value="false">Reported
+            </label>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">From</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="fromDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">To</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="toDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-primary" href="javascript:void(0)" onclick="submit()">Go</a>
+            </div>
+        </div>
+
+        <table id="table" class="table table-primary">
+            <thead>
+                <tr style="text-align: left;">
+                    <th>Id</th>
+                    <th>Description</th>
+                    <th>Creation Date</th>
+                    <th>Post Title</th>
+                    <th>Post Content</th>
+                    <th>Post Media</th>
+                    <th>User</th>
+                    <th>Reports Count</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+@Html.Partial("_LoadingPartial", "overall")
+
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    var postid = (vars["PostId"] == null) ? "" : vars["PostId"];
+    var status = (vars["status"] == null) ? "" : vars["status"];
+
+    if (status == "Nonreported") {
+        $("#nonreported").attr("checked", true);
+        $("#nonreported").val("true");
+    } else if (status == "Reported") {
+        $("#reported").attr("checked", true);
+        $("#reported").val("true");
+    }
+
+    $('#fromDate').datepicker();
+    $('#toDate').datepicker();
+
+    var dt;
+
+    function getTableData(status, fromDate, toDate) {
+        dt = $('#table').DataTable({
+            "scrollX": true,
+            "processing": true,
+            "serverSide": true,
+            "info": true,
+            "stateSave": true,
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "ajax": {
+                "url": "/Admin/AjaxGetReportComments",
+                "type": "POST",
+                "data": { "status": status, "fromDate": fromDate, "toDate": toDate, "PostId": postid },
+                "beforeSend": function () {
+                    $(".loading").removeClass("hidden");
+                },
+                "complete": function () {
+                    $(".loading").addClass("hidden");
+                }
+            },
+            "columns": [
+                {
+                    "data": "DT_RowId"
+                },
+                {
+                    "data": "Description"
+                },
+                {
+                    "data": "CreationDate"
+                },
+                {
+                    "data": "ActivePosts"
+                },
+                {
+                    "data": "PostContent"
+                },
+                {
+                    "data": "Media"
+                },
+                {
+                    "data": "Email"
+                },
+                {
+                    "data": "ReportedCommentsCount"
+                }
+            ],
+            "order": [[0, "asc"]]
+        });
+    }
+
+    getTableData(status, "", "");
+
+    $('.status').change(function () {
+        if ($(this).is(":checked")) {
+            $(this).attr("checked", true);
+            $(this).val("true");
+        } else {
+            $(this).attr("checked", false);
+            $(this).val("false");
+        }
+        var status = "";
+        if ($("#reported").val() == "true" && $("#nonreported").val() == "false") {
+            status = "Reported";
+        } else if ($("#reported").val() == "false" && $("#nonreported").val() == "true") {
+            status = "Nonreported";
+        }
+
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+
+        dt.destroy();
+        getTableData(status, fromDate, toDate);
+    });
+
+    function submit() {
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+
+        var status = "";
+        if ($("#reported").val() == "true" && $("#nonreported").val() == "false") {
+            status = "Reported";
+        } else if ($("#reported").val() == "false" && $("#nonreported").val() == "true") {
+            status = "Nonreported";
+        }
+
+        if ($.fn.DataTable.isDataTable('#table')) {
+            $("#table").DataTable().destroy();
+        }
+
+        getTableData(status, fromDate, toDate);
+    }
+
+    function Export() {
+        var status = "";
+        if ($("#reported").val() == "true" && $("#nonreported").val() == "false") {
+            status = "Reported";
+        } else if ($("#reported").val() == "false" && $("#nonreported").val() == "true") {
+            status = "Nonreported";
+        }
+
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+        var search = $('#table_filter input').val();
+        //var page = $(".paginate_button.current").text();
+        //var size = $('select[name="table_length"] option:selected').val();
+
+        window.location = "/Admin/ExportComments?status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate + "&search=" + search;
+    };
+</script>

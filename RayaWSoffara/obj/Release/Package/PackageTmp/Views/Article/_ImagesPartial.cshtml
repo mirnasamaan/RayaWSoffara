@@ -1,0 +1,19 @@
+﻿@model List<RWSDataLayer.Context.Image>
+
+@if (Model != null)
+{
+    foreach (var item in @Model) {
+        <div class="col-md-3 col-sm-6 col-xs-12 image-choice">
+            <img onclick="chooseImage(this)" src="@item.ImageURL?w=242&h=137&mode=crop" />
+            <div class="inner-image-tags">
+                @foreach(var tag in @item.Tags){
+                    <span>@tag.TagName </span>
+                }
+            </div>
+        </div>
+        
+        @*<div class="col-xs-12 hidden-md hidden-lg image-choice">
+            <img onclick="chooseImage(this)" src="@item.ImageURL?w=300&h=200&mode=crop" />
+        </div>*@
+    }
+}

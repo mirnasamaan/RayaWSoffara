@@ -1,0 +1,213 @@
+﻿@{
+    ViewBag.Title = "Users";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="javascript:void(0)" onclick="Export()">Export to Excel</a>
+        </div>
+        <h4 class="panel-title">Users</h4>
+    </div>
+    <div class="panel-body">
+        <div class="checkbox block">
+            <label>
+                <input type="checkbox" class="status" name="status" id="active" value="false">Active &nbsp;
+            </label>
+            <label>
+                <input type="checkbox" class="status" name="status" id="inactive" value="false">Inactive
+            </label>
+        </div>
+
+        <div class="form-group">
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">From</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="fromDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">To</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="toDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-primary" href="javascript:void(0)" onclick="submit()">Go</a>
+            </div>
+        </div>
+
+        <table id="table" class="table table-primary">
+            <thead>
+                <tr style="text-align: left;">
+                    <th>Id</th>
+                    <th>User Name</th>
+                    <th>Creation Date</th>
+                    <th>Activation Date</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Total Points</th>
+                    <th>Active Posts</th>
+                    <th>Inactive Posts</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+@Html.Partial("_LoadingPartial", "overall")
+
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+    // start of getting data from query string //
+    var vars = [], hash;
+    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
+    for (var i = 0; i < hashes.length; i++) {
+        hash = hashes[i].split('=');
+        vars.push(hash[0]);
+        vars[hash[0]] = hash[1];
+    }
+    var status = (vars["status"] == null) ? "" : vars["status"];
+    var fromDate = (vars["from"] == null) ? "" : vars["from"];
+    var toDate = (vars["to"] == null) ? "" : vars["to"];
+
+    if (status == "Active") {
+        $("#active").attr("checked", true);
+        $("#active").val("true");
+    } else if (status == "Inactive") {
+        $("#inactive").attr("checked", true);
+        $("#inactive").val("true");
+    }
+
+    $("#fromDate").datepicker();
+    $("#toDate").datepicker();
+    if (fromDate != "") {
+        var from_date = fromDate.split('/');
+        $("#fromDate").datepicker("setDate", new Date(from_date[2], parseInt(from_date[0]-1), from_date[1]));
+    } 
+    if (toDate != "") {
+        var to_date = toDate.split('/');
+        $("#toDate").datepicker("setDate", new Date(to_date[2], parseInt(to_date[0]-1), to_date[1]));
+    } 
+    // end of getting data from query string //
+
+    var dt;
+
+    function getTableData(status, fromDate, toDate) {
+        dt = $('#table').DataTable({
+            "processing": true,
+            "serverSide": true,
+            "info": true,
+            "stateSave": true,
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "ajax": {
+                "url": "/Admin/AjaxGetReportUsers",
+                "type": "POST",
+                "data": { "status": status, "fromDate": fromDate, "toDate": toDate },
+                "beforeSend": function () {
+                    $(".loading").removeClass("hidden");
+                },
+                "complete": function () {
+                    $(".loading").addClass("hidden");
+                }
+            },
+            "columns": [
+                {
+                    "data": "DT_RowId"
+                },
+                {
+                    "data": "ItemName"
+                },
+                {
+                    "data": "CreationDate"
+                },
+                {
+                    "data": "ActivationDate"
+                },
+                {
+                    "data": "Email"
+                },
+                {
+                    "data": "Status"
+                },
+                {
+                    "data": "Points"
+                },
+                {
+                    "data": "ActivePosts"
+                },
+                {
+                    "data": "InactivePosts"
+                }
+            ],
+            "order": [[0, "asc"]]
+        });
+    }
+
+    getTableData(status, fromDate, toDate);
+
+    $('.status').change(function () {
+        if ($(this).is(":checked")) {
+            $(this).attr("checked", true);
+            $(this).val("true");
+        } else {
+            $(this).attr("checked", false);
+            $(this).val("false");
+        }
+        var status = "";
+        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
+            status = "Inactive";
+        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
+            status = "Active";
+        }
+
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+
+        dt.destroy();
+        getTableData(status, fromDate, toDate);
+    });
+
+    function submit() {
+        fromDate = $("#fromDate").val();
+        toDate = $("#toDate").val();
+
+        status = "";
+        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
+            status = "Inactive";
+        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
+            status = "Active";
+        }
+
+        if ($.fn.DataTable.isDataTable('#table')) {
+            $("#table").DataTable().destroy();
+        }
+
+        getTableData(status, fromDate, toDate);
+    }
+
+    function Export() {
+        status = "";
+        if ($("#inactive").val() == "true" && $("#active").val() == "false") {
+            status = "Inactive";
+        } else if ($("#inactive").val() == "false" && $("#active").val() == "true") {
+            status = "Active";
+        }
+
+        fromDate = $("#fromDate").val();
+        toDate = $("#toDate").val();
+        var search = $('#table_filter input').val();
+        //var page = $(".paginate_button.current").text();
+        //var size = $('select[name="table_length"] option:selected').val();
+
+        window.location = "/Admin/ExportUsers?status=" + status + "&fromDate=" + fromDate + "&toDate=" + toDate + "&search=" + search;
+    };
+</script>

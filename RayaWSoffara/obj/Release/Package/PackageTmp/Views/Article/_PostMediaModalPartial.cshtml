@@ -1,0 +1,66 @@
+﻿@model string
+
+<div class="modal fade" id="image_edit" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="myModalLabel">ضبط الصورة</h4>
+            </div>
+            <div class="modal-body" id="edit_modal_body">
+                <ul id="tabs" class="nav nav-tabs" data-tabs="tabs">
+                    @if(Model != "Video") {
+                    <li class="active"><a href="#uploadimage" data-toggle="tab">أضف صورة</a></li>
+                    }
+                    @if(Model != "Image") {
+                    <li><a href="#uploadvideo" data-toggle="tab">يوتيوب فيديو</a></li>
+                    }
+                    @if(Model != "Video") {
+                    <li><a href="#chooseimage" data-toggle="tab">إختر صورة</a></li>
+                    }
+                </ul>
+                <div id="my-tab-content" class="tab-content">
+                    @if(Model != "Video") {
+                    <div class="tab-pane active" id="uploadimage">
+                        <div class="dropzone image-dropzone full_width" data-ajax="false" data-url="/Article/TestCrop" data-save="false" data-resize="true" data-canvas="true" data-width="866" data-height="398" style="width: 100%;">
+                            <input type="file" name="thumb" />
+                        </div>
+                        <input id="uploadimagefilename" type="hidden" />
+                        <input id="topXindex" type="hidden" />
+                        <button class="addImage btn btn-primary buttons" onclick="uploadImageClick(this)" disabled>أضف</button>
+                    </div>
+                    }
+                    @if(Model != "Image") {
+                    <div class="tab-pane" id="uploadvideo">
+                        <textarea id="embedded_video_link" class="full_width form-control" placeholder="رجاءً ضع الرابط هنا"></textarea>
+                        <div id="modal_video_viewport">
+                        </div>
+                        <button type="button" class="btn btn-primary buttons" id="embed_confirm">أضف</button>
+                    </div>
+                    }
+                    @if(Model != "Video") {
+                    <div class="tab-pane" id="chooseimage">
+                        <ul class="imageTags"></ul>
+                        <input type="hidden" id="tagNames" />
+                        <button class="search-btn"><i class="fa fa-search"></i></button>
+                        <div id="img_container">
+                            <div class="container full_width">
+                                @if(ViewBag.Images != null) {
+                                    @Html.Partial("_ImagesPartial", (List<RWSDataLayer.Context.Image>)@ViewBag.Images)
+                                }
+                            </div>
+                            <div id="testScroll" style="height: 10px">
+                                @Html.Partial("_LoadingPartial", "inline")
+                            </div>
+                        </div>
+                        <div class="vertical_space"></div>
+                        <button class="addImage btn btn-primary buttons" onclick="chooseImageClick(this)" disabled>أضف</button>
+                    </div>
+                    }
+                </div>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>

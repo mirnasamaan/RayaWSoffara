@@ -1,0 +1,63 @@
+﻿@model List<RayaWSoffara.Models.PostPointsVM>
+@using RayaWSoffara.Helpers
+
+@foreach (var item in @Model)
+{
+    <div class="recent-articles">
+        <div class="col-md-4 col-xs-12">
+            <a href="/Post/@item.PostId">
+                @if (@item.PostFeaturedImage != null)
+                {
+                    <img class="" id="article_img" src="~/Content/Article_Images/@item.PostFeaturedImage?w=210&h=140&mode=crop" /> 
+                }
+                else if (@item.PostFeaturedVideo != null)
+                {
+                    <iframe width="210" height="140" src="https://www.youtube.com/embed/@item.PostFeaturedVideo" frameborder="0" allowfullscreen></iframe>
+                }
+                else if (@item.PostContent != null)
+                {
+                    <div class="achievement-content">@TrimTextHelper.TrimText(item.PostContent, 170)</div>
+                }
+            </a>
+        </div>
+        <div class="col-md-8 points-stat">
+            <div class="article_title pull-left">@TrimTextHelper.TrimText(item.PostTitle, 40)</div>
+            <div class="clear-fix"></div>
+
+            <div class="achievements">
+                @foreach (var type in ViewBag.EngagementTypes)
+                {
+                    <div class="achievement-item pull-left col-lg-2">
+                        @if (type.EngTypeId == 3)
+                        {
+                            <div class="month-value">@item.PostViewsCount</div>
+                            <div class="icon"><i class="fa fa-eye"></i></div>
+                            <div class="points-value">
+                                <div>@item.PostViewsValue</div>
+                                <div>نقطة</div>
+                            </div>
+                        }
+                        else if (type.EngTypeId == 2)
+                        {
+                            <div class="month-value">@item.PostLikesCount</div>
+                            <div class="icon"><i class="fa fa-thumbs-up"></i></div>
+                            <div class="points-value">
+                                <div>@item.PostLikesValue</div>
+                                <div>نقطة</div>
+                            </div>
+                        }
+                        else if (type.EngTypeId == 1)
+                        {
+                            <div class="month-value">@item.PostSharesCount</div>
+                            <div class="icon"><i class="fa fa-share"></i></div>
+                            <div class="points-value">
+                                <div>@item.PostSharesValue</div>
+                                <div>نقطة</div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}

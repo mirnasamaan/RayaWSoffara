@@ -1201,7 +1201,7 @@
     <Content Include="Views\Admin\ArticlesTopX.cshtml" />
     <Content Include="Views\Admin\AddArticleTopX.cshtml" />
     <Content Include="Views\Admin\EditArticleTopX.cshtml" />
-    <Content Include="Views\Admin\Engagements.cshtml" />
+    <Content Include="Views\Admin\PointTypes.cshtml" />
     <Content Include="Views\Admin\Leaderboard.cshtml" />
     <Content Include="Views\Admin\UserPoints.cshtml" />
     <Content Include="Views\Account\UserPosts.cshtml" />

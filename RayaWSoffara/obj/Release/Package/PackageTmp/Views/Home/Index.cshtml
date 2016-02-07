@@ -4,7 +4,7 @@
     //var model = ViewBag.Posts;
 }
 
-<div class="row header_divs header_div_4">
+<div class="row header_divs header_div_4" id="step4">
     <div class="container-fluid checkbox-wrapper visible-xs">
         <div class="pull-left checkbox-item-wrapper black col-xs-6">
             <span class="black pull-left"></span>
@@ -36,7 +36,7 @@
                 @Html.Partial("_PostPartial", Model)
             </div>
         </div>
-        <div class="col-lg-3 col-xs-12 custom-row sidebar">
+        <div class="col-md-3 hidden-sm hidden-xs custom-row sidebar">
             @if (!Request.IsAuthenticated)
             {
                 <div class="callToAction">
@@ -120,80 +120,11 @@
                 </div>
 
             </div>
-            <div class="statistics">
-                <div class="profile-sub-title no-margin">المباريات القادمة</div>
-
-
-@*                <a href="http://www.livescore.in/" title="Livescore.in" target="_blank">Livescore.in</a>
-                <iframe id="inscore-xdc-413348" src="http://www.livescore.in/free/413348/" width="624" height="500" frameborder="0" scrolling="no"></iframe>*@
-
-
-                <ul class="nav leader-nav-tabs">
-                    <li class="col-xs-4"><a href="#yesterday" data-toggle="tab">أمس</a></li>
-                    <li class="col-xs-4 active"><a href="#today" data-toggle="tab">اليوم</a></li>
-                    <li class="col-xs-4"><a href="#tomorrow" data-toggle="tab">غداً</a></li>
-                </ul>
-                <div class="tab-content">
-                    <div class="tab-pane" id="yesterday">
-                        <div class="matches">
-                            <div>
-                                <div class="col-xs-4">
-                                    <div>يوفنتوس</div>
-                                    <img src="~/Content/Images/Juventus.png?w=50&h=50&mode=pad" />
-                                </div>
-                                <div class="col-xs-4 score">
-                                    <div>1 - 3</div>
-                                    <div>20/11/2015</div>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div>برشلونة</div>
-                                    <img src="~/Content/Images/barcelona.png?w=50&h=50&mode=pad" />
-                                </div>
-                                <div class="clear-fix"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane active" id="today">
-                        <div class="matches">
-                            <div>
-                                <div class="col-xs-4">
-                                    <div>يوفنتوس</div>
-                                    <img src="~/Content/Images/Juventus.png?w=50&h=50&mode=pad" />
-                                </div>
-                                <div class="col-xs-4 score">
-                                    <div>1 - 3</div>
-                                    <div>20/11/2015</div>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div>برشلونة</div>
-                                    <img src="~/Content/Images/barcelona.png?w=50&h=50&mode=pad" />
-                                </div>
-                                <div class="clear-fix"></div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="tab-pane" id="tomorrow">
-                        <div class="matches">
-                            <div>
-                                <div class="col-xs-4">
-                                    <div>يوفنتوس</div>
-                                    <img src="~/Content/Images/Juventus.png?w=50&h=50&mode=pad" />
-                                </div>
-                                <div class="col-xs-4 score">
-                                    <div>1 - 3</div>
-                                    <div>20/11/2015</div>
-                                </div>
-                                <div class="col-xs-4">
-                                    <div>برشلونة</div>
-                                    <img src="~/Content/Images/barcelona.png?w=50&h=50&mode=pad" />
-                                </div>
-                                <div class="clear-fix"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <div class="main-footer">
+                <div class="pull-left"><a href="">شروط الاستخدام وبيان الخصوصية</a>&nbsp;</div>
+                <div class="pull-left"><a href="">اقتراحات</a>&nbsp;</div>
+                <div class="pull-left"><a href="">شكاوى ومشاكل فنية</a>&nbsp;</div>
+                <div class="pull-left"><a href="">انضم لفريق العمل</a>&nbsp;</div>
             </div>
         </div>
     </div>
@@ -202,26 +133,10 @@
 <div class="clear-fix"></div>
 
 <div class="viewMoreButton">
-    <div class="loading hidden">
-        <div>
-            <div class="sk-fading-circle">
-                <div class="sk-circle1 sk-circle"></div>
-                <div class="sk-circle2 sk-circle"></div>
-                <div class="sk-circle3 sk-circle"></div>
-                <div class="sk-circle4 sk-circle"></div>
-                <div class="sk-circle5 sk-circle"></div>
-                <div class="sk-circle6 sk-circle"></div>
-                <div class="sk-circle7 sk-circle"></div>
-                <div class="sk-circle8 sk-circle"></div>
-                <div class="sk-circle9 sk-circle"></div>
-                <div class="sk-circle10 sk-circle"></div>
-                <div class="sk-circle11 sk-circle"></div>
-                <div class="sk-circle12 sk-circle"></div>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("_LoadingPartial", "overall")
     <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
 </div>
+@Html.Raw(ViewBag.tutorial)
 
 <script src="~/Content/Scripts/masonry.pkgd.min.js"></script>
 <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
@@ -236,96 +151,15 @@
         });
     });
 
-    //start of show/hide view button //
-    var page = 1;
-    var displayed_posts_count = parseInt($(".visible-lg .grid-item").length);
-    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-    if (displayed_posts_count >= all_posts_count) {
-        $("#viewMore").addClass("hidden");
+    //stat of view tutorial function //
+    function viewTutorial() {
+        $.ajax({
+            type: "POST",
+            data: { TutorialId: 1, UserName: "@HttpContext.Current.User.Identity.Name" },
+            url: "/Home/ViewTutorial"
+        });
     }
-    //end of show/hide view button //
-
-
-    //start of reading query string //
-    var vars = [], hash;
-    var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-    for (var i = 0; i < hashes.length; i++) {
-        hash = hashes[i].split('=');
-        vars.push(hash[0]);
-        vars[hash[0]] = hash[1];
-    }
-
-    var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
-    var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
-
-    var displayed_posts_count = parseInt($(".grid-item").length);
-    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-    if (displayed_posts_count >= all_posts_count) {
-        $("#viewMore").addClass("hidden");
-    }
-    //end of reading query string //
-
-    //start of view button click function //
-    function viewMore(e) {
-        var vars = [], hash;
-        var hashes = window.location.href.slice(window.location.href.indexOf('?') + 1).split('&');
-        for (var i = 0; i < hashes.length; i++) {
-            hash = hashes[i].split('=');
-            vars.push(hash[0]);
-            vars[hash[0]] = hash[1];
-        }
-
-        var posts_qs = (vars["posts"] == null) ? "" : vars["posts"];
-        var tags_qs = (vars["tags"] == null) ? "" : vars["tags"];
-
-        var controller = window.location.href.slice(window.location.href.indexOf('?') + 1).split('/');
-        controller = controller[3];
-
-        if (controller == "Popular") {
-            $.ajax({
-                type: "POST",
-                data: { count: page },
-                url: "/Home/Popular",
-                beforeSend: function () {
-                    $(".loading").removeClass("hidden");
-                },
-                success: function (posts) {
-                    page++;
-                    $posts = $(posts);
-                    $(".loading").addClass("hidden");
-                    $('.grid').append($posts).masonry('appended', $posts);
-                    var displayed_posts_count = parseInt($(".grid-item").length);
-                    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-                    if (displayed_posts_count >= all_posts_count) {
-                        $("#viewMore").addClass("hidden");
-                    }
-                }
-            });
-        } else {
-            $.ajax({
-                type: "POST",
-                data: { posts: posts_qs, tags: tags_qs, count: page },
-                url: "/Home/Index",
-                beforeSend: function () {
-                    $(".loading").removeClass("hidden");
-                },
-                success: function (posts) {
-                    page++;
-                    $posts = $(posts);
-                    $(".loading").addClass("hidden");
-                    $('.grid').append($posts).masonry('appended', $posts);
-                    var displayed_posts_count = parseInt($(".grid-item").length);
-                    var all_posts_count = parseInt($("#AllActivePostsCount").val());
-                    if (displayed_posts_count >= all_posts_count) {
-                        $("#viewMore").addClass("hidden");
-                    }
-                }
-            });
-        }
-
-        return false;
-    }
-    //end of view button click function //
+    //end of view tutorial function //
 
     //start of sidebar animation //
     function isScrolledIntoView(elem) {
@@ -402,6 +236,11 @@
     //end of sidebar animation //
 
     $(document).ready(function () {
+        var username = "@HttpContext.Current.User.Identity.Name";
+        if (username != "" && "@ViewBag.tutorial" != "") {
+            startIntro();
+        }
+
         $(".leaderboard .tab-pane > div:nth-child(1)").animate({
             width: "100%"
         }, 5000, function () {

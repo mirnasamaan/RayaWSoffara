@@ -1,90 +1,117 @@
 ﻿@using RayaWSoffara.Helpers
 @model RayaWSoffara.Models.IndexVM
 
-    @if (Model != null)
+@if (Model != null)
+{
+    foreach (var item in Model.Posts)
     {
-        foreach (var item in Model.Posts)
-        {
-                <div class="grid-item" onclick="article_display(@item.PostID)">
-                    <div class="article-lg">
-                        <div>
-                            @if (item.PostVideo != null)
-                            {
-                                <iframe width="266" height="156" src="https://www.youtube.com/embed/@item.PostVideo" frameborder="0" allowfullscreen></iframe>
-                            }
-                            else if (item.PostImage != null)
-                            {
-                                <img src="~/Content/Article_Images/@item.PostImage?w=732&h=340&mode=crop" />
-                            }
+    <div class="grid-item" id="@item.PostID">
+        <div class="article-lg">
+            @if (item.PostAuthorUsername == User.Identity.Name)
+            {
+                <button class="remove-post" onclick="deletePost(@item.PostID)">X</button>
+            }
+            <div onclick="article_display(@item.PostID)">
+                <div>
+                    @if (item.PostVideo != null)
+                    {
+                        <iframe width="266" height="156" src="https://www.youtube.com/embed/@item.PostVideo" frameborder="0" allowfullscreen></iframe>
+                    }
+                    else if (item.PostImage != null)
+                    {
+                        <img src="~/Content/Article_Images/@item.PostImage?w=264&h=140&mode=crop" />
+                    }
+                </div>
+                <div class="content-details">
+                    <div>
+                        <span class="post-title pull-left">@Html.Raw(@item.PostTitle)</span>
+                        @{ int id = @item.PostTypeID;
+                           string color = "";
+                           string icon = "";
+                           string type = ""; }
+                        @{
+                           switch (id)
+                           {
+                               case 1: color = "orange";
+                                   icon = "<i class='fa fa-newspaper-o' title='مقالة'></i>";
+                                   type = "مقالة";
+                                   break;
+                               case 2: color = "red";
+                                   icon = "<i class='fa fa-list-ol' title='مقالة توب X'></i>";
+                                   type = "مقالة توب X";
+                                   break;
+                               case 3: color = "green";
+                                   icon = "<i class='fa fa-exclamation' title='رأي'></i>";
+                                   type = "رأي";
+                                   break;
+                               case 4: color = "blue";
+                                   icon = "<i class='fa fa-picture-o' title='صورة'></i>";
+                                   type = "صورة";
+                                   break;
+                               case 5: color = "brown";
+                                   icon = "<i class='fa fa-video-camera' title='فيديو'></i>";
+                                   type = "فيديو";
+                                   break;
+                               default: color = "black"; break;
+                           }
+                        }
+                    </div>
+                    <div class="clear-fix"></div>
+                    <a href="/Profile?Username=@item.PostAuthorUsername&Page=1" class="author-name">@item.PostAuthorUsername</a>
+                    <div class="post-content">
+                        @{ string text2 = @Html.Raw(item.PostContent).ToString(); }
+                        @TrimTextHelper.TrimText(@text2, 100)
+                    </div>
+                </div>
+                <div class="footer-details">
+                    <div class="post-type post-type-indicator @color" title="@type">
+                        @Html.Raw(@icon)
+                    </div>
+                    <div class="lower-footer">
+                        <div class="pull-left views">
+                            <span>@item.PostViewsCount</span>
+                            <i class="fa fa-eye"></i>
                         </div>
-                        <div class="content-details">
-                            <div>
-                                <span class="post-title pull-left">@Html.Raw(@item.PostTitle)</span>
-                                @{ int id = @item.PostTypeID;
-                                   string color = "";
-                                   string icon = "";
-                                   string type = ""; }
-                                @{
-                                   switch (id)
-                                   {
-                                       case 1: color = "orange";
-                                           icon = "<i class='fa fa-newspaper-o' title='مقالة'></i>";
-                                           type = "مقالة";
-                                           break;
-                                       case 2: color = "red";
-                                           icon = "<i class='fa fa-trophy' title='مقالة توب X'></i>";
-                                           type = "مقالة توب X";
-                                           break;
-                                       case 3: color = "green";
-                                           icon = "<i class='fa fa-exclamation' title='رأي'></i>";
-                                           type = "رأي";
-                                           break;
-                                       case 4: color = "blue";
-                                           icon = "<i class='fa fa-picture-o' title='صورة'></i>";
-                                           type = "صورة";
-                                           break;
-                                       case 5: color = "brown";
-                                           icon = "<i class='fa fa-video-camera' title='فيديو'></i>";
-                                           type = "فيديو";
-                                           break;
-                                       default: color = "black"; break;
-                                   }
-                                }
-                            </div>
-                            <div class="clear-fix"></div>
-                            <a href="/Profile?Username=@item.PostAuthorUsername&Page=1" class="author-name">@item.PostAuthorUsername</a>
-                            <div class="post-content">
-                                @{ string text2 = @Html.Raw(item.PostContent).ToString(); }
-                                @TrimTextHelper.TrimText(@text2, 100)
-                            </div>
+                        <div class="pull-left comments">
+                            <span>@item.PostCommentsCount</span>
+                            <i class="fa fa-comment"></i>
                         </div>
-                        <div class="footer-details">
-                            <div class="post-type post-type-indicator @color" title="@type">
-                                @Html.Raw(@icon)
-                            </div>
-                            <div class="lower-footer">
-                                <div class="pull-left views">
-                                    <span>@item.PostViewsCount</span>
-                                    <i class="fa fa-eye"></i>
-                                </div>
-                                <div class="pull-left comments">
-                                    <span>@item.PostCommentsCount</span>
-                                    <i class="fa fa-comment"></i>
-                                </div>
-                                <div class="pull-left shares">
-                                    <span>@item.PostSharesCount</span>
-                                    <i class="fa fa-share"></i>
-                                </div>
-                            </div>
+                        <div class="pull-left shares">
+                            <span>@item.PostSharesCount</span>
+                            <i class="fa fa-share"></i>
                         </div>
                     </div>
                 </div>
-                @*}*@
-        }
+            </div>
+        </div>
+    </div>
+    }
+    @Html.Partial("_LoadingPartial", "overall")
+}
+
+<script src="~/Content/Scripts/notie.js"></script>
+<script>
+    function article_display(post_id) {
+        window.location.href = "/Post/" + post_id;
     }
 
-<script>
-    function article_display(article_id) {
-        window.location.href = "/Post/" + article_id;
+    function deletePost(post_id) {
+        notie.confirm('هل أنت متأكد أنك تريد حذف هذه المقالة بشكل دائم؟', 'نعم', 'إلغاء', function () {
+            $.ajax({
+                type: "POST",
+                data: { PostId: post_id },
+                url: "/Article/DeletePost",
+                beforeSend: function () {
+                    $(".loading").removeClass("hidden");
+                },
+                success: function () {
+                    notie.alert(1, 'تم حذف المقالة.', 2);
+                    $('.grid').masonry('remove', $("#" + post_id)).masonry('layout');
+                },
+                error: function () { notie.alert(3, 'لم يتم حذف المقالة. من فضلك حاول مرة أخرى.', 2); },
+                complete: function () { $(".loading").addClass("hidden"); }
+            });
+        });
+        return false;
     }
 </script>

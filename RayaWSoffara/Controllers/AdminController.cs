@@ -19,7 +19,6 @@ using Newtonsoft.Json;
 
 namespace RayaWSoffara.Controllers
 {
-    [CustomAuthorize(Roles = "Admin")]
     public class AdminController : Controller
     {
         UserRepository _userRepo = new UserRepository();
@@ -27,6 +26,7 @@ namespace RayaWSoffara.Controllers
         ArticleRepository _postRepo = new ArticleRepository();
         EngagementRepository _engRepo = new EngagementRepository();
 
+        [AllowAnonymous]
         public ActionResult Signin(string RedirectUrl)
         {
             ViewBag.RedirectUrl = RedirectUrl;
@@ -35,6 +35,7 @@ namespace RayaWSoffara.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [AllowAnonymous]
         public ActionResult Signin(string username, string password, string RedirectUrl)
         {
             RWSUser user = _userRepo.GetUserByUsernameAndPassword(username, password);
@@ -109,12 +110,14 @@ namespace RayaWSoffara.Controllers
             return sBuilder.ToString();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult Signout()
         {
             FormsAuthentication.SignOut();
             return RedirectToAction("Signin", "Admin");
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult GetUserImage(string username)
         {
             string imgPath = _userRepo.GetUserByUsername(username).ProfileImagePath;
@@ -122,6 +125,7 @@ namespace RayaWSoffara.Controllers
         }
 
         #region Dashboard
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult Dashboard()
         {
             ViewBag.SidebarItem = "dashboard";
@@ -164,6 +168,7 @@ namespace RayaWSoffara.Controllers
             return View(dashboard);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public static long GetJavascriptTimestamp(DateTime input)
         {
             TimeSpan span = new System.TimeSpan(DateTime.Parse("1/1/1970").Ticks);
@@ -285,6 +290,7 @@ namespace RayaWSoffara.Controllers
             public int value { get; set; }
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult GetTopTags()
         {
             IQueryable<Tag> topTags = _postRepo.GetTopTags(5);
@@ -312,6 +318,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetUsers(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -370,6 +377,7 @@ namespace RayaWSoffara.Controllers
             return Json(dataTableData, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult DeleteUser(string Username)
         {
             RWSUser user = _userRepo.GetUserByUsername(Username);
@@ -377,6 +385,7 @@ namespace RayaWSoffara.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddUser()
         {
             List<RWSRole> roles = _userRepo.GetRoles().ToList();
@@ -388,6 +397,7 @@ namespace RayaWSoffara.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddUser(RWSUser user, string roleName)
         {
             RWSRole role = _userRepo.GetRoleByName(roleName);
@@ -401,6 +411,7 @@ namespace RayaWSoffara.Controllers
             return View("Users");
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult EditUser(string UserName)
         {
             RWSUser user = _userRepo.GetUserByUsername(UserName);
@@ -413,6 +424,7 @@ namespace RayaWSoffara.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult EditUser(RWSUser user, string roleName, int UserId)
         {
             RWSUser db_user = _userRepo.GetUserByUserId(UserId);
@@ -427,6 +439,7 @@ namespace RayaWSoffara.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult DeactivateUser(string username)
         {
             _userRepo.DeactivateUser(username);
@@ -434,6 +447,7 @@ namespace RayaWSoffara.Controllers
         }
 
         [HttpPost]
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult ActivateUser(string username)
         {
             _userRepo.ActivateUser(username);
@@ -461,6 +475,7 @@ namespace RayaWSoffara.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddRegion()
         {
             ViewBag.SidebarItem = "tags-management";
@@ -494,6 +509,7 @@ namespace RayaWSoffara.Controllers
             return Redirect("/Admin/Regions");
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetRegions(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -621,6 +637,7 @@ namespace RayaWSoffara.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddCompetition()
         {
             ViewBag.SidebarItem = "tags-management";
@@ -677,6 +694,7 @@ namespace RayaWSoffara.Controllers
             return Json(teams, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetCompetitions(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -830,6 +848,7 @@ namespace RayaWSoffara.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddTeam()
         {
             ViewBag.SubSidebarItem = "teams";
@@ -873,6 +892,7 @@ namespace RayaWSoffara.Controllers
             return Redirect("/Admin/Teams");
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetTeams(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -1053,6 +1073,7 @@ namespace RayaWSoffara.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddPlayer()
         {
             ViewBag.SidebarItem = "tags-management";
@@ -1092,6 +1113,7 @@ namespace RayaWSoffara.Controllers
             return Redirect("/Admin/Players");
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetPlayers(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -1238,6 +1260,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetTags(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -1317,12 +1340,14 @@ namespace RayaWSoffara.Controllers
             return Json(dataTableData, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult RemoveTagAsFeatured(int TagId)
         {
             _postRepo.RemoveTagAsFeatured(TagId);
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult SetTagAsFeatured(int TagId)
         {
             _postRepo.SetTagAsFeatured(TagId);
@@ -1347,6 +1372,7 @@ namespace RayaWSoffara.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddTag()
         {
             ViewBag.SubSidebarItem = "tags";
@@ -1441,6 +1467,7 @@ namespace RayaWSoffara.Controllers
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AddImages()
         {
             ViewBag.SidebarItem = "images-management";
@@ -1555,6 +1582,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetArticles(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -1821,6 +1849,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetArticlesTopX(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -2085,6 +2114,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetOpinions(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -2299,6 +2329,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetImagePosts(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -2516,6 +2547,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public ActionResult AjaxGetVideos(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
@@ -2772,20 +2804,21 @@ namespace RayaWSoffara.Controllers
 
         #region Engagements
         [CustomAuthorize(Roles = "Admin")]
-        public ActionResult Engagements()
+        public ActionResult PointTypes()
         {
-            ViewBag.SubSidebarItem = "Engagements";
-            ViewBag.SidebarItem = "engagements-management";
-            ViewBag.PageHeader = "Engagements Management";
+            ViewBag.SubSidebarItem = "Point Types";
+            ViewBag.SidebarItem = "point-types-management";
+            ViewBag.PageHeader = "Point Types Management";
             return View();
         }
 
-        public ActionResult AjaxGetEngagements(int draw, int start, int length)
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult AjaxGetPointTypes(int draw, int start, int length)
         {
             string search = Request.QueryString["search[value]"];
             int sortColumn = -1;
             string sortDirection = "asc";
-            int total_rows = _engRepo.GetEngagementTypes(null).Count();
+            int total_rows = _engRepo.GetPointTypes(null, null).Count();
             if (length == -1)
             {
                 length = total_rows;
@@ -2805,16 +2838,16 @@ namespace RayaWSoffara.Controllers
             dataTableData.draw = draw;
             dataTableData.recordsTotal = total_rows;
             int recordsFiltered = total_rows;
-            List<DataItem> posts = new List<DataItem>();
-            IQueryable<EngagementType> eng_items = _engRepo.GetEngagementTypes(start, length);
-            foreach (var item in eng_items)
+            List<DataItem> point_types = new List<DataItem>();
+            IQueryable<PointType> point_type_items = _engRepo.GetPointTypes(start, length);
+            foreach (var item in point_type_items)
             {
                 string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a><a href='#' onclick='Delete(this);return false;'<i class='fa fa-trash-o'></i></a>";
                 //string actions = "<a href='#' onclick='Edit(this);return false;'><i class='fa fa-pencil'></i></a>";
                 string savebtn = "<button class='btn btn-primary btn-sm' onclick='Save(this)'>Save</button>";
-                posts.Add(new DataItem { ItemName = item.EngType, articlesCount = item.EngWeight.Value, Actions = actions, Status = savebtn, DT_RowId = item.EngTypeId.ToString() });
+                point_types.Add(new DataItem { ItemName = item.PointTypeName, articlesCount = item.PointTypeWeight.Value, Actions = actions, Status = savebtn, DT_RowId = item.PointTypeId.ToString() });
             }
-            dataTableData.data = posts;
+            dataTableData.data = point_types;
             dataTableData.recordsFiltered = recordsFiltered;
 
             return Json(dataTableData, JsonRequestBehavior.AllowGet);
@@ -2823,45 +2856,27 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [CustomAuthorize(Roles = "Admin")]
         [ValidateInput(false)]
-        public ActionResult AddEngagementType(int EngagementTypeId, string EngagementType, double EngagementWeight)
+        public ActionResult DeletePointType(int PointTypeId)
         {
-            EngagementType EngType = new EngagementType();
-            EngType.EngTypeId = EngagementTypeId;
-            EngType.EngType = EngagementType;
-            EngType.EngWeight = EngagementWeight;
-            EngType = _engRepo.AddEngagementType(EngType);
-            dynamic data = new System.Dynamic.ExpandoObject();
-            data.EngType = EngType.EngType;
-            data.EngWeight = EngType.EngWeight;
-            data.EngTypeId = EngType.EngTypeId;
-            return Json(data, JsonRequestBehavior.AllowGet);
-        }
-
-        [HttpPost]
-        [CustomAuthorize(Roles = "Admin")]
-        [ValidateInput(false)]
-        public ActionResult DeleteEngagementType(int EngagementTypeId)
-        {
-            EngagementType EngType = _engRepo.GetEngagementTypeById(EngagementTypeId);
-            _engRepo.DeleteEngagementType(EngType);
+            _engRepo.DeletePointType(PointTypeId);
             return Json(true, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
         [CustomAuthorize(Roles = "Admin")]
         [ValidateInput(false)]
-        public ActionResult EditEngagementType(int EngagementTypeId, string EngagementType, double EngagementWeight, int EngagementTypeNewId)
+        public ActionResult EditPointType(int PointTypeId, double PointTypeWeight)
         {
             //EngagementType EngType = _postRepo.GetEngagementTypeById(EngagementTypeId);
             //EngType.EngTypeId = EngagementTypeNewId;
             //EngType.EngType = EngagementType;
             //EngType.EngWeight = EngagementWeight;
             //EngType = _postRepo.UpdateEngagementType(EngType);
-            EngagementType EngType = _engRepo.UpdateEngagementType(EngagementTypeId, EngagementType, EngagementWeight, EngagementTypeNewId);
+            PointType PointType = _engRepo.UpdatePointType(PointTypeId, PointTypeWeight);
             dynamic data = new System.Dynamic.ExpandoObject();
-            data.EngType = EngType.EngType;
-            data.EngWeight = EngType.EngWeight;
-            data.EngTypeId = EngType.EngTypeId;
+            //data.PointType = EngType.EngType;
+            data.PointTypeWeight = PointType.PointTypeWeight;
+            data.PointTypeId = PointType.PointTypeId;
             return Json(data, JsonRequestBehavior.AllowGet);
         }
         #endregion
@@ -2876,6 +2891,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult AjaxGetLeaderboard(int draw, int start, int length, string filter, string fromDate, string toDate)
         {
@@ -2965,6 +2981,7 @@ namespace RayaWSoffara.Controllers
             return Json(dataTableData, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         public MemoryStream GetStream(XLWorkbook excelWorkbook)
         {
             MemoryStream fs = new MemoryStream();
@@ -3117,6 +3134,7 @@ namespace RayaWSoffara.Controllers
             return Json(users, JsonRequestBehavior.AllowGet);
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult AjaxGetUserPoints(int draw, int start, int length, string userName, string fromDate, string toDate)
         {
@@ -3184,6 +3202,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult AjaxGetReportUsers(int draw, int start, int length, string status, string fromDate, string toDate)
         {
@@ -3382,6 +3401,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult AjaxGetReportPosts(int draw, int start, int length, string status, string fromDate, string toDate, string username)
         {
@@ -3711,6 +3731,7 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        [CustomAuthorize(Roles = "Admin")]
         [HttpPost]
         public ActionResult AjaxGetReportComments(int draw, int start, int length, string status, string fromDate, string toDate, int? PostId)
         {

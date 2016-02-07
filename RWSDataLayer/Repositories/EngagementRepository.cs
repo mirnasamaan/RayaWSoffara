@@ -121,6 +121,18 @@ namespace RWSDataLayer.Repositories
             return Context.EngagementTypes.FirstOrDefault(i => i.EngTypeId == EngTypeId);
         }
 
+        public EngagementType GetEngagementTypeByName(string EngTypeName)
+        {
+            if (Context.EngagementTypes.Any(i => i.EngType == EngTypeName))
+            {
+                return Context.EngagementTypes.FirstOrDefault(i => i.EngType == EngTypeName);
+            }
+            else
+            {
+                return null;
+            }
+        }
+
         public EngagementType AddEngagementType(EngagementType EngType)
         {
             Context.EngagementTypes.Add(EngType);
@@ -279,6 +291,73 @@ namespace RWSDataLayer.Repositories
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Get all Point Types.
+        /// </summary>
+        public IQueryable<PointType> GetPointTypes(int? page, int? count = 10)
+        {
+            if (page != null && count != null)
+            {
+                int startIndex = page.Value * count.Value;
+                return Context.PointTypes.OrderBy(i => i.PointTypeId).Skip(startIndex).Take(count.Value);
+            }
+            else
+            {
+                return Context.PointTypes.OrderBy(i => i.PointTypeId);
+            }
+        }
+
+        /// <summary>
+        /// Get point type by id
+        /// </summary>
+        /// <param name="pointTypeId">Point type id</param>
+        /// <returns></returns>
+        public PointType GetPointTypeById(int pointTypeId)
+        {
+            return Context.PointTypes.FirstOrDefault(i => i.PointTypeId == pointTypeId);
+        }
+
+        public bool DeletePointType(int PointTypeId)
+        {
+            try
+            {
+                PointType pointType = Context.PointTypes.FirstOrDefault(i => i.PointTypeId == PointTypeId);
+                Context.PointTypes.Remove(pointType);
+
+                EngagementType engType = GetEngagementTypeByName(pointType.PointTypeName);
+                if (engType != null)
+                {
+                    Context.EngagementTypes.Remove(engType);
+                }
+                Context.SaveChanges();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// Update point type
+        /// </summary>
+        /// <param name="PointTypeId"></param>
+        /// <param name="PointWeight"></param>
+        /// <returns></returns>
+        public PointType UpdatePointType(int PointTypeId, double PointTypeWeight)
+        {
+            PointType pointType = Context.PointTypes.FirstOrDefault(i => i.PointTypeId == PointTypeId);
+            pointType.PointTypeWeight = PointTypeWeight;
+
+            EngagementType engType = GetEngagementTypeByName(pointType.PointTypeName);
+            if (engType != null)
+            {
+                engType.EngWeight = PointTypeWeight;
+            }
+            Context.SaveChanges();
+            return pointType;
         }
         #endregion
 

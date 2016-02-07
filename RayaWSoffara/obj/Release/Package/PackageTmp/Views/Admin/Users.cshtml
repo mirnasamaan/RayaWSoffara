@@ -40,6 +40,8 @@
         </div>
     </div>
 </div>
+@Html.Partial("_LoadingPartial", "overall")
+
 <script src="//code.jquery.com/jquery-1.11.3.min.js"></script>
 <script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
 <script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
@@ -53,7 +55,13 @@
         "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
         "ajax": {
             "url": "@string.Format("{0}://{1}{2}", Request.Url.Scheme, Request.Url.Authority, Url.Content("~"))/Admin/AjaxGetUsers",
-            "type": "GET"
+            "type": "GET",
+            "beforeSend": function () {
+                $(".loading").removeClass("hidden");
+            },
+            "complete": function () {
+                $(".loading").addClass("hidden");
+            }
         },
         "columns": [
             {

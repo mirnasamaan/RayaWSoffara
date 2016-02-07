@@ -6,7 +6,7 @@
 }
 
 <div class="clear-fix"></div>
-@if (@Model.newArticle.IsActive != true && User.Identity.Name != @Model.newArticle.RWSUser.UserName)
+@if ((@Model.newArticle.isDeleted == true) || (@Model.newArticle.IsActive != true && User.Identity.Name != @Model.newArticle.RWSUser.UserName))
 {
     <div class="Page404">
         <img src="~/Content/Images/404.png" />
@@ -34,40 +34,58 @@
                     <div class="pull-left user-data">
                         <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName&Page=1">@Model.newArticle.RWSUser.UserName</a></span></div>
                         <div class="border pull-left"></div>
-                        <div class="pull-left"><span class="date">@ArabicTimeStampHelper.ArabicTimeStamp(Convert.ToDateTime(Model.newArticle.ActivationDate))</span></div>
-                    </div>
+                        @if(Model.newArticle.ActivationDate == null){
+                            <div class="pull-left"><span class="date">تحت المراجعة</span></div>
+                        } else {
+                            <div class="pull-left"><span class="date">@ArabicTimeStampHelper.ArabicTimeStamp(Convert.ToDateTime(Model.newArticle.ActivationDate))</span></div>
+                        }
+                        </div>
                     <div class="clear-fix"></div>
                 </div>
             </div>
             <div class="row">
                 <div class="article_display_row">
-                    <div class="pull-left social-media-icons">
-                        <div class="pull-left">
-                            <a href="javascript:void(0)" class="so-facebook" onclick="facebookshare()"><i class="fa fa-facebook"></i></a>
+                    @if(Model.newArticle.IsActive != null && Model.newArticle.IsActive != false){
+                        <div class="pull-left social-media-icons">
+                            <div class="pull-left">
+                                <a href="javascript:void(0)" class="so-facebook" onclick="facebookshare()"><i class="fa fa-facebook"></i></a>
+                            </div>
+                            <div class="pull-left">
+                                <a href="javascript:void(0)" class="so-twitter" onclick="twittershare()"><i class="fa fa-twitter"></i></a>
+                            </div>
+                            <div class="pull-left">
+                                <a href="javascript:void(0)" class="so-google" onclick="googleplusshare()"><i class="fa fa-google-plus"></i></a>
+                            </div>
                         </div>
-                        <div class="pull-left">
-                            <a href="javascript:void(0)" class="so-twitter" onclick="twittershare()"><i class="fa fa-twitter"></i></a>
+                        <div class="pull-left article_stats">
+                            <div class="pull-left shares">
+                                <div class="count">@Model.newArticle.SharesCount</div>
+                                <div>مشاركة</div>
+                            </div>
+                            <div class="border pull-left"></div>
+                            <div class="pull-left comments">
+                                <div class="count">@ViewBag.AllCommentsCount</div>
+                                <div>تعليق</div>
+                            </div>
+                            <div class="border hidden-xs hidden-sm pull-left"></div>
+                            <div class="clear-fix hidden-lg hidden-md"></div>
+                            <div class="vertical_space hidden-lg hidden-md"></div>
+                            <div class="pull-left views">
+                                <div class="count">@Model.newArticle.ViewsCount</div>
+                                <div>مشاهدة</div>
+                            </div>
+                            <div class="border pull-left"></div>
+                            <div class="pull-left likes">
+                                <div class="count">@Model.newArticle.LikesCount</div>
+                                <div>اعجابات</div>
+                            </div>
                         </div>
-                        <div class="pull-left">
-                            <a href="javascript:void(0)" class="so-google" onclick="googleplusshare()"><i class="fa fa-google-plus"></i></a>
+                        <div class="pull-left social-media-icons">
+                            <div class="pull-left like-btn">
+                                <a href="javascript:void(0)" class="" onclick="like(this)"><i class="fa fa-thumbs-up"></i></a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="pull-left article_stats">
-                        <div class="pull-left shares">
-                            <div class="count">@Model.newArticle.SharesCount</div>
-                            <div>مشاركة</div>
-                        </div>
-                        <div class="border pull-left"></div>
-                        <div class="pull-left comments">
-                            <div class="count">@ViewBag.AllCommentsCount</div>
-                            <div>تعليق</div>
-                        </div>
-                        <div class="border pull-left"></div>
-                        <div class="pull-left views">
-                            <div class="count">@Model.newArticle.ViewsCount</div>
-                            <div>مشاهدة</div>
-                        </div>
-                    </div>
+                    }
                     <div class="pull-right">
                         @{ int id = Model.newArticle.PostTypeId.Value;
                                    string color = "";
@@ -228,35 +246,9 @@
             </div>
             <div class="clear-fix"></div>
             <div class="writers_data_div">
-                @foreach (var article in @Model.userArticles)
+                @foreach (var post in @Model.userArticles)
                 {
-                    <div class="single_article col-md-12 col-xs-6">
-                        <div class="col-xs-5">
-                            <div class="other_articles_img">
-                                <a href="../../Article/ArticleDisplay/@article.PostId">
-                                    @if (@article.HasImage == true)
-                                    {
-                                        <img class="img" id="" src="~/Content/Article_Images/@article.FeaturedImage?w=135&h=90&mode=crop" />
-                                    }
-                                    else
-                                    {
-                                        <img class="video_img" src="http://img.youtube.com/vi/@article.FeaturedVideo/0.jpg?w=135&h=90&mode=crop">
-                                    }
-
-                                </a>
-                            </div>
-                        </div>
-                        <div class="col-xs-7">
-                            <div class="title">
-                                @Html.ActionLink(@article.Title, "ArticleDisplay", new { id = @article.PostId })
-                            </div>
-                            <div class="abstract">
-                                @{ string text = @Html.Raw(@article.Content).ToString(); }
-                                @TrimTextHelper.TrimText(@text, 50)
-                            </div>
-                        </div>
-                    </div>
-                    <div class="clear-fix hidden-xs hidden-sm"></div>
+                    @Html.Partial("_RecentPostPartial", post)
                 }
             </div>
             <div class="clear-fix"></div>
@@ -282,29 +274,18 @@
                 <div class="form-group">
                     <input type="text" class="form-control" name="Google" value="@Model.newArticle.RWSUser.Google" disabled />
                 </div>
+                @if (Model.userArticles.Count > 0)
+                {
+                    <div class="profile-sub-title">
+                        <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.newArticle.RWSUser.UserName">كل مقالات الكاتب</a>
+                    </div>
+                }
             </div>
         </div>
     </div>
 </div>
 
-<div class="loading hidden">
-    <div>
-        <div class="sk-fading-circle">
-            <div class="sk-circle1 sk-circle"></div>
-            <div class="sk-circle2 sk-circle"></div>
-            <div class="sk-circle3 sk-circle"></div>
-            <div class="sk-circle4 sk-circle"></div>
-            <div class="sk-circle5 sk-circle"></div>
-            <div class="sk-circle6 sk-circle"></div>
-            <div class="sk-circle7 sk-circle"></div>
-            <div class="sk-circle8 sk-circle"></div>
-            <div class="sk-circle9 sk-circle"></div>
-            <div class="sk-circle10 sk-circle"></div>
-            <div class="sk-circle11 sk-circle"></div>
-            <div class="sk-circle12 sk-circle"></div>
-        </div>
-    </div>
-</div>
+@Html.Partial("_LoadingPartial", "overall")
 }
 <script>
 
@@ -316,10 +297,27 @@
         }
     });
     //end of view more button display //
+
+    //start of isPostLikedByUser //
+    var post_id = $("#PostId").val();
+    $.ajax({
+        type: "POST",
+        data: { PostId: post_id },
+        url: "/Article/isPostLikedByUser",
+        success: function (data) {
+            if (data == "liked") {
+                $(".like-btn i").css("color", "#22629f").css("background", "#F2F2F2").css("cursor", "default");
+                $(".like-btn a").attr("onclick", "");
+            } else if (data == "not a member") {
+                $(".like-btn").parent().css("display", "none");
+            }
+        }
+    });
+    //end of isPostLikedByUser //
     
     // start of adding a new comment //
     function addComment() {
-        if ($("#add_comment").val() == "") {
+        if ($("#add_comment").val().trim() == "") {
             $(".comment-validation").removeClass("hidden");
         } else {
             $(".new-comment button").attr('disabled', 'disabled');
@@ -396,6 +394,24 @@
         this.style.height = (1 + this.scrollHeight) + "px";
     });
     // end of comment textarea auto-resize function //
+
+    // start of like function //
+    function like(e) {
+        var post_id = $("#PostId").val();
+        $.ajax({
+            type: "POST",
+            data: { PostId: post_id },
+            url: "/Article/AddLikeCount",
+            success: function () {
+                $(e).children("i").css("color", "#22629f").css("background", "#F2F2F2").css("cursor", "default");
+                var likes_count = $(".likes .count").text();
+                likes_count = parseInt(likes_count) + 1;
+                $(".likes .count").text(likes_count);
+                $(e).attr("onclick", "");
+            }
+        });
+    }
+    // end of like function //
 
     // start of facebook share function //
     function facebookshare() {

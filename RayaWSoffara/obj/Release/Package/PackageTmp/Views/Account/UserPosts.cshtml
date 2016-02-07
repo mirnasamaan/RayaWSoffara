@@ -1,0 +1,60 @@
+﻿@model RayaWSoffara.Models.IndexVM
+@{
+    ViewBag.Title = "مقالات الكاتب";
+}
+
+<div class="row header_divs header_div_4">
+    <div class="container-fluid checkbox-wrapper visible-xs">
+        <div class="pull-left checkbox-item-wrapper black col-xs-6">
+            <span class="black pull-left"></span>
+            <input class="الكل" type="checkbox" name="PostType" value="0">
+            <label>الكل</label>
+        </div>
+    </div>
+    <div class="container-fluid checkbox-wrapper hidden-xs">
+        <div>
+            <div class="pull-left checkbox-item-wrapper black">
+                <span class="black pull-left"></span>
+                <input class="الكل" type="checkbox" name="PostType" value="0">
+                <label>الكل</label>
+            </div>
+        </div>
+    </div>
+</div>
+
+<input id="AllActivePostsCount" type="hidden" value="@Model.PostsCount" />
+
+<div class="container">
+    <div class="row negative-row">
+        <div class="col-lg-12 col-xs-12 no-padding">
+            <div class="grid">
+                @if (Model.PostsCount < 1)
+                {
+                    <div class="no-results">لا توجد نتائج لهذا البحث</div>
+                }
+                @Html.Partial("../Home/_PostPartial", Model)
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="clear-fix"></div>
+
+<div class="viewMoreButton">
+    @Html.Partial("_LoadingPartial", "overall")
+    <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
+</div>
+
+<script src="~/Content/Scripts/masonry.pkgd.min.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/tag-it.js" type="text/javascript" charset="utf-8"></script>
+<script src="~/Content/Scripts/imagesloaded.pkgd.min.js"></script>
+<script>
+    $('.grid').imagesLoaded(function () {
+        $('.grid').masonry({
+            itemSelector: '.grid-item',
+            isFitWidth: true,
+            isOriginLeft: false
+        });
+    });
+</script>

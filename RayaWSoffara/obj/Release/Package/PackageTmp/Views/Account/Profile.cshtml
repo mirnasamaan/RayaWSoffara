@@ -66,6 +66,12 @@
                 <label class="pull-left">حساب جوجل بلس</label>
                 <input type="text" class="form-control" name="Google" value="@Model.Google" disabled />
             </div>
+            @if (Model.articlesCount > 0)
+            {
+                <div class="profile-sub-title">
+                    <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.UserName">كل مقالات الكاتب</a>
+                </div>
+            }
         </div>
 
     </div>
@@ -81,7 +87,7 @@
             <div class="achievements">
                 @Html.Partial("_AchievementsPartial")
             </div>
-            
+
             <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
         </div>
         <div class="clear-fix"></div>
@@ -92,11 +98,12 @@
             {
                 <div class="no-results pull-left">لا توجد مقالات لهذا الكاتب.</div>
             }
-            @foreach (var article in @Model.recentArticles)
+            @foreach (var post in @Model.recentArticles)
             {
-                <div class="recent-articles">
-                    <div class="col-md-4 col-xs-12">
-                        <a href="/Post/@article.PostId">
+                @Html.Partial("../Article/_RecentPostPartial", post)
+                @*<div class="recent-articles">
+                    <a href="/Post/@article.PostId">
+                        <div class="col-md-4 col-xs-12">
                             @if (@article.FeaturedImage != null)
                             {
                                 <img class="" id="article_img" src="~/Content/Article_Images/@article.FeaturedImage?w=210&h=140&mode=crop" /> 
@@ -105,24 +112,22 @@
                             {
                                 <iframe width="210" height="140" src="https://www.youtube.com/embed/@article.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
                             }
-                        </a>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="article_title pull-left">@article.Title</div>
-                        <div class="clear-fix"></div>
-                        <div class="">
-                            <div class="content">
-                                @{ string text = @Html.Raw(article.Content).ToString(); }
-                                @TrimTextHelper.TrimText(@text, 300);
+                        </div>
+                        <div class="col-md-8">
+                            <div class="article_title pull-left">@article.Title</div>
+                            <div class="clear-fix"></div>
+                            <div class="">
+                                <div class="content">
+                                    @{ string text = @Html.Raw(article.Content).ToString(); }
+                                    @TrimTextHelper.TrimText(@text, 300);
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
+                    </a>
+                </div>*@
                 
                 <div class="clear-fix"></div>
-                
             }
-
         </div>
     </div>
 </div>
@@ -131,24 +136,7 @@
 <input id="AllPointsCount" type="hidden" value="@ViewBag.AllPointsCount" />
 
 <div class="viewMoreButton">
-    <div class="loading hidden">
-        <div>
-            <div class="sk-fading-circle">
-                <div class="sk-circle1 sk-circle"></div>
-                <div class="sk-circle2 sk-circle"></div>
-                <div class="sk-circle3 sk-circle"></div>
-                <div class="sk-circle4 sk-circle"></div>
-                <div class="sk-circle5 sk-circle"></div>
-                <div class="sk-circle6 sk-circle"></div>
-                <div class="sk-circle7 sk-circle"></div>
-                <div class="sk-circle8 sk-circle"></div>
-                <div class="sk-circle9 sk-circle"></div>
-                <div class="sk-circle10 sk-circle"></div>
-                <div class="sk-circle11 sk-circle"></div>
-                <div class="sk-circle12 sk-circle"></div>
-            </div>
-        </div>
-    </div>
+    @Html.Partial("_LoadingPartial", "overall")
 </div>
 
 <script src="~/Content/Scripts/flot/jquery.flot.min.js"></script>
@@ -167,14 +155,12 @@
     function viewMore(e) {
         var username = $("#userName").val();
         $.ajax({
-            url: "/Profile?Username="+username+"&Page="+page,
+            url: "/Profile?Username=" + username + "&Page=" + page,
             beforeSend: function () {
                 $(".loading").removeClass("hidden");
             },
             success: function (points) {
                 page++;
-                //$points = $(points);
-                //alert(JSON.stringify(points));
                 $(".loading").addClass("hidden");
                 $('.achievements').append(points);
                 var displayed_points_count = parseInt($(".achievement-item").length);

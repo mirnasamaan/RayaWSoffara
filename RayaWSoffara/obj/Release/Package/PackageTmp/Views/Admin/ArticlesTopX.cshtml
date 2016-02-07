@@ -24,6 +24,10 @@
                         <th>Title</th>
                         <th>Actions</th>
                         <th>Status</th>
+                        <th>User Delete</th>
+                        <th>Comments</th>
+                        <th>Reported Comments</th>
+                        <th>Original</th>
                     </tr>
                 </thead>
             </table>
@@ -56,6 +60,18 @@
             },
             {
                 "data": "Status"
+            },
+            {
+                "data": "UserDelete"
+            },
+            {
+                "data": "CommentsCount"
+            },
+            {
+                "data": "ReportedCommentsCount"
+            },
+            {
+                "data": "isOriginal"
             }
         ],
         "order": [[0, "asc"]]
@@ -109,5 +125,39 @@
                 }
             });
         }
+    }
+
+    function UnsetOriginal(e) {
+        var post_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to set this article as not original?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { PostId: post_id },
+                url: "/Admin/UnsetOriginal",
+                success: function (data) {
+                    $(e).html("Copied").attr("onclick", "SetOriginal(this)").removeClass("label-success").addClass("label-danger");
+                }
+            });
+        }
+    }
+
+    function SetOriginal(e) {
+        var post_id = $(e).parent().parent().attr("id");
+        var r = confirm("Are you sure you want to set this article as original?");
+        if (r == true) {
+            $.ajax({
+                type: "POST",
+                data: { PostId: post_id },
+                url: "/Admin/SetOriginal",
+                success: function (data) {
+                    $(e).html("Original").attr("onclick", "UnsetOriginal(this)").removeClass("label-danger").addClass("label-success");
+                }
+            });
+        }
+    }
+
+    function SeeComments(post_id) {
+        window.location.href = "/PostComments?PostId=" + post_id;
     }
 </script>
