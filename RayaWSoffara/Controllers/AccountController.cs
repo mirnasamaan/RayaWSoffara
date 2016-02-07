@@ -448,12 +448,15 @@ namespace RayaWSoffara.Controllers
                 UserPointsVM points = new UserPointsVM();
                 points.UserId = UserId;
                 points.UserName = user.UserName;
-                double[] views = _userRepo.GetUserViewsByMonthId(UserId, monthId, yearId);
-                double[] likes = _userRepo.GetUserLikesByMonthId(UserId, monthId, yearId);
-                double[] shares = _userRepo.GetUserSharesByMonthId(UserId, monthId, yearId);
-                points.ViewsCount = Convert.ToInt32(views[0]);
-                points.LikesCount = Convert.ToInt32(likes[0]);
-                points.SharesCount = Convert.ToInt32(shares[0]);
+                //double[] views = _userRepo.GetUserViewsByMonthId(UserId, monthId, yearId);
+                //double[] likes = _userRepo.GetUserLikesByMonthId(UserId, monthId, yearId);
+                //double[] shares = _userRepo.GetUserSharesByMonthId(UserId, monthId, yearId);
+                int viewsCount = _userRepo.GetUserPointTypeCount(UserId, 3);
+                int likesCount = _userRepo.GetUserPointTypeCount(UserId, 2);
+                int sharesCount = _userRepo.GetUserPointTypeCount(UserId, 1);
+                points.ViewsCount = viewsCount;
+                points.LikesCount = likesCount;
+                points.SharesCount = sharesCount;
                 points.MonthId = monthId;
                 switch (monthId)
                 {

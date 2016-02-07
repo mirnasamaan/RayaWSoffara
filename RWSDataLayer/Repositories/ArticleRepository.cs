@@ -415,6 +415,8 @@ namespace RWSDataLayer.Repositories
             {
                 Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
                 post.IsActive = false;
+                List<Point> points = Context.Points.Where(i => i.PostId == PostId).ToList();
+                points.ForEach(i => i.isActive = false);
                 Context.SaveChanges();
                 return true;
             }
@@ -431,6 +433,8 @@ namespace RWSDataLayer.Repositories
                 Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
                 post.IsActive = true;
                 post.ActivationDate = DateTime.Now;
+                List<Point> points = Context.Points.Where(i => i.PostId == PostId).ToList();
+                points.ForEach(i => i.isActive = true);
                 Context.SaveChanges();
                 return true;
             }

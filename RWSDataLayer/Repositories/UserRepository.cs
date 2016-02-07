@@ -435,9 +435,16 @@ namespace RWSDataLayer.Repositories
         /// <param name="userId"></param>
         /// <param name="engType"></param>
         /// <returns></returns>
-        public int GetUserEngTypeCount(int userId, int engType)
+        public int GetUserPointTypeCount(int userId, int pointType)
         {
-            return 0;
+            if (Context.RWSUsers.Any(i => i.UserId == userId))
+            {
+                return Context.PointsViews.Where(i => i.UserId == userId && i.PointTypeId == pointType).Count();
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         /// <summary>
