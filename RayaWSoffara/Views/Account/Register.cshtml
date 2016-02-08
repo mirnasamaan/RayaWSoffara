@@ -22,11 +22,13 @@
                 @Html.TextBoxFor(m => m.FirstName, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.FirstName)
             </div>
+            <div class="clear-fix"></div>
             <div class="form-group">
                 <label class="pull-left">أسم العائلة<span class="mandatory">*</span></label>
                 @Html.TextBoxFor(m => m.LastName, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.LastName)
             </div>
+            <div class="clear-fix"></div>
             <div class="form-group">
                 <label class="pull-left">أسم المستخدم<span class="mandatory">*</span></label>
                 @Html.TextBoxFor(m => m.UserName, new { @class = "form-control", onfocusout = "checkusername($(this).val())" })
@@ -35,6 +37,7 @@
                     <div class="full_width" id="tick_div"></div>
                 </div>
             </div>
+            <div class="clear-fix"></div>
             <div class="form-group">
                 <label class="pull-left">البريد الالكتروني<span class="mandatory">*</span></label>
                 @Html.TextBoxFor(m => m.Email, new { @class = "form-control", onfocusout = "checkemail($(this).val())" })
@@ -43,15 +46,18 @@
                     <div class="full_width" id="email_tick_div"></div>
                 </div>
             </div>
+            <div class="clear-fix"></div>
             <div class="form-group">
                 <label class="pull-left">كلمة السر<span class="mandatory">*</span></label>
                 @Html.PasswordFor(m => m.Password, new { @class = "form-control" })
                 @Html.ValidationMessageFor(model => model.Password)
             </div>
+            <div class="clear-fix"></div>
             <div class="form-group">
                 <label class="pull-left">تأكيد كلمة السر<span class="mandatory">*</span></label>
                 @Html.PasswordFor(m => m.ConfirmPassword, new { @class = "form-control" })
             </div>
+            <div class="clear-fix"></div>
             <div class="form-group">
                 <label class="pull-left">البلد</label>
                 <select name="country" class="form-control">
@@ -62,7 +68,12 @@
                 </select>
                 @Html.ValidationMessageFor(model => model.Country)
             </div>
+            <div class="clear-fix"></div>
+            <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
+            <input name="recaptcha" type="hidden" />
+            <div class="clear-fix"></div>
             <input id="sender" name="sender" type="hidden" />
+
         </div>
         <div id="btn_reg_div">
             <input type="submit" value="تسجيل" id="btn_reg" class="buttons" />
@@ -74,6 +85,7 @@
 
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <script>
     function checkusername(username) {
         $.ajax({
@@ -183,8 +195,17 @@
         return (result == 'true');
     }, "البريد الإلكتروني مسجل.");
 
+    jQuery.validator.addMethod("reCaptchaValidate", function (value, element) {
+        alert("in");
+        var googleResponse = jQuery('.g-recaptcha-response').val();
+        alert(googleResponse);
+        return googleResponse;
+    });
+
     $("#form").validate({
+        ignore: [],
         rules: {
+            recaptcha: { reCaptchaValidate: true },
             FirstName: "required",
             LastName: "required",
             UserName: {
@@ -207,6 +228,7 @@
             }
         },
         messages: {
+            recaptcha: { reCaptchaValidate: "برجاء تأكيد هويتك." },
             FirstName: "يجب إدخال الاسم الاول",
             LastName: "يجب إدخال إسم العائلة",
             UserName: {
@@ -224,6 +246,13 @@
             Email: {
                 required: "يجب إدخال البريد الالكتروني.",
                 email: "البريد الالكتروني غير صحيح."
+            }
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "recaptcha") {
+                error.insertAfter(".g-recaptcha > div > div");
+            } else {
+                error.insertAfter(element);
             }
         }
     });

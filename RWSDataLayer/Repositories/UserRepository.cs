@@ -9,6 +9,7 @@ using RWSDataLayer.Interfaces;
 using System.Data.Entity;
 using System.Security.Cryptography;
 using System.Data.Objects.SqlClient;
+using System.Data.Objects;
 
 namespace RWSDataLayer.Repositories
 {
@@ -55,8 +56,10 @@ namespace RWSDataLayer.Repositories
             }
             else
             {
+                startDate = startDate.Value.Date;
+                endDate = endDate.Value.Date;
                 leaderIds = Context.PointsViews
-                    .Where(i => i.PointTimestamp.Value >= startDate && i.PointTimestamp.Value <= endDate)
+                    .Where(i => EntityFunctions.TruncateTime(i.PointTimestamp.Value) >= startDate && EntityFunctions.TruncateTime(i.PointTimestamp.Value) <= endDate)
                     .GroupBy(i => new { i.UserId })
                     .OrderByDescending(sum => sum.Sum(i => i.PointTypeWeight.Value))
                     .Select(i => i.Key.UserId)
@@ -73,15 +76,19 @@ namespace RWSDataLayer.Repositories
         {
             if (fromDate != null && toDate != null)
             {
-                return Context.RWSUsers.Where(i => i.CreationDate.Value >= fromDate && i.CreationDate.Value <= toDate);
+                fromDate = fromDate.Value.Date;
+                toDate = toDate.Value.Date;
+                return Context.RWSUsers.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) >= fromDate && EntityFunctions.TruncateTime(i.CreationDate.Value) <= toDate);
             }
             else if (fromDate != null && toDate == null)
             {
-                return Context.RWSUsers.Where(i => i.CreationDate.Value >= fromDate);
+                fromDate = fromDate.Value.Date;
+                return Context.RWSUsers.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) >= fromDate);
             }
             else if (fromDate == null && toDate != null)
             {
-                return Context.RWSUsers.Where(i => i.CreationDate.Value <= toDate);
+                toDate = toDate.Value.Date;
+                return Context.RWSUsers.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) <= toDate);
             }
             else
             {
@@ -192,7 +199,8 @@ namespace RWSDataLayer.Repositories
         {
             try
             {
-                return Context.RWSUsers.Where(i => i.CreationDate == day);
+                day = day.Date;
+                return Context.RWSUsers.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) == day);
             }
             catch (Exception ex)
             {
@@ -204,7 +212,8 @@ namespace RWSDataLayer.Repositories
         {
             try
             {
-                return Context.RWSUsers.Where(i => i.ConfirmationDate == day);
+                day = day.Date;
+                return Context.RWSUsers.Where(i => EntityFunctions.TruncateTime(i.ConfirmationDate.Value) == day);
             }
             catch (Exception ex)
             {
@@ -216,7 +225,8 @@ namespace RWSDataLayer.Repositories
         {
             try
             {
-                return Context.RWSUsers.Where(i => i.CreationDate == day && i.IsConfirmed != true);
+                day = day.Date;
+                return Context.RWSUsers.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) == day && i.IsConfirmed != true);
             }
             catch (Exception ex)
             {
@@ -270,15 +280,19 @@ namespace RWSDataLayer.Repositories
         {
             if (from != null && to != null)
             {
-                return Context.RWSUsers.Where(i => i.IsConfirmed == true && i.ConfirmationDate >= from && i.ConfirmationDate <= to);
+                from = from.Value.Date;
+                to = to.Value.Date;
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true && EntityFunctions.TruncateTime(i.ConfirmationDate.Value) >= from && EntityFunctions.TruncateTime(i.ConfirmationDate.Value) <= to);
             }
             else if (from != null && to == null)
             {
-                return Context.RWSUsers.Where(i => i.IsConfirmed == true && i.ConfirmationDate >= from);
+                from = from.Value.Date;
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true && EntityFunctions.TruncateTime(i.ConfirmationDate.Value) >= from);
             }
             else if (from == null && to != null)
             {
-                return Context.RWSUsers.Where(i => i.IsConfirmed == true && i.ConfirmationDate <= to);
+                to = to.Value.Date;
+                return Context.RWSUsers.Where(i => i.IsConfirmed == true && EntityFunctions.TruncateTime(i.ConfirmationDate.Value) <= to);
             }
             else
             {
@@ -639,7 +653,9 @@ namespace RWSDataLayer.Repositories
                 }
                 else
                 {
-                    IQueryable<PointsView> pointsview = Context.PointsViews.Where(i => i.UserId == userId && i.isActive == true && i.PointTimestamp.Value >= startDate && i.PointTimestamp.Value <= endDate);
+                    startDate = startDate.Value.Date;
+                    endDate = endDate.Value.Date;
+                    IQueryable<PointsView> pointsview = Context.PointsViews.Where(i => i.UserId == userId && i.isActive == true && EntityFunctions.TruncateTime(i.PointTimestamp.Value) >= startDate && EntityFunctions.TruncateTime(i.PointTimestamp.Value) <= endDate);
                     if (pointsview.Count() > 0)
                     {
                         return pointsview.Sum(i => i.PointTypeWeight.Value);

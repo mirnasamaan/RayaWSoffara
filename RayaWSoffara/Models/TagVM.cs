@@ -34,6 +34,7 @@ namespace RayaWSoffara.Models
         public string PostImage { get; set; }
         public string PostVideo { get; set; }
         public string PostContent { get; set; }
+        public DateTime ActivationDate { get; set; }
     }
 
     public class IndexVM

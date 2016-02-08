@@ -9,6 +9,7 @@ using System.Data;
 using System.Data.Entity.ModelConfiguration.Conventions;
 using System.Web.Mvc;
 using System.Data.Objects.SqlClient;
+using System.Data.Objects;
 
 namespace RWSDataLayer.Repositories
 {
@@ -31,15 +32,24 @@ namespace RWSDataLayer.Repositories
         {
             if (fromDate != null && toDate != null)
             {
-                return Context.Posts.Where(i => i.CreationDate.Value >= fromDate && i.CreationDate.Value <= toDate);
+                //int fromMonth = fromDate.Value.Month;
+                //int fromYear = fromDate.Value.Year;
+                //int toMonth = toDate.Value.Month;
+                //int toYear = toDate.Value.Year;
+                //Context.Posts.Where(i => (i.CreationDate.Value.Month >= fromDate.Value.Month && i.CreationDate.Value.Year >= fromDate.Value.Year) && (i.CreationDate.Value.Month <= toDate.Value.Month && i.CreationDate.Value.Year <= toDate.Value.Year));
+                fromDate = fromDate.Value.Date;
+                toDate = toDate.Value.Date;
+                return Context.Posts.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) >= fromDate && EntityFunctions.TruncateTime(i.CreationDate.Value) <= toDate);
             }
             else if (fromDate != null && toDate == null)
             {
-                return Context.Posts.Where(i => i.CreationDate.Value >= fromDate);
+                fromDate = fromDate.Value.Date;
+                return Context.Posts.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) >= fromDate);
             }
             else if (fromDate == null && toDate != null)
             {
-                return Context.Posts.Where(i => i.CreationDate.Value <= toDate);
+                toDate = toDate.Value.Date;
+                return Context.Posts.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) <= toDate);
             }
             else
             {
@@ -198,15 +208,19 @@ namespace RWSDataLayer.Repositories
         {
             if (from != null && to != null)
             {
-                return Context.Posts.Where(i => i.IsActive == true && i.ActivationDate >= from && i.ActivationDate <= to).OrderByDescending(i => i.ActivationDate);
+                from = from.Value.Date;
+                to = to.Value.Date;
+                return Context.Posts.Where(i => i.IsActive == true && EntityFunctions.TruncateTime(i.ActivationDate.Value) >= from && EntityFunctions.TruncateTime(i.ActivationDate.Value) <= to).OrderByDescending(i => i.ActivationDate);
             }
             else if (from != null && to == null)
             {
-                return Context.Posts.Where(i => i.IsActive == true && i.ActivationDate >= from).OrderByDescending(i => i.ActivationDate);
+                from = from.Value.Date;
+                return Context.Posts.Where(i => i.IsActive == true && EntityFunctions.TruncateTime(i.ActivationDate.Value) >= from).OrderByDescending(i => i.ActivationDate);
             }
             else if (from == null && to != null)
             {
-                return Context.Posts.Where(i => i.IsActive == true && i.ActivationDate <= to).OrderByDescending(i => i.ActivationDate);
+                to = to.Value.Date;
+                return Context.Posts.Where(i => i.IsActive == true && EntityFunctions.TruncateTime(i.ActivationDate.Value) <= to).OrderByDescending(i => i.ActivationDate);
             }
             else
             {
@@ -542,15 +556,19 @@ namespace RWSDataLayer.Repositories
         {
             if (fromDate != null && toDate != null)
             {
-                return Context.Comments.Where(i => i.CommentCreationDate.Value >= fromDate && i.CommentCreationDate.Value <= toDate);
+                fromDate = fromDate.Value.Date;
+                toDate = toDate.Value.Date;
+                return Context.Comments.Where(i => EntityFunctions.TruncateTime(i.CommentCreationDate.Value) >= fromDate && EntityFunctions.TruncateTime(i.CommentCreationDate.Value) <= toDate);
             }
             else if (fromDate != null && toDate == null)
             {
-                return Context.Comments.Where(i => i.CommentCreationDate.Value >= fromDate);
+                fromDate = fromDate.Value.Date;
+                return Context.Comments.Where(i => EntityFunctions.TruncateTime(i.CommentCreationDate.Value) >= fromDate);
             }
             else if (fromDate == null && toDate != null)
             {
-                return Context.Comments.Where(i => i.CommentCreationDate.Value <= toDate);
+                toDate = toDate.Value.Date;
+                return Context.Comments.Where(i => EntityFunctions.TruncateTime(i.CommentCreationDate.Value) <= toDate);
             }
             else
             {

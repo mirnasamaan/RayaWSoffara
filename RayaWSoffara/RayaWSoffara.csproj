@@ -251,8 +251,6 @@
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Content Include="Content\Article_Images\Penguins.jpg" />
-    <Content Include="Content\Article_Images\Tulips.jpg" />
     <Content Include="Content\CSS\animate.delay.css" />
     <Content Include="Content\CSS\animate.min.css" />
     <Content Include="Content\CSS\bootstrap-ar.css" />
@@ -1281,6 +1279,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Article_Images\" />
     <Folder Include="Content\Profile_Pictures\" />
     <Folder Include="Temp\" />
   </ItemGroup>

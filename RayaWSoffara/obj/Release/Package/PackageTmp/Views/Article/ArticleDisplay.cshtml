@@ -240,6 +240,15 @@
         </div>
     </div>
     <div class="col-md-4">
+        @if (!Request.IsAuthenticated)
+        {
+            <div class="sidebar">
+                <div class="callToAction">
+                    <a href="/Article" class="pull-left article_anchor"><span class="pull-left">إكــــــتــــب</span><i class="fa fa-pencil-square-o pull-right article-write"></i>
+                    </a>
+                </div>
+            </div>
+        }
         <div id="other_articles">
             <div class="writer_title_div col-xs-12">
                 مقالات أخرى للكاتب

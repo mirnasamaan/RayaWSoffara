@@ -115,7 +115,6 @@
     // start of disabling add button in images modal when dropzone image is deleted //
     $('#image_edit').on('shown.bs.modal', function (e) {
         $("#uploadimage .tools .btn-cancel").click(function () {
-            alert("test");
             $("#uploadimage .addImage").attr("disabled");
         });
     });

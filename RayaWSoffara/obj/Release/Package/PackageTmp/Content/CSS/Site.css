@@ -2692,6 +2692,14 @@ input[name="Email"] {
     color: black;
 }
 
+#display_post_container .sidebar {
+    position: relative;
+}
+
+#display_post_container .sidebar span {
+    font-size: 20px;
+}
+
 .sidebar {
     position: absolute;
     left: 0;
@@ -3716,7 +3724,7 @@ input {
     padding: 0 20px;
 }
 
-.form-group label {
+.form-group label:nth-child(1) {
     text-align: right;
     display: block;
     position: absolute;

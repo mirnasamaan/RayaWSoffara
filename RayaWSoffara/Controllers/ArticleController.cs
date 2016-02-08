@@ -37,22 +37,36 @@ namespace RayaWSoffara.Controllers
         [Authorize]
         public ActionResult Index()
         {
-            UserArticleVM model = new UserArticleVM();
-            return View(model);
+            if (User.Identity.Name != "")
+            {
+                UserArticleVM model = new UserArticleVM();
+                return View(model);
+            }
+            else
+            {
+                return Redirect("/Login");
+            }
         }
 
         [Authorize]
         [ValidateInput(false)]
         public ActionResult Create(string Type)
         {
-            IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
-            ViewBag.tags = articlesTags.ToList();
-            ViewBag.Images = GetImages(0);
-            ViewBag.Type = Type;
-            ImageRepository _imgrepo = new ImageRepository();
-            ViewBag.AllImagesCount = _imgrepo.GetAll().Count();
-            UserArticleVM model = new UserArticleVM();
-            return View(model);
+            if (User.Identity.Name != "")
+            {
+                IEnumerable<Tag> articlesTags = _articleRepo.GetTags();
+                ViewBag.tags = articlesTags.ToList();
+                ViewBag.Images = GetImages(0);
+                ViewBag.Type = Type;
+                ImageRepository _imgrepo = new ImageRepository();
+                ViewBag.AllImagesCount = _imgrepo.GetAll().Count();
+                UserArticleVM model = new UserArticleVM();
+                return View(model);
+            }
+            else
+            {
+                return Redirect("Login");
+            }
         }
 
         [Authorize]

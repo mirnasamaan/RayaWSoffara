@@ -57,7 +57,8 @@
                         }
                     </div>
                     <div class="clear-fix"></div>
-                    <a href="/Profile?Username=@item.PostAuthorUsername&Page=1" class="author-name">@item.PostAuthorUsername</a>
+                    @{ dynamic calc_time = CalculateTimeHelper.CalculteTime(Convert.ToDateTime(item.ActivationDate)); }
+                    <a href="/Profile?Username=@item.PostAuthorUsername&Page=1" class="author-name">@item.PostAuthorUsername &middot; <span>منذ @calc_time.diff <span>@calc_time.unit</span></span></a>
                     <div class="post-content">
                         @{ string text2 = @Html.Raw(item.PostContent).ToString(); }
                         @TrimTextHelper.TrimText(@text2, 100)

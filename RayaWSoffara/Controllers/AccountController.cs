@@ -22,6 +22,7 @@ using RWSInfrastructure.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 using System.Globalization;
+using RayaWSoffara.Helpers;
 
 
 namespace RayaWSoffara.Controllers
@@ -209,39 +210,45 @@ namespace RayaWSoffara.Controllers
             {
                 try
                 {
-                var createStatus = MembershipService.CreateUser(model.UserName, model.Password, model.Email);
+                    string remoteip = Request.UserHostAddress;
+                    string recaptcha = Request.Form["g-recaptcha-response"];
+                    bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
+                    if (valid)
+                    {
+                        var createStatus = MembershipService.CreateUser(model.UserName, model.Password, model.Email);
 
-                if (createStatus == MembershipCreateStatus.Success)
-                {
-                    RWSUser user = _userRepo.GetUserByUsername(model.UserName);
-                    user.FirstName = model.FirstName;
-                    user.LastName = model.LastName;
-                    user.Country = model.Country;
-                    user.ConfirmationToken = Guid.NewGuid().ToString();
-                    user.IsConfirmed = false;
-                    user.PasswordVerificationToken = Guid.NewGuid().ToString();
-                    user.RWSRoles.Add(_userRepo.GetRoleByName("User"));
-                    _userRepo.UpdateUserDetails(user);
-                    dynamic email = new Email("RegEmail");
-                    email.To = model.Email;
-                    email.UserName = model.UserName;
-                    email.ConfirmationToken = user.ConfirmationToken;
-                    email.BaseUrl = Request.Url.Authority;
-                    try
-                    {
-                        email.Send();
-                        if (sender != null && sender != "")
+                        if (createStatus == MembershipCreateStatus.Success)
                         {
-                            _engRepo.AddInvitationPoints(sender);
+                            RWSUser user = _userRepo.GetUserByUsername(model.UserName);
+                            user.FirstName = model.FirstName;
+                            user.LastName = model.LastName;
+                            user.Country = model.Country;
+                            user.ConfirmationToken = Guid.NewGuid().ToString();
+                            user.IsConfirmed = false;
+                            user.PasswordVerificationToken = Guid.NewGuid().ToString();
+                            user.RWSRoles.Add(_userRepo.GetRoleByName("User"));
+                            _userRepo.UpdateUserDetails(user);
+                            dynamic email = new Email("RegEmail");
+                            email.To = model.Email;
+                            email.UserName = model.UserName;
+                            email.ConfirmationToken = user.ConfirmationToken;
+                            email.BaseUrl = Request.Url.Authority;
+                            try
+                            {
+                                email.Send();
+                                if (sender != null && sender != "")
+                                {
+                                    _engRepo.AddInvitationPoints(sender);
+                                }
+                                return RedirectToAction("ConfirmationEmailSent", "Account", new { message = "لقد تم ارسال رسالة الى بريدك الالكتروني" });
+                            }
+                            catch (Exception ex)
+                            {
+                                return RedirectToAction("ConfirmationFailure", "Account", new { message = "العملية لم تتم بنجاح" });
+                            }
                         }
-                        return RedirectToAction("ConfirmationEmailSent", "Account", new { message = "لقد تم ارسال رسالة الى بريدك الالكتروني" });
+                        ModelState.AddModelError("", ErrorCodeToString(createStatus));
                     }
-                    catch (Exception ex)
-                    {
-                        return RedirectToAction("ConfirmationFailure", "Account", new { message = "العملية لم تتم بنجاح" });
-                    }
-                }
-                ModelState.AddModelError("", ErrorCodeToString(createStatus));
                 }
                 catch (MembershipCreateUserException e)
                 {
@@ -250,6 +257,7 @@ namespace RayaWSoffara.Controllers
             }
 
             // If we got this far, something failed, redisplay form
+            ViewBag.Countries = GetAllCountries();
             return View(model);
         }
 

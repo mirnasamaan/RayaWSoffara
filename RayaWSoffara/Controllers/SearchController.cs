@@ -29,7 +29,7 @@ namespace RayaWSoffara.Controllers
             articles = articles.OrderBy(i => i.CreationDate).Skip(displayedPageNumber * count).Take(count);
             foreach (var item in articles)
             {
-                result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null) ? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName, PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName });
+                result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null) ? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName, PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName, ActivationDate = item.ActivationDate.Value });
             }
             return result; 
         }
@@ -114,7 +114,7 @@ namespace RayaWSoffara.Controllers
                 articles = articles.OrderBy(i => i.CreationDate).Skip(displayedPageNumber*count).Take(count);
                 foreach (var item in articles)
                 {
-                    result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null)? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName, PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName });
+                    result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null)? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName, PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName, ActivationDate = item.ActivationDate.Value });
                 }
                 return result;
             }
@@ -145,7 +145,7 @@ namespace RayaWSoffara.Controllers
                 articles = articles.OrderBy(i => i.CreationDate).Skip(displayedPageNumber*count).Take(count);
                 foreach (var item in articles)
                 {
-                    result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null)? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName , PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName });
+                    result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null)? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName , PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName, ActivationDate = item.ActivationDate.Value });
                 }
                 return result;
             }
@@ -160,7 +160,7 @@ namespace RayaWSoffara.Controllers
             articles = articles.OrderByDescending(i => i.CreationDate).Skip(displayedPageNumber*count).Take(count);
             foreach (var item in articles)
             {
-                result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null) ? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName, PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName });
+                result.Posts.Add(new PostVM { PostID = item.PostId, PostTypeID = item.PostTypeId.Value, PostTypeName = _articleRepo.GetPostTypeByID(item.PostTypeId.Value).PostTypeName, PostAuthorID = item.CreatedBy, PostAuthorName = (item.RWSUser.DisplayName == null) ? item.RWSUser.FirstName + " " + item.RWSUser.LastName : item.RWSUser.DisplayName, PostAuthorProfilePicture = item.RWSUser.ProfileImagePath, PostSharesCount = item.SharesCount, PostViewsCount = item.ViewsCount, PostCommentsCount = _articleRepo.GetAllComments(item.PostId).Count(), PostImage = item.FeaturedImage, PostContent = item.Content, PostVideo = item.FeaturedVideo, PostTitle = item.Title, PostAuthorUsername = item.RWSUser.UserName, ActivationDate = item.ActivationDate.Value });
             }
             return result;    
         }
