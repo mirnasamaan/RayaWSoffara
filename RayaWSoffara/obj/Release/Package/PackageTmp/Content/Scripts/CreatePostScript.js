@@ -69,7 +69,7 @@ function LoadScript() {
                 if (element.attr("name") == "article_picture_path") {
                     error.insertAfter(".media");
                 } else if (element.attr("name") == "newArticle.Content") {
-                    error.insertAfter("#cke_newArticle_Content");
+                    error.insertAfter("#cke_Content");
                 } else if (element.attr("name") == "mySelect") {
                     error.insertAfter(".articleTags");
                 } else if (element.attr("name") == "recaptcha") {
@@ -127,7 +127,7 @@ function LoadScript() {
                 results = {}
                 results["newArticle.Title"] = { required: true }
                 results["newArticle.Content"] = { minCharsShort: true }
-                results["article_picture_path"] = { ImageOrVideo: true }
+                results["article_picture_path[0]"] = { ImageOrVideo: true }
                 results["mySelect"] = { RequiredTag: true }
                 results["recaptcha"] = { reCaptchaValidate: true }
                 for (var i = 0; i < $(".topX_item").length; i++) {
@@ -141,7 +141,7 @@ function LoadScript() {
                 results = {}
                 results["newArticle.Title"] = { required: "يجب إدخال عنوان المقالة." }
                 results["newArticle.Content"] = { minCharsShort: "يجب إدخال 10 حروف على الأقل." }
-                results["article_picture_path"] = { ImageOrVideo: "يجب إدخال صورة للمقالة." }
+                results["article_picture_path[0]"] = { ImageOrVideo: "يجب إدخال صورة للمقالة." }
                 results["mySelect"] = { RequiredTag: "يجب إدخال كلمات بحثية." }
                 results["recaptcha"] = { reCaptchaValidate: "برجاء تأكيد هويتك." }
                 for (var i = 0; i < $(".topX_item").length; i++) {
@@ -153,7 +153,7 @@ function LoadScript() {
             })(),
             errorPlacement: function (error, element) {
                 for (var i = 0; i < $(".topX_item").length; i++) {
-                    if (element.attr("name") == "article_picture_path") {
+                    if (element.attr("name") == "article_picture_path[0]") {
                         error.insertAfter("#media_0");
                     } else if (element.attr("name") == "newArticle.Content") {
                         error.insertAfter("#cke_topX_Content_0");

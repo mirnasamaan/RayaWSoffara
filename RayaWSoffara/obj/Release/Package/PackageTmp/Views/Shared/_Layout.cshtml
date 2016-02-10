@@ -2,7 +2,11 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/> <!--320-->
+    @*<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>*@ <!--320-->
+    @*<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">*@
+    <meta name="HandheldFriendly" content="True">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=auto">
     <title>راية وصفارة - @ViewBag.Title</title>
     <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
     <meta name="viewport" content="width=device-width" />
@@ -173,7 +177,7 @@
                                 </li>
                             </ul>
                         </div>
-                        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+                        <div class="collapse navbar-collapse full_width" id="bs-example-navbar-collapse-2">
                             <ul class="nav navbar-nav">
                                 <li id="home"><a href="/"><i class="fa fa-home pull-left"></i><span class="pull-left">الرئيسية </span>
                                     <div class="clearfix"></div>

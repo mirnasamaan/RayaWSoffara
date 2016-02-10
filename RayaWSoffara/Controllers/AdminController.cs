@@ -36,6 +36,7 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         [AllowAnonymous]
+        [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)] 
         public ActionResult Signin(string username, string password, string RedirectUrl)
         {
             RWSUser user = _userRepo.GetUserByUsernameAndPassword(username, password);
@@ -132,7 +133,7 @@ namespace RayaWSoffara.Controllers
             ViewBag.PageHeader = "Dashboard";
             ViewBag.SubSidebarItem = "dashboard";
             Dashboard dashboard = new Dashboard();
-            DateTime firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+            DateTime firstDayOfMonth = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, 1);
             DateTime lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 
             dashboard.AllTimeRegisteredUsers = _userRepo.GetUsersCount(null, null, null, null);
@@ -145,26 +146,26 @@ namespace RayaWSoffara.Controllers
             dashboard.AllTimeNonReportedComments = _postRepo.GetAllCommentsCount(null, null, "Nonreported", null, null);
             dashboard.AllTimeReportedComments = _postRepo.GetAllCommentsCount(null, null, "Reported", null, null);
 
-            dashboard.RegisterdUsersThisMonth = _userRepo.GetUsersByCreationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
-            dashboard.ActivatedUsersThisMonth = _userRepo.GetUsersByActivationDate(DateTime.Now.Month, DateTime.Now.Year).Count();
-            dashboard.PendingUsersThisMonth = _userRepo.GetPendingUsersByMonth(DateTime.Now.Month, DateTime.Now.Year).Count();
-            dashboard.RegisteredUsersToday = _userRepo.GetUsersByCreationDate(DateTime.Now).Count();
-            dashboard.ActivatedUsersToday = _userRepo.GetUsersByActivationDate(DateTime.Now).Count();
-            dashboard.PendingUsersToday = _userRepo.GetPendingUsersByDate(DateTime.Now).Count();
+            dashboard.RegisterdUsersThisMonth = _userRepo.GetUsersByCreationDate(DateTime.UtcNow.ToLocalTime().Month, DateTime.UtcNow.ToLocalTime().Year).Count();
+            dashboard.ActivatedUsersThisMonth = _userRepo.GetUsersByActivationDate(DateTime.UtcNow.ToLocalTime().Month, DateTime.UtcNow.ToLocalTime().Year).Count();
+            dashboard.PendingUsersThisMonth = _userRepo.GetPendingUsersByMonth(DateTime.UtcNow.ToLocalTime().Month, DateTime.UtcNow.ToLocalTime().Year).Count();
+            dashboard.RegisteredUsersToday = _userRepo.GetUsersByCreationDate(DateTime.UtcNow.ToLocalTime()).Count();
+            dashboard.ActivatedUsersToday = _userRepo.GetUsersByActivationDate(DateTime.UtcNow.ToLocalTime()).Count();
+            dashboard.PendingUsersToday = _userRepo.GetPendingUsersByDate(DateTime.UtcNow.ToLocalTime()).Count();
 
             dashboard.TotalPostsThisMonth = _postRepo.GetPostsCount("", null, firstDayOfMonth, lastDayOfMonth, "");
             dashboard.ActivatedPostsThisMonth = _postRepo.GetPostsCount("Active", null, firstDayOfMonth, lastDayOfMonth, "");
             dashboard.PendingPostsThisMonth = _postRepo.GetPostsCount("Inactive", null, firstDayOfMonth, lastDayOfMonth, "");
-            dashboard.TotalPostsToday = _postRepo.GetPostsCount("", null, DateTime.Now, DateTime.Now, "");
-            dashboard.ActivatedPostsToday = _postRepo.GetPostsCount("Active", null, DateTime.Now, DateTime.Now, "");
-            dashboard.PendingPostsThisMonth = _postRepo.GetPostsCount("Inactive", null, DateTime.Now, DateTime.Now, "");
+            dashboard.TotalPostsToday = _postRepo.GetPostsCount("", null, DateTime.UtcNow.ToLocalTime(), DateTime.UtcNow.ToLocalTime(), "");
+            dashboard.ActivatedPostsToday = _postRepo.GetPostsCount("Active", null, DateTime.UtcNow.ToLocalTime(), DateTime.UtcNow.ToLocalTime(), "");
+            dashboard.PendingPostsThisMonth = _postRepo.GetPostsCount("Inactive", null, DateTime.UtcNow.ToLocalTime(), DateTime.UtcNow.ToLocalTime(), "");
 
             dashboard.TotalCommentsThisMonth = _postRepo.GetAllCommentsCount(null, null, "", firstDayOfMonth, lastDayOfMonth);
             dashboard.NonReportedCommentsThisMonth = _postRepo.GetAllCommentsCount(null, null, "NonReported", firstDayOfMonth, lastDayOfMonth);
             dashboard.ReportedCommentsThisMonth = _postRepo.GetAllCommentsCount(null, null, "Reported", firstDayOfMonth, lastDayOfMonth);
-            dashboard.TotalCommentsToday = _postRepo.GetAllCommentsCount(null, null, "", DateTime.Now, DateTime.Now);
-            dashboard.NonreportedCommentsToday = _postRepo.GetAllCommentsCount(null, null, "Nonreported", DateTime.Now, DateTime.Now);
-            dashboard.ReportedCommentsToday = _postRepo.GetAllCommentsCount(null, null, "Reported", DateTime.Now, DateTime.Now);
+            dashboard.TotalCommentsToday = _postRepo.GetAllCommentsCount(null, null, "", DateTime.UtcNow.ToLocalTime(), DateTime.UtcNow.ToLocalTime());
+            dashboard.NonreportedCommentsToday = _postRepo.GetAllCommentsCount(null, null, "Nonreported", DateTime.UtcNow.ToLocalTime(), DateTime.UtcNow.ToLocalTime());
+            dashboard.ReportedCommentsToday = _postRepo.GetAllCommentsCount(null, null, "Reported", DateTime.UtcNow.ToLocalTime(), DateTime.UtcNow.ToLocalTime());
             return View(dashboard);
         }
 
@@ -180,8 +181,8 @@ namespace RayaWSoffara.Controllers
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult GetUsersGraphPoints()
         {
-            int currMonth = DateTime.Now.Month;
-            int currYear = DateTime.Now.Year;
+            int currMonth = DateTime.UtcNow.ToLocalTime().Month;
+            int currYear = DateTime.UtcNow.ToLocalTime().Year;
             int beginMonth, beginYear;
 
             beginMonth = currMonth - 6 + 1;
@@ -215,8 +216,8 @@ namespace RayaWSoffara.Controllers
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult GetPostsGraphPoints()
         {
-            int currMonth = DateTime.Now.Month;
-            int currYear = DateTime.Now.Year;
+            int currMonth = DateTime.UtcNow.ToLocalTime().Month;
+            int currYear = DateTime.UtcNow.ToLocalTime().Year;
             int beginMonth, beginYear;
 
             beginMonth = currMonth - 6 + 1;
@@ -251,8 +252,8 @@ namespace RayaWSoffara.Controllers
         [CustomAuthorize(Roles = "Admin")]
         public ActionResult GetCommentsGraphPoints()
         {
-            int currMonth = DateTime.Now.Month;
-            int currYear = DateTime.Now.Year;
+            int currMonth = DateTime.UtcNow.ToLocalTime().Month;
+            int currYear = DateTime.UtcNow.ToLocalTime().Year;
             int beginMonth, beginYear;
 
             beginMonth = currMonth - 6 + 1;
@@ -405,7 +406,7 @@ namespace RayaWSoffara.Controllers
             user.RWSRoles.Add(role);
             user.Password = GetMd5Hash(user.Password);
             user.IsConfirmed = true;
-            user.ConfirmationDate = DateTime.Now;
+            user.ConfirmationDate = DateTime.UtcNow.ToLocalTime();
             _userRepo.AddUser(user);
             ViewBag.AddSuccess = true;
             return View("Users");
@@ -499,7 +500,7 @@ namespace RayaWSoffara.Controllers
             if (path != null && path.ContentLength > 0)
             {
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + region.RegionName + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Region_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -589,7 +590,7 @@ namespace RayaWSoffara.Controllers
                 //var fileName = Path.GetFileName(path.FileName);
                 // store the file inside ~/App_Data/uploads folder
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + region.RegionName.Replace(' ', '_') + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Region_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -671,7 +672,7 @@ namespace RayaWSoffara.Controllers
             if (path != null && path.ContentLength > 0)
             {
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + comp.CompetitionName + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Competition_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -788,7 +789,7 @@ namespace RayaWSoffara.Controllers
             if (path != null && path.ContentLength > 0)
             {
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + comp.CompetitionName.Replace(' ', '_') + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Competition_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -882,7 +883,7 @@ namespace RayaWSoffara.Controllers
             if (path != null && path.ContentLength > 0)
             {
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + db_team.TeamName + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Team_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -1013,7 +1014,7 @@ namespace RayaWSoffara.Controllers
             if (path != null && path.ContentLength > 0)
             {
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + db_team.TeamName.Replace(' ', '_') + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Team_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -1103,7 +1104,7 @@ namespace RayaWSoffara.Controllers
             if (path != null && path.ContentLength > 0)
             {
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + db_player.PlayerName + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Player_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -1209,7 +1210,7 @@ namespace RayaWSoffara.Controllers
             if (path != null && path.ContentLength > 0)
             {
                 string extention = Path.GetExtension(path.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = time + "_" + player.PlayerName.Replace(' ', '_') + extention;
                 var localpath = Path.Combine(Server.MapPath("/Content/Player_Logos"), fileName);
                 path.SaveAs(localpath);
@@ -1463,6 +1464,11 @@ namespace RayaWSoffara.Controllers
         public ActionResult DeleteImage(int ImageId)
         {
             Image image = _compRepo.GetImageById(ImageId);
+            string filePath = Server.MapPath("~" + image.ImageURL);
+            if (System.IO.File.Exists(filePath))
+            {
+                System.IO.File.Delete(filePath);
+            }
             _compRepo.DeleteImage(image);
             return Json(true, JsonRequestBehavior.AllowGet);
         }
@@ -1483,7 +1489,7 @@ namespace RayaWSoffara.Controllers
             if (file != null && file.ContentLength > 0)
             {
                 string extention = Path.GetExtension(file.FileName);
-                string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                 string fileName = Path.GetFileNameWithoutExtension(file.FileName) + "_" + time + Path.GetExtension(file.FileName);
                 var localpath = Path.Combine(Server.MapPath("/Content/Article_Images"), fileName);
                 file.SaveAs(localpath);
@@ -1664,10 +1670,11 @@ namespace RayaWSoffara.Controllers
             //ViewBag.tags = articlesTags.ToList();
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.ActivationDate = DateTime.Now;
+            article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+            article.newArticle.ActivationDate = DateTime.UtcNow.ToLocalTime();
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
+            article.newArticle.Tags = tags;
             HttpPostedFileBase picture = Request.Files[0];
             if (picture.FileName != "" || article_picture_path != "")
             {
@@ -1678,7 +1685,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "Temp/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -1699,14 +1706,12 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.FeaturedVideo = video_url;
             }
 
-            article.newArticle.Tags = null;
             article.newArticle.MetaTags = "";
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
             article.newArticle.PostTypeId = 1;
             article.newArticle.IsActive = true;
             Post addedArticle = _postRepo.AddPost(article.newArticle);
-            _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
             {
                 ViewBag.ErrorMsg = 0;
@@ -1765,7 +1770,7 @@ namespace RayaWSoffara.Controllers
                         {
                             string[] separator = new string[] { "Temp/" };
                             string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                             System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                             article.FeaturedImage = imgName;
                         }
@@ -1929,10 +1934,11 @@ namespace RayaWSoffara.Controllers
         {
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.ActivationDate = DateTime.Now;
+            article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+            article.newArticle.ActivationDate = DateTime.UtcNow.ToLocalTime();
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
+            article.newArticle.Tags = tags;
             HttpPostedFileBase picture = Request.Files[0];
             if (picture.FileName != "" || article_picture_path != "")
             {
@@ -1943,7 +1949,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "Temp/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -1980,21 +1986,19 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "Temp/" };
                         string[] temp = item.TopXImage.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         item.TopXImage = imgName;
                     }
                 }
             }
 
-            article.newArticle.Tags = null;
             article.newArticle.MetaTags = "";
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
             article.newArticle.PostTypeId = 2;
             article.newArticle.IsActive = true;
             Post addedArticle = _postRepo.AddPost(article.newArticle);
-            _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
             {
                 ViewBag.ErrorMsg = 0;
@@ -2046,7 +2050,7 @@ namespace RayaWSoffara.Controllers
                         {
                             string[] separator = new string[] { "Temp/" };
                             string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                             System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                             article.FeaturedImage = imgName;
                         }
@@ -2088,7 +2092,7 @@ namespace RayaWSoffara.Controllers
                         {
                             imgName = temp.Last().Split('_').Last();
                         }
-                        imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp.Last();
                         
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.ArticleTopXes.ElementAt(index).TopXImage = imgName;
@@ -2194,10 +2198,11 @@ namespace RayaWSoffara.Controllers
         {
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.ActivationDate = DateTime.Now;
+            article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+            article.newArticle.ActivationDate = DateTime.UtcNow.ToLocalTime();
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
+            article.newArticle.Tags = tags;
             HttpPostedFileBase picture = Request.Files[0];
             if (picture.FileName != "" || article_picture_path != "")
             {
@@ -2208,7 +2213,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "Temp/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -2229,14 +2234,12 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.FeaturedVideo = video_url;
             }
 
-            article.newArticle.Tags = null;
             article.newArticle.MetaTags = "";
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
             article.newArticle.PostTypeId = 3;
             article.newArticle.IsActive = true;
             Post addedArticle = _postRepo.AddPost(article.newArticle);
-            _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
             {
                 ViewBag.ErrorMsg = 0;
@@ -2286,7 +2289,7 @@ namespace RayaWSoffara.Controllers
                         {
                             string[] separator = new string[] { "Temp/" };
                             string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                             System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                             article.FeaturedImage = imgName;
                         }
@@ -2409,10 +2412,11 @@ namespace RayaWSoffara.Controllers
         {
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.ActivationDate = DateTime.Now;
+            article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+            article.newArticle.ActivationDate = DateTime.UtcNow.ToLocalTime();
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
+            article.newArticle.Tags = tags;
             HttpPostedFileBase picture = Request.Files[0];
             if (picture.FileName != "" || article_picture_path != "")
             {
@@ -2423,7 +2427,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "Temp/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -2443,8 +2447,6 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.HasImage = false;
                 article.newArticle.FeaturedVideo = video_url;
             }
-
-            article.newArticle.Tags = null;
             article.newArticle.MetaTags = "";
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
@@ -2452,7 +2454,6 @@ namespace RayaWSoffara.Controllers
             article.newArticle.IsActive = true;
             article.newArticle.Content = "";
             Post addedArticle = _postRepo.AddPost(article.newArticle);
-            _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
             {
                 ViewBag.ErrorMsg = 0;
@@ -2504,7 +2505,7 @@ namespace RayaWSoffara.Controllers
                         {
                             string[] separator = new string[] { "Temp/" };
                             string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                             System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                             imagePost.FeaturedImage = imgName;
                         }
@@ -2627,10 +2628,11 @@ namespace RayaWSoffara.Controllers
         {
             RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
             article.newArticle.CreatedBy = currentUser.UserId;
-            article.newArticle.CreationDate = DateTime.Now;
-            article.newArticle.ActivationDate = DateTime.Now;
+            article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+            article.newArticle.ActivationDate = DateTime.UtcNow.ToLocalTime();
             article.newArticle.MetaTags = "";
             List<Tag> tags = _postRepo.getSelectedTags(article.SelectedTags).ToList();
+            article.newArticle.Tags = tags;
             HttpPostedFileBase picture = Request.Files[0];
             if (picture.FileName != "" || article_picture_path != "")
             {
@@ -2641,7 +2643,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "Temp/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -2662,7 +2664,6 @@ namespace RayaWSoffara.Controllers
                 article.newArticle.FeaturedVideo = video_url;
             }
 
-            article.newArticle.Tags = null;
             article.newArticle.MetaTags = "";
             article.newArticle.ViewsCount = 0;
             article.newArticle.SharesCount = 0;
@@ -2670,7 +2671,6 @@ namespace RayaWSoffara.Controllers
             article.newArticle.IsActive = true;
             article.newArticle.Content = "";
             Post addedArticle = _postRepo.AddPost(article.newArticle);
-            _postRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
             if (addedArticle != null)
             {
                 ViewBag.ErrorMsg = 0;
@@ -2722,7 +2722,7 @@ namespace RayaWSoffara.Controllers
                         {
                             string[] separator = new string[] { "Temp/" };
                             string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                            string imgName = DateTime.Now.Ticks + "_" + temp[1];
+                            string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp[1];
                             System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                             video.FeaturedImage = imgName;
                         }
@@ -2928,8 +2928,8 @@ namespace RayaWSoffara.Controllers
             }
             else if (filter == "month")
             {
-                DateTime MonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                DateTime MonthEndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                DateTime MonthStartDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, 1);
+                DateTime MonthEndDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, DateTime.DaysInMonth(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month));
                 List<int> LeaderIdsMonthly = _userRepo.GetLeaderboardAuthorIds(MonthStartDate, MonthEndDate);
                 foreach (var item in LeaderIdsMonthly)
                 {
@@ -3016,8 +3016,8 @@ namespace RayaWSoffara.Controllers
             else if (filter == "month")
             {
                 fileNamePrefix = "Month_Leaderboard_";
-                DateTime MonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-                DateTime MonthEndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                DateTime MonthStartDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, 1);
+                DateTime MonthEndDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, DateTime.DaysInMonth(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month));
                 List<int> LeaderIdsMonthly = _userRepo.GetLeaderboardAuthorIds(MonthStartDate, MonthEndDate);
                 foreach (var item in LeaderIdsMonthly)
                 {
@@ -3103,7 +3103,7 @@ namespace RayaWSoffara.Controllers
 
             ws.Columns(2, 6).AdjustToContents();
 
-            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.UtcNow.ToLocalTime().ToShortDateString().Replace("/", "_") + ".xlsx");
             MemoryStream stream = GetStream(wb);
 
             Response.Clear();
@@ -3176,7 +3176,7 @@ namespace RayaWSoffara.Controllers
             int userId = _userRepo.GetUserByUsername(userName).UserId;
             double customPoints = _userRepo.GetUserPointsBySelectedDate(userId, from, to);
             double weekPoints = _userRepo.GetUserPointsBySelectedDate(userId, WeekStartDate, WeekEndDate);
-            double monthPoints = _userRepo.GetUserPointsByMonthId(userId, DateTime.Now.Month, DateTime.Now.Year);
+            double monthPoints = _userRepo.GetUserPointsByMonthId(userId, DateTime.UtcNow.ToLocalTime().Month, DateTime.UtcNow.ToLocalTime().Year);
             double alltimePoints = _userRepo.GetUserPointsBySelectedDate(userId, null, null);
 
             data.Add(new DataItem { ItemName = userName, Actions = weekPoints.ToString(), articlesCount = monthPoints, Featured = alltimePoints.ToString(), Status = customPoints.ToString(), DT_RowId = userId.ToString() });
@@ -3381,7 +3381,7 @@ namespace RayaWSoffara.Controllers
 
             ws.Columns(2, 6).AdjustToContents();
 
-            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.UtcNow.ToLocalTime().ToShortDateString().Replace("/", "_") + ".xlsx");
             MemoryStream stream = GetStream(wb);
 
             Response.Clear();
@@ -3711,7 +3711,7 @@ namespace RayaWSoffara.Controllers
 
             ws.Columns(2, 6).AdjustToContents();
 
-            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.UtcNow.ToLocalTime().ToShortDateString().Replace("/", "_") + ".xlsx");
             MemoryStream stream = GetStream(wb);
 
             Response.Clear();
@@ -3906,7 +3906,7 @@ namespace RayaWSoffara.Controllers
 
             ws.Columns(2, 6).AdjustToContents();
 
-            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.Now.ToShortDateString().Replace("/", "_") + ".xlsx");
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.UtcNow.ToLocalTime().ToShortDateString().Replace("/", "_") + ".xlsx");
             MemoryStream stream = GetStream(wb);
 
             Response.Clear();

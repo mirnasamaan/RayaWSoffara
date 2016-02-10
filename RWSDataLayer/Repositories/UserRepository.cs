@@ -372,7 +372,7 @@ namespace RWSDataLayer.Repositories
         {
             RWSUser user = Context.RWSUsers.Where(i => i.UserName == username).FirstOrDefault();
             user.IsConfirmed = true;
-            user.ConfirmationDate = DateTime.Now;
+            user.ConfirmationDate = DateTime.UtcNow.ToLocalTime();
             Context.SaveChanges();
         }
 
@@ -637,7 +637,7 @@ namespace RWSDataLayer.Repositories
             {
                 if (startDate != null && endDate == null)
                 {
-                    endDate = DateTime.Now;
+                    endDate = DateTime.UtcNow.ToLocalTime();
                 }
                 if (startDate == null && endDate == null)
                 {
@@ -766,7 +766,7 @@ namespace RWSDataLayer.Repositories
             {
                 var user = Context.RWSUsers.FirstOrDefault(i => i.UserName == userName);
                 user.Password = newPassword;
-                user.PasswordChangedDate = DateTime.Now;
+                user.PasswordChangedDate = DateTime.UtcNow.ToLocalTime();
                 Context.Entry(user).State = System.Data.EntityState.Modified;
                 Context.SaveChanges();
                 return true;
@@ -906,7 +906,7 @@ namespace RWSDataLayer.Repositories
         {
             try
             {
-                user.CreationDate = DateTime.Now;
+                user.CreationDate = DateTime.UtcNow.ToLocalTime();
                 user.ConfirmationToken = new Guid().ToString();
                 user.IsBanned = false;
                 //user.RWSRoles.Add(GetRoleByName("User"));

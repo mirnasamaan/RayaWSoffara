@@ -3,6 +3,9 @@
 @{
     ViewBag.Title = "التسجيل";
 }
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
 <div class="clear-fix"></div>
 <div id="registration_container">
@@ -91,6 +94,7 @@
 
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <script>
     function checkusername(username) {
         $.ajax({

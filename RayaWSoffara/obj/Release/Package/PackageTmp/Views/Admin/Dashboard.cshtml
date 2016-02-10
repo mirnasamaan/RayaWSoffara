@@ -2,7 +2,7 @@
 @{
     ViewBag.Title = "Home";
     Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
-    var firstDayOfMonth = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
+    var firstDayOfMonth = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, 1);
     var lastDayOfMonth = firstDayOfMonth.AddMonths(1).AddDays(-1);
 }
 
@@ -175,7 +175,7 @@
             <div class="panel-heading">
                 <div class="stat">
                     <div class="row">
-                        <a href="/Admin/ReportUsers?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()">
+                        <a href="/Admin/ReportUsers?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()">
                             <div class="col-xs-4">
                                 <img src="/Content/Images/is-user.png" alt="" />
                             </div>
@@ -189,14 +189,14 @@
                     <div class="mb15"></div>
 
                     <div class="row">
-                        <a href="/Admin/ReportUsers?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Active">
+                        <a href="/Admin/ReportUsers?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&status=Active">
                             <div class="col-xs-6">
                                 <small class="stat-label">Active</small>
                                 <h4>@Model.ActivatedUsersToday</h4>
                             </div>
                         </a>
 
-                        <a href="/Admin/ReportUsers?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Inactive">
+                        <a href="/Admin/ReportUsers?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&status=Inactive">
                             <div class="col-xs-6">
                                 <small class="stat-label">Pending</small>
                                 <h4>@Model.PendingUsersToday</h4>
@@ -271,7 +271,7 @@
             <div class="panel-heading">
                 <div class="stat">
                     <div class="row">
-                        <a href="/Admin/ReportPosts?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()">
+                        <a href="/Admin/ReportPosts?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()">
                             <div class="col-xs-4">
                                 <img src="/Content/Images/is-document.png" alt="" />
                             </div>
@@ -285,14 +285,14 @@
                     <div class="mb15"></div>
 
                     <div class="row">
-                        <a href="/Admin/ReportPosts?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Active">
+                        <a href="/Admin/ReportPosts?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&status=Active">
                             <div class="col-xs-6">
                                 <small class="stat-label">Active</small>
                                 <h4>@Model.ActivatedPostsToday</h4>
                             </div>
                         </a>
 
-                        <a href="/Admin/ReportPosts?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Inactive">
+                        <a href="/Admin/ReportPosts?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&status=Inactive">
                             <div class="col-xs-6">
                                 <small class="stat-label">Pending</small>
                                 <h4>@Model.PendingPostsToday</h4>
@@ -367,7 +367,7 @@
             <div class="panel-heading">
                 <div class="stat">
                     <div class="row">
-                        <a href="/Admin/ReportComments?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()">
+                        <a href="/Admin/ReportComments?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()">
                             <div class="col-xs-4">
                                 <img src="/Content/Images/is-document.png" alt="" />
                             </div>
@@ -381,14 +381,14 @@
                     <div class="mb15"></div>
 
                     <div class="row">
-                        <a href="/Admin/ReportComments?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Nonreported">
+                        <a href="/Admin/ReportComments?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&status=Nonreported">
                             <div class="col-xs-6">
                                 <small class="stat-label">Non Reported</small>
                                 <h4>@Model.NonreportedCommentsToday</h4>
                             </div>
                         </a>
 
-                        <a href="/Admin/ReportComments?from=@DateTime.Now.ToShortDateString()&to=@DateTime.Now.ToShortDateString()&status=Reported">
+                        <a href="/Admin/ReportComments?from=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&to=@DateTime.UtcNow.ToLocalTime().ToShortDateString()&status=Reported">
                             <div class="col-xs-6">
                                 <small class="stat-label">Reported</small>
                                 <h4>@Model.ReportedCommentsToday</h4>

@@ -28,6 +28,8 @@ namespace RayaWSoffara.Controllers
         private ArticleRepository _articleRepo;
         private UserRepository _userRepo;
         private EngagementRepository _engRepo = new EngagementRepository();
+        private static List<string> tempImages = new List<string>();
+
         public ArticleController()
         {
             _articleRepo = new ArticleRepository();
@@ -159,7 +161,7 @@ namespace RayaWSoffara.Controllers
         {
             HttpPostedFileBase uploads = Request.Files["upload"];
             string CKEditorFuncNum = Request["CKEditorFuncNum"];
-            string file = DateTime.Now.Ticks + "_" + System.IO.Path.GetFileName(uploads.FileName);
+            string file = DateTime.UtcNow.ToLocalTime().Ticks + "_" + System.IO.Path.GetFileName(uploads.FileName);
             string path = System.IO.Path.Combine(Server.MapPath("~/Content/Article_Images"), file);
             uploads.SaveAs(path);
             string url = "/Content/Article_Images/" + file;
@@ -188,7 +190,8 @@ namespace RayaWSoffara.Controllers
                 //ViewBag.tags = articlesTags.ToList();
                 RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
                 article.newArticle.CreatedBy = currentUser.UserId;
-                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+                article.newArticle.isOriginal = true;
                 article.newArticle.MetaTags = "";
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
                 article.newArticle.Tags = tags;
@@ -199,7 +202,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp.Last();
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -213,14 +216,21 @@ namespace RayaWSoffara.Controllers
                         article.newArticle.FeaturedVideo = video_url;
                     }
 
-
-                article.newArticle.Tags = null;
                 article.newArticle.MetaTags = "";
                 article.newArticle.ViewsCount = 0;
                 article.newArticle.SharesCount = 0;
                 article.newArticle.PostTypeId = 1;
                 Post addedArticle = _articleRepo.AddPost(article.newArticle);
-                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+
+                foreach (var item in tempImages)
+                {
+                    string filePath = Server.MapPath("~/Temp/" + item);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
                 if (addedArticle != null)
                 {
                     ViewBag.ErrorMsg = 0;
@@ -249,9 +259,11 @@ namespace RayaWSoffara.Controllers
                 ViewBag.tags = articlesTags.ToList();
                 RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
                 article.newArticle.CreatedBy = currentUser.UserId;
-                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+                article.newArticle.isOriginal = true;
                 article.newArticle.MetaTags = "";
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                article.newArticle.Tags = tags;
                
                 if (article_picture_path != "")
                 {
@@ -260,7 +272,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp.Last();
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -277,13 +289,21 @@ namespace RayaWSoffara.Controllers
                     article.newArticle.HasImage = false;
                 }
 
-                article.newArticle.Tags = null;
                 article.newArticle.MetaTags = "";
                 article.newArticle.ViewsCount = 0;
                 article.newArticle.SharesCount = 0;
                 article.newArticle.PostTypeId = 3;
                 Post addedArticle = _articleRepo.AddPost(article.newArticle);
-                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+
+                foreach (var item in tempImages)
+                {
+                    string filePath = Server.MapPath("~/Temp/" + item);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
                 if (addedArticle != null)
                 {
                     ViewBag.ErrorMsg = 0;
@@ -312,13 +332,15 @@ namespace RayaWSoffara.Controllers
                 ViewBag.tags = articlesTags.ToList();
                 RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
                 article.newArticle.CreatedBy = currentUser.UserId;
-                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+                article.newArticle.isOriginal = true;
                 article.newArticle.MetaTags = "";
                 if (article.newArticle.Content == null)
                 {
                     article.newArticle.Content = "";
                 }
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                article.newArticle.Tags = tags;
                 if (article_picture_path != "")
                 {
                     string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
@@ -326,7 +348,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp.Last();
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -340,13 +362,21 @@ namespace RayaWSoffara.Controllers
                     article.newArticle.PostTypeId = 5;
                 }
 
-                article.newArticle.Tags = null;
                 article.newArticle.MetaTags = "";
                 article.newArticle.ViewsCount = 0;
                 article.newArticle.SharesCount = 0;
                 article.newArticle.PostTypeId = 4;
                 Post addedArticle = _articleRepo.AddPost(article.newArticle);
-                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+
+                foreach (var item in tempImages)
+                {
+                    string filePath = Server.MapPath("~/Temp/" + item);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
                 if (addedArticle != null)
                 {
                     ViewBag.ErrorMsg = 0;
@@ -375,13 +405,15 @@ namespace RayaWSoffara.Controllers
                 ViewBag.tags = articlesTags.ToList();
                 RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
                 article.newArticle.CreatedBy = currentUser.UserId;
-                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+                article.newArticle.isOriginal = true;
                 article.newArticle.MetaTags = "";
                 if (article.newArticle.Content == null)
                 {
                     article.newArticle.Content = "";
                 }
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                article.newArticle.Tags = tags;
                 if (article_picture_path != "")
                 {
                     string path = AppDomain.CurrentDomain.BaseDirectory + article_picture_path;
@@ -389,7 +421,7 @@ namespace RayaWSoffara.Controllers
                     {
                         string[] separator = new string[] { "/" };
                         string[] temp = article_picture_path.Split(separator, StringSplitOptions.None);
-                        string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                        string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp.Last();
                         System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                         article.newArticle.FeaturedImage = imgName;
                     }
@@ -403,13 +435,21 @@ namespace RayaWSoffara.Controllers
                     article.newArticle.PostTypeId = 5;
                 }
 
-                article.newArticle.Tags = null;
                 article.newArticle.MetaTags = "";
                 article.newArticle.ViewsCount = 0;
                 article.newArticle.SharesCount = 0;
                 article.newArticle.PostTypeId = 5;
                 Post addedArticle = _articleRepo.AddPost(article.newArticle);
-                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+
+                foreach (var item in tempImages)
+                {
+                    string filePath = Server.MapPath("~/Temp/" + item);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
                 if (addedArticle != null)
                 {
                     ViewBag.ErrorMsg = 0;
@@ -438,9 +478,11 @@ namespace RayaWSoffara.Controllers
                 ViewBag.tags = articlesTags.ToList();
                 RWSUser currentUser = _userRepo.GetUserByUsername(User.Identity.Name);
                 article.newArticle.CreatedBy = currentUser.UserId;
-                article.newArticle.CreationDate = DateTime.Now;
+                article.newArticle.CreationDate = DateTime.UtcNow.ToLocalTime();
+                article.newArticle.isOriginal = true;
                 article.newArticle.MetaTags = "";
                 List<Tag> tags = _articleRepo.getSelectedTags(article.SelectedTags).ToList();
+                article.newArticle.Tags = tags;
 
                 int count = 0;
                 foreach (string img_path in article_picture_path)
@@ -454,7 +496,7 @@ namespace RayaWSoffara.Controllers
                             {
                                 string[] separator = new string[] { "/" };
                                 string[] temp = img_path.Split(separator, StringSplitOptions.None);
-                                string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                                string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp.Last();
                                 System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                                 article.newArticle.ArticleTopXes.ElementAt(count - 1).TopXImage = imgName;
                             }
@@ -473,7 +515,7 @@ namespace RayaWSoffara.Controllers
                             {
                                 string[] separator = new string[] { "/" };
                                 string[] temp = img_path.Split(separator, StringSplitOptions.None);
-                                string imgName = DateTime.Now.Ticks + "_" + temp.Last();
+                                string imgName = DateTime.UtcNow.ToLocalTime().Ticks + "_" + temp.Last();
                                 System.IO.File.Copy(path, Server.MapPath("~/Content/Article_Images/" + imgName));
                                 article.newArticle.FeaturedImage = imgName;
                             }
@@ -490,12 +532,20 @@ namespace RayaWSoffara.Controllers
                     count++;
                 }
 
-                article.newArticle.Tags = null;
                 article.newArticle.MetaTags = "";
                 article.newArticle.ViewsCount = 0;
                 article.newArticle.PostTypeId = 2;
                 Post addedArticle = _articleRepo.AddPost(article.newArticle);
-                _articleRepo.UpdatedArticleTags(article.newArticle.PostId, tags);
+
+                foreach (var item in tempImages)
+                {
+                    string filePath = Server.MapPath("~/Temp/" + item);
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+                }
+
                 if (addedArticle != null)
                 {
                     //_articleRepo.UpdatedArticleTags(addedArticle.ArticleId, tags);
@@ -579,6 +629,7 @@ namespace RayaWSoffara.Controllers
             try
             {
                 FileHelper.SaveFile(croppedImage, Path.Combine(tempFolderName, newName));
+                tempImages.Add(newName);
                 return Json(newName, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

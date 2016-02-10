@@ -37,7 +37,8 @@
                         @if(Model.newArticle.ActivationDate == null){
                             <div class="pull-left"><span class="date">تحت المراجعة</span></div>
                         } else {
-                            <div class="pull-left"><span class="date">@ArabicTimeStampHelper.ArabicTimeStamp(Convert.ToDateTime(Model.newArticle.ActivationDate))</span></div>
+                            dynamic calc_time = CalculateTimeHelper.CalculteTime(Convert.ToDateTime(Model.newArticle.ActivationDate));
+                            <div class="pull-left"><span class="date"><span>منذ @calc_time.diff <span>@calc_time.unit</span></span></span></div>
                         }
                         </div>
                     <div class="clear-fix"></div>

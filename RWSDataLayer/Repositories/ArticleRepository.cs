@@ -429,6 +429,7 @@ namespace RWSDataLayer.Repositories
             {
                 Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
                 post.IsActive = false;
+                post.ActivationDate = null;
                 List<Point> points = Context.Points.Where(i => i.PostId == PostId).ToList();
                 points.ForEach(i => i.isActive = false);
                 Context.SaveChanges();
@@ -446,7 +447,7 @@ namespace RWSDataLayer.Repositories
             {
                 Post post = Context.Posts.Where(i => i.PostId == PostId).FirstOrDefault();
                 post.IsActive = true;
-                post.ActivationDate = DateTime.Now;
+                post.ActivationDate = DateTime.UtcNow.ToLocalTime();
                 List<Point> points = Context.Points.Where(i => i.PostId == PostId).ToList();
                 points.ForEach(i => i.isActive = true);
                 Context.SaveChanges();
@@ -505,7 +506,7 @@ namespace RWSDataLayer.Repositories
         /// <returns></returns>
         public Post UpdateArticle(Post updatedArticle, RWSUser updatedBy)
         {
-            updatedArticle.UpdateDate = DateTime.Now;
+            updatedArticle.UpdateDate = DateTime.UtcNow.ToLocalTime();
             updatedArticle.UpdatedBy = updatedBy.UserId;
             Context.Entry(updatedArticle).State = System.Data.EntityState.Modified;
             Context.SaveChanges();
@@ -591,7 +592,7 @@ namespace RWSDataLayer.Repositories
             addedComment.CommentContent = comment;
             addedComment.CommentUserId = UserId;
             addedComment.CommentPostId = PostId;
-            addedComment.CommentCreationDate = DateTime.Now;
+            addedComment.CommentCreationDate = DateTime.UtcNow.ToLocalTime();
             addedComment = Context.Comments.Add(addedComment);
 
             //Context.SaveChanges();
@@ -675,7 +676,7 @@ namespace RWSDataLayer.Repositories
             try
             {
                 article.IsActive = true;
-                article.ActivationDate = DateTime.Now;
+                article.ActivationDate = DateTime.UtcNow.ToLocalTime();
                 return true;
             }
             catch (Exception ex)
@@ -697,7 +698,7 @@ namespace RWSDataLayer.Repositories
                 CommentReport report = new CommentReport();
                 report.CommentId = CommentId;
                 report.UserId = UserId;
-                report.ReportTimestamp = DateTime.Now;
+                report.ReportTimestamp = DateTime.UtcNow.ToLocalTime();
                 Context.CommentReports.Add(report);
                 Comment comment = Context.Comments.FirstOrDefault(i => i.CommentId == CommentId);
                 comment.CommentReportCount = comment.CommentReportCount + 1;
@@ -751,7 +752,7 @@ namespace RWSDataLayer.Repositories
 
         public IQueryable<Tag> GetTopTagsThisMonth(int count = 10)
         {
-            IQueryable<Tag> topTags = Context.Tags.Where(i => i.Posts.Where(j => j.IsActive == true && j.ActivationDate != null && j.ActivationDate.Value.Month == DateTime.Now.Month && j.ActivationDate.Value.Year == DateTime.Now.Year).Count() > 0).OrderByDescending(i => i.Posts.Where(j => j.IsActive == true && j.ActivationDate != null && j.ActivationDate.Value.Month == DateTime.Now.Month && j.ActivationDate.Value.Year == DateTime.Now.Year).Count()).Take(count);
+            IQueryable<Tag> topTags = Context.Tags.Where(i => i.Posts.Where(j => j.IsActive == true && j.ActivationDate != null && j.ActivationDate.Value.Month == DateTime.UtcNow.ToLocalTime().Month && j.ActivationDate.Value.Year == DateTime.UtcNow.ToLocalTime().Year).Count() > 0).OrderByDescending(i => i.Posts.Where(j => j.IsActive == true && j.ActivationDate != null && j.ActivationDate.Value.Month == DateTime.UtcNow.ToLocalTime().Month && j.ActivationDate.Value.Year == DateTime.UtcNow.ToLocalTime().Year).Count()).Take(count);
             return topTags;
         }
 

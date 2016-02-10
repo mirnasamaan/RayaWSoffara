@@ -3,6 +3,9 @@
 @{
     ViewBag.Title = "التسجيل";
 }
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
 <div class="clear-fix"></div>
 <div id="registration_container">
@@ -74,6 +77,11 @@
                 </div>
                 <div class="clear-fix"></div>
                 @Html.HiddenFor(m => m.PicturePath)
+                
+                <div class="clear-fix"></div>
+                <div class="g-recaptcha" data-sitekey="6LdhiRQTAAAAAGKaboWCwIsqgpDFEQH4ov3WCYBI"></div>
+                <input name="recaptcha" type="hidden" />
+                <div class="clear-fix"></div>
             </div>
             <div id="btn_reg_div">
                 <input type="submit" value="تسجيل" id="btn_reg"/>
@@ -86,6 +94,7 @@
 
 <script src="~/Content/Scripts/jquery.validate.min.js"></script>
 <script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script src='https://www.google.com/recaptcha/api.js'></script>
 <script>
     function checkusername(username) {
         $.ajax({
@@ -188,8 +197,17 @@
         return (result == 'true');
     }, "البريد الإلكتروني مسجل.");
 
+    jQuery.validator.addMethod("reCaptchaValidate", function (value, element) {
+        alert("in");
+        var googleResponse = jQuery('.g-recaptcha-response').val();
+        alert(googleResponse);
+        return googleResponse;
+    });
+
     $("#form").validate({
+        ignore: [],
         rules: {
+            recaptcha: { reCaptchaValidate: true },
             UserName: {
                 required: true,
                 UsernameExist: true
@@ -210,6 +228,7 @@
             }
         },
         messages: {
+            recaptcha: { reCaptchaValidate: "برجاء تأكيد هويتك." },
             FirstName: "يجب إدخال الاسم الاول",
             LastName: "يجب إدخال إسم العائلة",
             UserName: {
@@ -227,6 +246,13 @@
             Email: {
                 required: "يجب إدخال البريد الالكتروني.",
                 email: "البريد الالكتروني غير صحيح."
+            }
+        },
+        errorPlacement: function (error, element) {
+            if (element.attr("name") == "recaptcha") {
+                error.insertAfter(".g-recaptcha > div > div");
+            } else {
+                error.insertAfter(element);
             }
         }
     });

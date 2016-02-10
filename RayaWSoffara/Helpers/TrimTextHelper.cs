@@ -14,6 +14,7 @@ namespace RayaWSoffara.Helpers
             if (text != null)
             {
                 trimmed_text = Regex.Replace(text, "<.*?>", String.Empty); ;
+                trimmed_text = HttpUtility.HtmlDecode(trimmed_text);
 
                 if (charCount < trimmed_text.Length)
                 {

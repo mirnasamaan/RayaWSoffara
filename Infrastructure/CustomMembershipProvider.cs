@@ -64,7 +64,7 @@ namespace RWSInfrastructure
 
             if (user == null)
             {
-                var userObj = new RWSUser { UserName = username, Password = GetMd5Hash(password), Email = email, CreationDate = DateTime.Now , ConfirmationToken = new Guid().ToString(), IsConfirmed = false, IsBanned = false, BanDate = null, LastPasswordFailureDate = null, ConfirmationDate = null, PasswordChangedDate = DateTime.Now, PasswordVerificationToken = new Guid().ToString(), ProfileImagePath = null, PasswordVerificationTokenExpirationDate= null, FirstName = null, LastName = null, Country = null, PasswordSalt = null, PasswordFaliuresSinceLastSuccess = null };
+                var userObj = new RWSUser { UserName = username, Password = GetMd5Hash(password), Email = email, CreationDate = DateTime.UtcNow.ToLocalTime() , ConfirmationToken = new Guid().ToString(), IsConfirmed = false, IsBanned = false, BanDate = null, LastPasswordFailureDate = null, ConfirmationDate = null, PasswordChangedDate = DateTime.UtcNow.ToLocalTime(), PasswordVerificationToken = new Guid().ToString(), ProfileImagePath = null, PasswordVerificationTokenExpirationDate= null, FirstName = null, LastName = null, Country = null, PasswordSalt = null, PasswordFaliuresSinceLastSuccess = null };
 
                 var _userRepo = new UserRepository();
 
@@ -126,7 +126,7 @@ namespace RWSInfrastructure
         {
             try
             {
-                MembershipUser returnedUser = new MembershipUser("", user.UserName, null, user.Email, "", "", (bool)user.IsConfirmed, (bool)user.IsBanned, (DateTime)user.CreationDate, DateTime.Now, DateTime.Now, (DateTime)user.ConfirmationDate, DateTime.Now);
+                MembershipUser returnedUser = new MembershipUser("", user.UserName, null, user.Email, "", "", (bool)user.IsConfirmed, (bool)user.IsBanned, (DateTime)user.CreationDate, DateTime.UtcNow.ToLocalTime(), DateTime.UtcNow.ToLocalTime(), (DateTime)user.ConfirmationDate, DateTime.UtcNow.ToLocalTime());
                 returnedUser.Comment = user.ConfirmationToken;
                 return returnedUser;
             }

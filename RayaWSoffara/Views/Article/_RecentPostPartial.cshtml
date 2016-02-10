@@ -30,7 +30,7 @@
             @if (@Model.Title != null && @Model.Title != "")
             {
                 <div class="title">
-                    @Html.ActionLink(@Model.Title, "ArticleDisplay", new { id = @Model.PostId })
+                    <a href="../../Article/ArticleDisplay/2">@Model.Title</a>
                 </div>
             }
             else if (@Model.Content != null && @Model.Content != "")

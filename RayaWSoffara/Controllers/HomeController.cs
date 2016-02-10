@@ -56,7 +56,7 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.AllTimeLeadersPoints = AllTimeLeadersPoints;
 
-            //int weekId = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            //int weekId = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.UtcNow.ToLocalTime(), CalendarWeekRule.FirstDay, DayOfWeek.Monday);
             DateTime WeekStartDate = DateTime.Today.AddDays(-1 * (int)(DateTime.Today.DayOfWeek));
             DateTime WeekEndDate = WeekStartDate.AddDays(6);
             List<int> LeaderIdsWeekly = GetLeaderboardAuthorIds(WeekStartDate, WeekEndDate);
@@ -67,8 +67,8 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.WeeklyLeadersPoints = WeeklyLeadersPoints;
 
-            DateTime MonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            DateTime MonthEndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+            DateTime MonthStartDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, 1);
+            DateTime MonthEndDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, DateTime.DaysInMonth(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month));
             List<int> LeaderIdsMonthly = GetLeaderboardAuthorIds(MonthStartDate, MonthEndDate);
             List<UserPointsVM> MonthlyLeadersPoints = new List<UserPointsVM>();
             foreach (var item in LeaderIdsMonthly)
@@ -128,7 +128,7 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.AllTimeLeadersPoints = AllTimeLeadersPoints;
 
-            //int weekId = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            //int weekId = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.UtcNow.ToLocalTime(), CalendarWeekRule.FirstDay, DayOfWeek.Monday);
             DateTime WeekStartDate = DateTime.Today.AddDays(-1 * (int)(DateTime.Today.DayOfWeek));
             DateTime WeekEndDate = WeekStartDate.AddDays(6);
             List<int> LeaderIdsWeekly = GetLeaderboardAuthorIds(WeekStartDate, WeekEndDate);
@@ -139,8 +139,8 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.WeeklyLeadersPoints = WeeklyLeadersPoints;
 
-            DateTime MonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            DateTime MonthEndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+            DateTime MonthStartDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, 1);
+            DateTime MonthEndDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, DateTime.DaysInMonth(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month));
             List<int> LeaderIdsMonthly = GetLeaderboardAuthorIds(MonthStartDate, MonthEndDate);
             List<UserPointsVM> MonthlyLeadersPoints = new List<UserPointsVM>();
             foreach (var item in LeaderIdsMonthly)
@@ -162,7 +162,7 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.AllTimeLeadersPoints = AllTimeLeadersPoints;
 
-            //int weekId = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.Now, CalendarWeekRule.FirstDay, DayOfWeek.Monday);
+            //int weekId = CultureInfo.InvariantCulture.Calendar.GetWeekOfYear(DateTime.UtcNow.ToLocalTime(), CalendarWeekRule.FirstDay, DayOfWeek.Monday);
             DateTime WeekStartDate = DateTime.Today.AddDays(-1 * (int)(DateTime.Today.DayOfWeek));
             DateTime WeekEndDate = WeekStartDate.AddDays(7);
             List<int> LeaderIdsWeekly = GetLeaderboardAuthorIds(WeekStartDate, WeekEndDate);
@@ -173,8 +173,8 @@ namespace RayaWSoffara.Controllers
             }
             ViewBag.WeeklyLeadersPoints = WeeklyLeadersPoints;
 
-            DateTime MonthStartDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 1);
-            DateTime MonthEndDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+            DateTime MonthStartDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, 1);
+            DateTime MonthEndDate = new DateTime(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month, DateTime.DaysInMonth(DateTime.UtcNow.ToLocalTime().Year, DateTime.UtcNow.ToLocalTime().Month));
             List<int> LeaderIdsMonthly = GetLeaderboardAuthorIds(MonthStartDate, MonthEndDate);
             List<UserPointsVM> MonthlyLeadersPoints = new List<UserPointsVM>();
             foreach (var item in LeaderIdsMonthly)

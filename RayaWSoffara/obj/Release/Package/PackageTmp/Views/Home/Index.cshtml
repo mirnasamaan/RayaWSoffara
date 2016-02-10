@@ -35,6 +35,12 @@
                 }
                 @Html.Partial("_PostPartial", Model)
             </div>
+            <div class="main-footer hidden-md hidden-lg">
+                <div class="pull-left"><a href="">شروط الاستخدام وبيان الخصوصية</a>&nbsp;</div>
+                <div class="pull-left"><a href="">اقتراحات</a>&nbsp;</div>
+                <div class="pull-left"><a href="">شكاوى ومشاكل فنية</a>&nbsp;</div>
+                <div class="pull-left"><a href="">انضم لفريق العمل</a>&nbsp;</div>
+            </div>
         </div>
         <div class="col-md-3 hidden-sm hidden-xs custom-row sidebar">
             @if (!Request.IsAuthenticated)
@@ -134,7 +140,7 @@
 
 <div class="viewMoreButton">
     @Html.Partial("_LoadingPartial", "overall")
-    <button id="viewMore" onclick="viewMore();"><span>أظهر المزيد</span></button>
+    <button id="viewMore" onclick="viewMore();" class="hidden"><span>أظهر المزيد</span></button>
 </div>
 @Html.Raw(ViewBag.tutorial)
 

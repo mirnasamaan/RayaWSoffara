@@ -2205,7 +2205,7 @@ span.views > img {
 }
 
 #display_post_container .article_stats .views, #display_post_container .article_stats .comments, #display_post_container .article_stats .shares, #display_post_container .article_stats .likes {
-    padding: 0 20px;
+    padding: 0 8px;
     color: #3589b5;
     font-size: 20px;
     font-family: GESS_Medium, 'Open Sans';
@@ -2810,6 +2810,16 @@ input[name="Email"] {
 }
 #display_post_container .comments-container .new-comment {
     margin-top: 30px;
+    position: relative;
+}
+#display_post_container .comments-container .new-comment user-img {
+    position: absolute;
+}
+#display_post_container .comments-container .new-comment .add-comment {
+    padding-right: 70px;
+    width: 100%;
+    box-shadow: none;
+    border-radius: 0;
 }
 .comment-validation {
     background: rgb(171, 32, 25);
@@ -2824,7 +2834,7 @@ input[name="Email"] {
 #display_post_container .comments-container .new-comment textarea {
     overflow: hidden;
     resize: none;
-    width: 500px;
+    width: 100%;
     min-height: 50px;
     font-family: Arial, sans-serif;
     font-size: 13px;
@@ -2893,6 +2903,10 @@ input[name="Email"] {
 #createArticle_container .nav i, #display_post_container .nav i {
   font-size: 20px;
   padding: 0 10px;
+}
+#createArticle_container #tabs2 li {
+    border-left: solid 1px #348DB9;
+    border-right: solid 1px #348DB9;
 }
 #video_container {
     padding: 10px;
@@ -4135,7 +4149,8 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 }
 
 .header_div_3 .keywords > li.tagit-new input[type="text"] {
-    background-color: rgb(30, 32, 31);
+    width: 100% !important;
+    /*background-color: rgb(30, 32, 31);*/
 }
 
 .header_div_2 .search-btn > button {

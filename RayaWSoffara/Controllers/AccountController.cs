@@ -86,6 +86,7 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)]
         public ActionResult Login(LoginModel model, string RedirectUrl)
         {
             if (ModelState.IsValid)
@@ -93,7 +94,7 @@ namespace RayaWSoffara.Controllers
                 if (MembershipService.ValidateUser(model.UserName, model.Password))
                 {
                     bool confirmed = _userRepo.GetUserByUsernameAndPassword(model.UserName, model.Password).IsConfirmed.Value;
-                    if (confirmed == null || confirmed == false)
+                    if (confirmed == false)
                     {
                         ModelState.AddModelError("", "أسم المستخدم أو كلمة السر غير صحيح.");
                         return View(model);
@@ -177,6 +178,18 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        public static string GetMd5Hash(string value)
+        {
+            var md5Hasher = MD5.Create();
+            var data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(value));
+            var sBuilder = new System.Text.StringBuilder();
+            for (var i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+            return sBuilder.ToString();
+        }
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -186,6 +199,7 @@ namespace RayaWSoffara.Controllers
             if (user != null)
             {
                 user.Password = password;
+                user.Password = GetMd5Hash(password);
                 _userRepo.UpdateUserDetails(user);
                 ViewBag.Message = "تم تغيير كلمة المرور.";
                 return RedirectToAction("ConfirmationEmailSent", "Account", new { message = "تم تغيير كلمة المرور." });
@@ -285,6 +299,7 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)] 
         public ActionResult Register2(RegisterExternalLoginModel model, string returnUrl, string provider, string providerUserId)
         {
             if (ModelState.IsValid)
@@ -292,38 +307,44 @@ namespace RayaWSoffara.Controllers
                 // Attempt to register the user
                 try
                 {
-                    var createStatus = MembershipService.CreateUser(model.UserName, model.Password, model.Email);
-
-                    if (createStatus == MembershipCreateStatus.Success)
+                    string remoteip = Request.UserHostAddress;
+                    string recaptcha = Request.Form["g-recaptcha-response"];
+                    bool valid = CaptchaHelper.ValidateCaptcha("6LdhiRQTAAAAAMRMQP5NdFFtj2pgyAZljMcs1nAe", recaptcha, remoteip);
+                    if (valid)
                     {
-                        RWSUser user = _userRepo.GetUserByUsername(model.UserName);
-                        user.FirstName = model.FirstName;
-                        user.LastName = model.LastName;
-                        user.Country = model.Country;
-                        user.PasswordVerificationToken = Guid.NewGuid().ToString();
-                        user.IsConfirmed = true;
-                        user.ConfirmationDate = DateTime.Now;
-                        user.ProfileImagePath = "/" + model.PicturePath;
-                        _userRepo.UpdateUserDetails(user);
+                        var createStatus = MembershipService.CreateUser(model.UserName, model.Password, model.Email);
 
-                        string FacebookPictureUrl = GetFacebookPictureUrl(providerUserId);
-                        WebClient webClient = new WebClient();
-                        webClient.DownloadFile(FacebookPictureUrl, @AppDomain.CurrentDomain.BaseDirectory + model.PicturePath);
-                        
-                        RWSProviderUser provider_user = new RWSProviderUser();
-                        provider_user.UserId = user.UserId;
-                        provider_user.Provider = provider;
-                        provider_user.ProviderUserId = providerUserId;
-                        _userRepo.AddProviderUser(provider_user);
-                        //dynamic email = new Email("RegEmail");
-                        //email.To = model.Email;
-                        //email.UserName = model.UserName;
-                        //email.ConfirmationToken = user.ConfirmationToken;
-                        //email.Send();
+                        if (createStatus == MembershipCreateStatus.Success)
+                        {
+                            RWSUser user = _userRepo.GetUserByUsername(model.UserName);
+                            user.FirstName = model.FirstName;
+                            user.LastName = model.LastName;
+                            user.Country = model.Country;
+                            user.PasswordVerificationToken = Guid.NewGuid().ToString();
+                            user.IsConfirmed = true;
+                            user.ConfirmationDate = DateTime.UtcNow.ToLocalTime();
+                            user.ProfileImagePath = "/" + model.PicturePath;
+                            _userRepo.UpdateUserDetails(user);
 
-                        return RedirectToAction("Index", "Home");
+                            string FacebookPictureUrl = GetFacebookPictureUrl(providerUserId);
+                            WebClient webClient = new WebClient();
+                            webClient.DownloadFile(FacebookPictureUrl, @AppDomain.CurrentDomain.BaseDirectory + model.PicturePath);
+
+                            RWSProviderUser provider_user = new RWSProviderUser();
+                            provider_user.UserId = user.UserId;
+                            provider_user.Provider = provider;
+                            provider_user.ProviderUserId = providerUserId;
+                            _userRepo.AddProviderUser(provider_user);
+                            //dynamic email = new Email("RegEmail");
+                            //email.To = model.Email;
+                            //email.UserName = model.UserName;
+                            //email.ConfirmationToken = user.ConfirmationToken;
+                            //email.Send();
+
+                            return RedirectToAction("Index", "Home");
+                        }
+                        ModelState.AddModelError("", ErrorCodeToString(createStatus));
                     }
-                    ModelState.AddModelError("", ErrorCodeToString(createStatus));
                 }
                 catch (MembershipCreateUserException e)
                 {
@@ -341,9 +362,10 @@ namespace RayaWSoffara.Controllers
             RWSUser user = _userRepo.GetUserByConfirmationToken(Id);
             if (_userRepo.ConfirmUser(user))
             {
-                user.ConfirmationDate = DateTime.Now;
+                user.ConfirmationDate = DateTime.UtcNow.ToLocalTime();
                 user.IsConfirmed = true;
                 _userRepo.UpdateUserDetails(user);
+                FormsService.SignIn(user.UserName, false);
                 return RedirectToAction("ConfirmationSuccess");
             }
             return RedirectToAction("ConfirmationFailure");
@@ -429,7 +451,7 @@ namespace RayaWSoffara.Controllers
             Points = GetUserAchievements(user.UserId, Page);
             ViewBag.TotalPoints = Points; 
             
-            int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.Now.Year * 12 + DateTime.Now.Month)) + 1;
+            int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.UtcNow.ToLocalTime().Year * 12 + DateTime.UtcNow.ToLocalTime().Month)) + 1;
             ViewBag.AllPointsCount = membershipMonthCount;
 
             if (Request.IsAjaxRequest())
@@ -443,12 +465,12 @@ namespace RayaWSoffara.Controllers
         public List<UserPointsVM> GetUserAchievements(int UserId, int Page)
         {
             RWSUser user = _userRepo.GetUserByUserId(UserId);
-            //int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.Now.Year * 12 + DateTime.Now.Month)) + 1;
+            //int membershipMonthCount = Math.Abs((user.ConfirmationDate.Value.Year * 12 + user.ConfirmationDate.Value.Month) - (DateTime.UtcNow.ToLocalTime().Year * 12 + DateTime.UtcNow.ToLocalTime().Month)) + 1;
 
             List<UserPointsVM> Points = new List<UserPointsVM>();
-            DateTime startDate = DateTime.Now.AddMonths(-(Page-1)*6);
-            //int monthId = DateTime.Now.Month;
-            //int yearId = DateTime.Now.Year;
+            DateTime startDate = DateTime.UtcNow.ToLocalTime().AddMonths(-(Page-1)*6);
+            //int monthId = DateTime.UtcNow.ToLocalTime().Month;
+            //int yearId = DateTime.UtcNow.ToLocalTime().Year;
             int monthId = startDate.Month;
             int yearId = startDate.Year;
             for (int i = 0; i < 6; i++)
@@ -621,8 +643,8 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         public ActionResult GetGraphPoints(int userId)
         {
-            int currMonth = DateTime.Now.Month;
-            int currYear = DateTime.Now.Year;
+            int currMonth = DateTime.UtcNow.ToLocalTime().Month;
+            int currYear = DateTime.UtcNow.ToLocalTime().Year;
             int beginMonth, beginYear;
 
             beginMonth = currMonth - 6 + 1;
@@ -704,6 +726,7 @@ namespace RayaWSoffara.Controllers
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
+        [OutputCacheAttribute(VaryByParam = "*", Duration = 0, NoStore = true)] 
         public ActionResult ExternalLogin(string provider, string returnUrl)
         {
             return new ExternalLoginResult(provider, Url.Action("ExternalLoginCallback", new { ReturnUrl = returnUrl }));
@@ -796,7 +819,7 @@ namespace RayaWSoffara.Controllers
                         string remoteImgPathWithoutQuery = remoteImgPathUri.GetLeftPart(UriPartial.Path);
                         //string fileName = Path.GetFileName(remoteImgPathWithoutQuery);
                         string extention = Path.GetExtension(remoteImgPathWithoutQuery);
-                        string time = DateTime.Now.ToString("yyyymmddhhmmssfff");
+                        string time = DateTime.UtcNow.ToLocalTime().ToString("yyyymmddhhmmssfff");
                         string fileName = time + "_" + response["first_name"] + "_" + response["last_name"]+extention;
                         string localPath = AppDomain.CurrentDomain.BaseDirectory + "Content\\Profile_Pictures\\" + fileName;
                         //string localPath = "Content\\Profile_Pictures\\" + fileName;

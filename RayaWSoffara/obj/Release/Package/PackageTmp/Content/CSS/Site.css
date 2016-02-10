@@ -4135,7 +4135,8 @@ input[type=checkbox]:checked + label:before { letter-spacing: 5px; } /* allow sp
 }
 
 .header_div_3 .keywords > li.tagit-new input[type="text"] {
-    background-color: rgb(30, 32, 31);
+    width: 100% !important;
+    /*background-color: rgb(30, 32, 31);*/
 }
 
 .header_div_2 .search-btn > button {

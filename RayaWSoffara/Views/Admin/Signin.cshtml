@@ -63,7 +63,7 @@
                         <input type="hidden" name="RedirectUrl" value="@ViewBag.RedirectUrl" />
                         <input type="text" name="username" class="form-control uname" placeholder="username" />
                         <input type="password" name="password" class="form-control pword" placeholder="password" />
-                        <a href=""><small>Forget password</small></a>
+                        <a href="/ForgotPassword"><small>Forget password</small></a>
                         <input type="submit" class="btn btn-success btn-block" value="Send" />
                         @Html.AntiForgeryToken()
                     </form>
@@ -75,11 +75,8 @@
 
             <div class="signup-footer">
                 <div class="pull-left">
-                    &copy; 2014. All Rights Reserved. Bracket Bootstrap 3 Admin Template
-           
                 </div>
                 <div class="pull-right">
-                    Created By: <a href="http://themepixels.com/" target="_blank">ThemePixels</a>
                 </div>
             </div>
 

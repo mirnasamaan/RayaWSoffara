@@ -2,6 +2,9 @@
 @{
     ViewBag.Title = "التسجيل";
 }
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="0">
 
 <div class="clear-fix"></div>
 <div id="registration_container">
@@ -196,7 +199,6 @@
     }, "البريد الإلكتروني مسجل.");
 
     jQuery.validator.addMethod("reCaptchaValidate", function (value, element) {
-        alert("in");
         var googleResponse = jQuery('.g-recaptcha-response').val();
         alert(googleResponse);
         return googleResponse;

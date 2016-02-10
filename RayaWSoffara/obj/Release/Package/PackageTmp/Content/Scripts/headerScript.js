@@ -75,6 +75,8 @@ var displayed_posts_count = parseInt($(".visible-lg .grid-item").length);
 var all_posts_count = parseInt($("#AllActivePostsCount").val());
 if (displayed_posts_count >= all_posts_count) {
     $("#viewMore").addClass("hidden");
+} else {
+    $("#viewMore").removeClass("hidden");
 }
 //end of show/hide view button //
 
@@ -240,6 +242,8 @@ $(function () {
     var all_posts_count = parseInt($("#AllActivePostsCount").val());
     if (displayed_posts_count >= all_posts_count) {
         $("#viewMore").addClass("hidden");
+    } else {
+        $("#viewMore").removeClass("hidden");
     }
 
     username = (vars["Username"] == null) ? "" : vars["Username"];
@@ -438,6 +442,8 @@ function viewMore(e) {
                 var all_posts_count = parseInt($("#AllActivePostsCount").val());
                 if (displayed_posts_count >= all_posts_count) {
                     $("#viewMore").addClass("hidden");
+                } else {
+                    $("#viewMore").removeClass("hidden");
                 }
             }
         });
@@ -458,6 +464,8 @@ function viewMore(e) {
                 var all_posts_count = parseInt($("#AllActivePostsCount").val());
                 if (displayed_posts_count >= all_posts_count) {
                     $("#viewMore").addClass("hidden");
+                } else {
+                    $("#viewMore").removeClass("hidden");
                 }
             }
         });
@@ -478,6 +486,8 @@ function viewMore(e) {
                 var all_posts_count = parseInt($("#AllActivePostsCount").val());
                 if (displayed_posts_count >= all_posts_count) {
                     $("#viewMore").addClass("hidden");
+                } else {
+                    $("#viewMore").removeClass("hidden");
                 }
             }
         });

@@ -28,7 +28,7 @@ namespace RWSDataLayer.Repositories
 
             Engagement eng = new Engagement();
             eng.EngTypeId = 1;
-            eng.EngTimestamp = DateTime.Now;
+            eng.EngTimestamp = DateTime.UtcNow.ToLocalTime();
             eng.PostId = PostId;
             eng.EngUserId = UserId;  // Id of the user who made the engagement
             Context.Engagements.Add(eng);
@@ -36,7 +36,7 @@ namespace RWSDataLayer.Repositories
             Point point = new Point();
             point.UserId = _postRepo.GetPostById(PostId).CreatedBy; //UserId;  // Id of the user who will take the points
             point.isActive = _postRepo.GetPostById(PostId).isOriginal;
-            point.PointTimestamp = DateTime.Now;
+            point.PointTimestamp = DateTime.UtcNow.ToLocalTime();
             point.PointTypeId = 1;
             point.PostId = PostId;
             Context.Points.Add(point);
@@ -58,7 +58,7 @@ namespace RWSDataLayer.Repositories
 
             Engagement eng = new Engagement();
             eng.EngTypeId = 2;
-            eng.EngTimestamp = DateTime.Now;
+            eng.EngTimestamp = DateTime.UtcNow.ToLocalTime();
             eng.PostId = PostId;
             eng.EngUserId = UserId; // Id of the user who made the engagement
             Context.Engagements.Add(eng);
@@ -66,7 +66,7 @@ namespace RWSDataLayer.Repositories
             Point point = new Point();
             point.UserId = _postRepo.GetPostById(PostId).CreatedBy; //UserId;  // Id of the user who will take the points
             point.isActive = _postRepo.GetPostById(PostId).isOriginal;
-            point.PointTimestamp = DateTime.Now;
+            point.PointTimestamp = DateTime.UtcNow.ToLocalTime();
             point.PointTypeId = 2;
             point.PostId = PostId;
             Context.Points.Add(point);
@@ -90,7 +90,7 @@ namespace RWSDataLayer.Repositories
             }
             Engagement eng = new Engagement();
             eng.EngTypeId = 3;
-            eng.EngTimestamp = DateTime.Now;
+            eng.EngTimestamp = DateTime.UtcNow.ToLocalTime();
             eng.PostId = PostId;
             eng.EngUserId = userId; // Id of the user who made the engagement
             Context.Engagements.Add(eng);
@@ -98,7 +98,7 @@ namespace RWSDataLayer.Repositories
             Point point = new Point();
             point.UserId = _postRepo.GetPostById(PostId).CreatedBy; //userId;  // Id of the user who will take the points
             point.isActive = _postRepo.GetPostById(PostId).isOriginal;
-            point.PointTimestamp = DateTime.Now;
+            point.PointTimestamp = DateTime.UtcNow.ToLocalTime();
             point.PointTypeId = 3;
             point.PostId = PostId;
             Context.Points.Add(point);
@@ -264,7 +264,7 @@ namespace RWSDataLayer.Repositories
                 Point point = new Point();
                 point.UserId = _userRepo.GetUserByEmail(userEmail).UserId;
                 point.isActive = true;
-                point.PointTimestamp = DateTime.Now;
+                point.PointTimestamp = DateTime.UtcNow.ToLocalTime();
                 point.PointTypeId = 4;
                 Context.Points.Add(point);
                 Context.SaveChanges();
