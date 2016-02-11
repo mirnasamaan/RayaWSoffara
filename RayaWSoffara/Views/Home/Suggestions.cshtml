@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "اقتراحات";
+}
+
+<div id="registration_container">
+    <div class="title">
+        <span>@ViewBag.Title</span>
+    </div>
+
+    <div class="clear-fix"></div>
+
+    @using (Html.BeginForm("ForgotPassword", "Account", null, FormMethod.Post, new { @id = "form", @name = "form" }))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary()
+
+        <span>@ViewBag.ErrorMsg</span>
+        
+        <div id="reg_div">
+            <div class="form-group">
+                <label class="pull-left">البريد الالكتروني</label>
+                <input type="email" name="Email" class="form-control" />
+            </div>
+            <div class="clear-fix"></div>
+            <div class="form-group">
+                <label class="pull-left">اقتراحك</label>
+                <textarea name="Suggestion" class="form-control"></textarea>
+            </div>
+            <div class="clear-fix"></div>
+        </div>
+        <div id="btn_reg_div">
+            <input type="submit" value="إرسل" id="btn_reg" />
+        </div>
+    }
+</div>
+
+<script src="~/Content/Scripts/jquery.validate.min.js"></script>
+<script src="~/Content/Scripts/jquery.validate.unobtrusive.min.js"></script>
+<script>
+    $("#form").validate({
+        rules: {
+            Email: {
+                required: true,
+                email: true
+            },
+            Suggestion: { required: true }
+        },
+        messages: {
+            Email: {
+                required: "يجب إدخال البريد الالكتروني.",
+                email: "البريد الالكتروني غير صحيح."
+            },
+            Suggestion: { required: "يجب إدخال اقتراحك." }
+        }
+    });
+</script>

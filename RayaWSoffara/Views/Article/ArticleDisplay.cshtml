@@ -2,7 +2,17 @@
 @using RayaWSoffara.Helpers
 
 @{
-    ViewBag.Title = Model.newArticle.Title;
+    if(Model.newArticle.Title != "" && Model.newArticle.Title != null) {
+        ViewBag.Title = Model.newArticle.Title;
+    }
+    else
+    {
+        var title = "";
+        foreach(var item in Model.newArticle.Tags) {
+            title += item.TagName + " ";
+        }
+        ViewBag.Title = title;
+    }
 }
 
 <div class="clear-fix"></div>
@@ -14,18 +24,19 @@
 }
 else
 {
-    <div class="container full_width" id="display_post_container">
+    <article class="container full_width" id="display_post_container">
         <div class="display_article_header"></div>
         <input type="hidden" id="PostId" value="@Model.newArticle.PostId" />
         <input type="hidden" id="current_user" value="@User.Identity.Name" />
-        <div class="col-md-8">
+        <div class="col-md-8" itemscope itemtype="http://schema.org/Article">
             <div class="post-container">
                 <div class="row">
                     <div class="article_display_row">
                         <div class="article_title pull-left">
                             @if (@Model.newArticle.Title != null)
                             {
-                                <div class="pull-left">@Model.newArticle.Title</div>
+                                <div class="pull-left" itemprop="name">@Model.newArticle.Title</div>
+                                <span class="hidden" itemprop="headline">@Model.newArticle.Title</span>
                             }
                         </div>
                         <div class="clear-fix"></div>
@@ -34,6 +45,8 @@ else
                 <div class="row">
                     <div class="article_display_row">
                         <div class="pull-left user-data">
+                            <span class="hidden" itemprop="author">@Model.newArticle.RWSUser.UserName</span>
+                            <span class="hidden" itemprop="publisher">راية وصفارة</span>
                             <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName&Page=1">@Model.newArticle.RWSUser.UserName</a></span></div>
                             <div class="border pull-left"></div>
                             @if (Model.newArticle.ActivationDate == null)
@@ -42,6 +55,7 @@ else
                             }
                             else
                             {
+                                <input type="hidden" itemprop="datePublished" value="@Model.newArticle.ActivationDate" />
                                 dynamic calc_time = CalculateTimeHelper.CalculteTime(Convert.ToDateTime(Model.newArticle.ActivationDate));
                                 <div class="pull-left"><span class="date"><span>منذ @calc_time.diff <span>@calc_time.unit</span></span></span></div>
                             }
@@ -141,17 +155,22 @@ else
                         <div class="article_display_row">
                             @if (@Model.newArticle.FeaturedImage != null)
                             {
-                                <img src="~/Content/Article_Images/@Model.newArticle.FeaturedImage?w=725&h=410&mode=crop" /> 
+                                <span itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+                                    <img itemprop="url" src="~/Content/Article_Images/@Model.newArticle.FeaturedImage?w=725&h=410&mode=crop" /> 
+                                    <span class="hidden" itemprop="width">725</span> 
+                                    <span class="hidden" itemprop="height">420</span> 
+                                </span>
                             }
                             else if (@Model.newArticle.FeaturedVideo != null)
                             {
+                                <input type="hidden" itemprop="embedUrl" value="https://www.youtube.com/embed/@Model.newArticle.FeaturedVideo" />
                                 <iframe width="755" height="566" src="https://www.youtube.com/embed/@Model.newArticle.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
                             }
                         </div>
                     </div>
                 }
                 <div class="row">
-                    <div class="article_display_content">
+                    <div class="article_display_content" itemprop="articleBody">
                         @Html.Raw(@Model.newArticle.Content)
                     </div>
                 </div>
@@ -167,7 +186,7 @@ else
                                 <div class="article_title pull-left">
                                     @if (@item.TopXTitle != null)
                                     {
-                                        <div class="pull-left">@item.TopXTitle</div>
+                                        <div class="pull-left" itemprop="name">@item.TopXTitle</div>
                                     }
                                 </div>
                                 <div class="clear-fix"></div>
@@ -176,7 +195,7 @@ else
                         @if ((@item.TopXImage != null) || (@item.TopXVideo != null))
                         {
                             <div class="row">
-                                <div class="article_display_row">
+                                <div class="article_display_row" itemprop="image">
                                     @if (@item.TopXVideo != null)
                                     {
                                         <iframe width="755" height="566" src="https://www.youtube.com/embed/@item.TopXVideo" frameborder="0" allowfullscreen></iframe>
@@ -189,7 +208,7 @@ else
                             </div>
                         }
                         <div class="row">
-                            <div class="article_display_content">
+                            <div class="article_display_content" itemprop="articleBody">
                                 @Html.Raw(@item.TopXContent)
                             </div>
                         </div>
@@ -209,7 +228,7 @@ else
                             count = count + 1;
                             <div class="pull-left">
                                 <a href="/?posts=&tags=@tag.TagName">
-                                    <label class="pull-left tag-item" data-id="@tag.TagId">@tag.TagName</label>
+                                    <label class="pull-left tag-item" data-id="@tag.TagId" itemprop="keywords">@tag.TagName</label>
                                 </a>
                                 @if (count != allTagsCount)
                                 {
@@ -305,8 +324,8 @@ else
                 </div>
             </div>
         </div>
-    </div>
-
+    </article>
+   
     @Html.Partial("_LoadingPartial", "overall")
 }
 <script>

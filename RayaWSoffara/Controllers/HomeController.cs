@@ -189,5 +189,29 @@ namespace RayaWSoffara.Controllers
             return View();
         }
 
+        public ActionResult Terms()
+        {
+            return View();
+        }
+
+        public ActionResult Privacy()
+        {
+            return View();
+        }
+
+        public ActionResult Advertising()
+        {
+            return View();
+        }
+
+        public ActionResult About()
+        {
+            return View();
+        }
+
+        public ActionResult Suggestions()
+        {
+            return View();
+        }
     }
 }
