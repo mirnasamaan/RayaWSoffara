@@ -213,5 +213,25 @@ namespace RayaWSoffara.Controllers
         {
             return View();
         }
+
+        public ActionResult AddAdvertisement(string Email, string Text)
+        {
+            Advertisement adv = new Advertisement();
+            adv.AdvertisementUserEmail = Email;
+            adv.AdvertisementText = Text;
+            adv.AdvertisementTimestamp = DateTime.UtcNow.ToLocalTime();
+            _tutRepo.AddAdvertisement(adv);
+            return Redirect("/ConfirmationSuccess");
+        }
+
+        public ActionResult AddSuggestion(string Email, string Text)
+        {
+            Suggestion suggestion = new Suggestion();
+            suggestion.SuggestionUserEmail = Email;
+            suggestion.SuggestionText = Text;
+            suggestion.SuggestionTimestamp = DateTime.UtcNow.ToLocalTime();
+            _tutRepo.AddSuggestion(suggestion);
+            return Redirect("/ConfirmationSuccess");
+        }
     }
 }

@@ -10,14 +10,14 @@
             <a href="/Profile?Username=@item.RWSUser.UserName&Page=1"><img src="@item.RWSUser.ProfileImagePath?w=50&h=50&mode=crop" /></a>
         </div>
         @if(User != null && (@item.CommentReports.Where(i => i.CommentId == item.CommentId && i.RWSUser.UserName == User.Identity.Name).Count() == 0)) {
-        <div class="pull-right report col-xs-2" onclick="ReportComment(@item.CommentId, '@User.Identity.Name')"><span>الإبلاغ عن التعليق</span></div>
+        <div class="pull-right report col-md-2" onclick="ReportComment(@item.CommentId, '@User.Identity.Name')"><span>الإبلاغ عن التعليق</span></div>
         }
         <div class="post-data">
             <div class="pull-left username"><a href="/Profile?Username=@item.RWSUser.UserName&Page=1">@item.RWSUser.UserName</a></div>
             @{ dynamic calc_time = CalculateTimeHelper.CalculteTime(Convert.ToDateTime(item.CommentCreationDate)); }
             <div class="pull-left timestamp">منذ @calc_time.diff <span>@calc_time.unit</span></div>
         </div>
-        <div class="col-xs-12 comment-content">@item.CommentContent</div>
+        <div class="col-xs-12 comment-content" itemprop="comment">@item.CommentContent</div>
         <div class="clear-fix"></div>
     </div>
     }

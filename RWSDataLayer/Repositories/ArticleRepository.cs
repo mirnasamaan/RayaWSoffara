@@ -32,11 +32,6 @@ namespace RWSDataLayer.Repositories
         {
             if (fromDate != null && toDate != null)
             {
-                //int fromMonth = fromDate.Value.Month;
-                //int fromYear = fromDate.Value.Year;
-                //int toMonth = toDate.Value.Month;
-                //int toYear = toDate.Value.Year;
-                //Context.Posts.Where(i => (i.CreationDate.Value.Month >= fromDate.Value.Month && i.CreationDate.Value.Year >= fromDate.Value.Year) && (i.CreationDate.Value.Month <= toDate.Value.Month && i.CreationDate.Value.Year <= toDate.Value.Year));
                 fromDate = fromDate.Value.Date;
                 toDate = toDate.Value.Date;
                 return Context.Posts.Where(i => EntityFunctions.TruncateTime(i.CreationDate.Value) >= fromDate && EntityFunctions.TruncateTime(i.CreationDate.Value) <= toDate);

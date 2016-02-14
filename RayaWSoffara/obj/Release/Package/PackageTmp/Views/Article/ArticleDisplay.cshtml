@@ -2,7 +2,17 @@
 @using RayaWSoffara.Helpers
 
 @{
-    ViewBag.Title = Model.newArticle.Title;
+    if(Model.newArticle.Title != "" && Model.newArticle.Title != null) {
+        ViewBag.Title = Model.newArticle.Title;
+    }
+    else
+    {
+        var title = "";
+        foreach(var item in Model.newArticle.Tags) {
+            title += item.TagName + " ";
+        }
+        ViewBag.Title = title;
+    }
 }
 
 <div class="clear-fix"></div>
@@ -11,291 +21,312 @@
     <div class="Page404">
         <img src="~/Content/Images/404.png" />
     </div>
-} else {
-<div class="container full_width" id="display_post_container">
-    <div class="display_article_header"></div>
-    <input type="hidden" id="PostId" value="@Model.newArticle.PostId" />
-    <input type="hidden" id="current_user" value="@User.Identity.Name" />
-    <div class="col-md-8">
-        <div class="post-container">
-            <div class="row">
-                <div class="article_display_row">
-                    <div class="article_title pull-left">
-                        @if (@Model.newArticle.Title != null)
-                        {
-                            <div class="pull-left">@Model.newArticle.Title</div>
-                        }
+}
+else
+{
+    <article class="container full_width" id="display_post_container">
+        <div class="display_article_header"></div>
+        <input type="hidden" id="PostId" value="@Model.newArticle.PostId" />
+        <input type="hidden" id="current_user" value="@User.Identity.Name" />
+        <div class="col-md-8" itemscope itemtype="http://schema.org/Article">
+            <div class="post-container">
+                <div class="row">
+                    <div class="article_display_row">
+                        <div class="article_title pull-left">
+                            @if (@Model.newArticle.Title != null)
+                            {
+                                <div class="pull-left" itemprop="name">@Model.newArticle.Title</div>
+                                <span class="hidden" itemprop="headline">@Model.newArticle.Title</span>
+                            }
+                        </div>
+                        <div class="clear-fix"></div>
                     </div>
-                    <div class="clear-fix"></div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="article_display_row">
-                    <div class="pull-left user-data">
-                        <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName&Page=1">@Model.newArticle.RWSUser.UserName</a></span></div>
-                        <div class="border pull-left"></div>
-                        @if(Model.newArticle.ActivationDate == null){
-                            <div class="pull-left"><span class="date">تحت المراجعة</span></div>
-                        } else {
-                            dynamic calc_time = CalculateTimeHelper.CalculteTime(Convert.ToDateTime(Model.newArticle.ActivationDate));
-                            <div class="pull-left"><span class="date"><span>منذ @calc_time.diff <span>@calc_time.unit</span></span></span></div>
-                        }
+                <div class="row">
+                    <div class="article_display_row">
+                        <div class="pull-left user-data">
+                            <span class="hidden" itemprop="author">@Model.newArticle.RWSUser.UserName</span>
+                            <span class="hidden" itemprop="publisher">راية وصفارة</span>
+                            <div class="pull-left"><span class="value"><a href="/Profile?Username=@Model.newArticle.RWSUser.UserName&Page=1">@Model.newArticle.RWSUser.UserName</a></span></div>
+                            <div class="border pull-left"></div>
+                            @if (Model.newArticle.ActivationDate == null)
+                            {
+                                <div class="pull-left"><span class="date">تحت المراجعة</span></div>
+                            }
+                            else
+                            {
+                                <input type="hidden" itemprop="datePublished" value="@Model.newArticle.ActivationDate" />
+                                dynamic calc_time = CalculateTimeHelper.CalculteTime(Convert.ToDateTime(Model.newArticle.ActivationDate));
+                                <div class="pull-left"><span class="date"><span>منذ @calc_time.diff <span>@calc_time.unit</span></span></span></div>
+                            }
                         </div>
-                    <div class="clear-fix"></div>
+                        <div class="clear-fix"></div>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="article_display_row">
-                    @if(Model.newArticle.IsActive != null && Model.newArticle.IsActive != false){
-                        <div class="pull-left social-media-icons">
-                            <div class="pull-left">
-                                <a href="javascript:void(0)" class="so-facebook" onclick="facebookshare()"><i class="fa fa-facebook"></i></a>
+                <div class="row">
+                    <div class="article_display_row">
+                        <div class="pull-right">
+                            @if (Model.newArticle.IsActive != null && Model.newArticle.IsActive != false)
+                            {
+                            <div class="pull-left social-media-icons">
+                                <div class="pull-left like-btn">
+                                    <a href="javascript:void(0)" class="" onclick="like(this)"><i class="fa fa-thumbs-up"></i></a>
+                                </div>
                             </div>
-                            <div class="pull-left">
-                                <a href="javascript:void(0)" class="so-twitter" onclick="twittershare()"><i class="fa fa-twitter"></i></a>
-                            </div>
-                            <div class="pull-left">
-                                <a href="javascript:void(0)" class="so-google" onclick="googleplusshare()"><i class="fa fa-google-plus"></i></a>
-                            </div>
-                        </div>
-                        <div class="pull-left article_stats">
-                            <div class="pull-left shares">
-                                <div class="count">@Model.newArticle.SharesCount</div>
-                                <div>مشاركة</div>
-                            </div>
-                            <div class="border pull-left"></div>
-                            <div class="pull-left comments">
-                                <div class="count">@ViewBag.AllCommentsCount</div>
-                                <div>تعليق</div>
-                            </div>
-                            <div class="border hidden-xs hidden-sm pull-left"></div>
-                            <div class="clear-fix hidden-lg hidden-md"></div>
-                            <div class="vertical_space hidden-lg hidden-md"></div>
-                            <div class="pull-left views">
-                                <div class="count">@Model.newArticle.ViewsCount</div>
-                                <div>مشاهدة</div>
-                            </div>
-                            <div class="border pull-left"></div>
-                            <div class="pull-left likes">
-                                <div class="count">@Model.newArticle.LikesCount</div>
-                                <div>اعجابات</div>
-                            </div>
-                        </div>
-                        <div class="pull-left social-media-icons">
-                            <div class="pull-left like-btn">
-                                <a href="javascript:void(0)" class="" onclick="like(this)"><i class="fa fa-thumbs-up"></i></a>
-                            </div>
-                        </div>
-                    }
-                    <div class="pull-right">
-                        @{ int id = Model.newArticle.PostTypeId.Value;
+                            }
+                            <div class="pull-right">
+                                @{ int id = Model.newArticle.PostTypeId.Value;
                                    string color = "";
                                    string icon = "";
                                    string type = ""; }
-                        @{
-                           switch (id)
-                           {
-                               case 1: color = "orange";
-                                   icon = "<i class='fa fa-newspaper-o' title='مقالة'></i>";
-                                   type = "مقالة";
-                                   break;
-                               case 2: color = "red";
-                                   icon = "<i class='fa fa-list-ol' title='مقالة توب X'></i>";
-                                   type = "مقالة توب X";
-                                   break;
-                               case 3: color = "green";
-                                   icon = "<i class='fa fa-exclamation' title='رأي'></i>";
-                                   type = "رأي";
-                                   break;
-                               case 4: color = "blue";
-                                   icon = "<i class='fa fa-picture-o' title='صورة'></i>";
-                                   type = "صورة";
-                                   break;
-                               case 5: color = "brown";
-                                   icon = "<i class='fa fa-video-camera' title='فيديو'></i>";
-                                   type = "فيديو";
-                                   break;
-                               default: color = "black"; break;
-                           }
-                        }
-                        <div class="post-type post-type-indicator pull-left @color" title="@type">
-                            @Html.Raw(@icon)
+                                @{
+                                   switch (id)
+                                   {
+                                       case 1: color = "orange";
+                                           icon = "<i class='fa fa-newspaper-o' title='مقالة'></i>";
+                                           type = "مقالة";
+                                           break;
+                                       case 2: color = "red";
+                                           icon = "<i class='fa fa-list-ol' title='مقالة توب X'></i>";
+                                           type = "مقالة توب X";
+                                           break;
+                                       case 3: color = "green";
+                                           icon = "<i class='fa fa-exclamation' title='رأي'></i>";
+                                           type = "رأي";
+                                           break;
+                                       case 4: color = "blue";
+                                           icon = "<i class='fa fa-picture-o' title='صورة'></i>";
+                                           type = "صورة";
+                                           break;
+                                       case 5: color = "brown";
+                                           icon = "<i class='fa fa-video-camera' title='فيديو'></i>";
+                                           type = "فيديو";
+                                           break;
+                                       default: color = "black"; break;
+                                   }
+                                }
+                                <div class="post-type post-type-indicator pull-left @color" title="@type">
+                                    @Html.Raw(@icon)
+                                </div>
+                                <div class="pull-right name">@Model.newArticle.PostType.PostTypeName</div>
+                            </div>
                         </div>
-                        <div class="pull-right name">@Model.newArticle.PostType.PostTypeName</div>
-                    </div>
-                    <div class="clear-fix"></div>
-                </div>
-            </div>
-            @if ((@Model.newArticle.FeaturedImage != null) || (@Model.newArticle.FeaturedVideo != null))
-            {
-                <div class="row">
-                    <div class="article_display_row">
-                        @if (@Model.newArticle.FeaturedImage != null)
+                        @if (Model.newArticle.IsActive != null && Model.newArticle.IsActive != false)
                         {
-                            <img src="~/Content/Article_Images/@Model.newArticle.FeaturedImage?w=725&h=410&mode=crop" /> 
+                            <div class="pull-left social-media-icons">
+                                <div class="pull-left">
+                                    <a href="javascript:void(0)" class="so-facebook" onclick="facebookshare()"><i class="fa fa-facebook"></i></a>
+                                </div>
+                                <div class="pull-left">
+                                    <a href="javascript:void(0)" class="so-twitter" onclick="twittershare()"><i class="fa fa-twitter"></i></a>
+                                </div>
+                                <div class="pull-left">
+                                    <a href="javascript:void(0)" class="so-google" onclick="googleplusshare()"><i class="fa fa-google-plus"></i></a>
+                                </div>
+                            </div>
+                            <div class="pull-left article_stats">
+                                <div class="pull-left shares">
+                                    <div class="count">@Model.newArticle.SharesCount</div>
+                                    <div>مشاركة</div>
+                                </div>
+                                <div class="border pull-left"></div>
+                                <div class="pull-left comments">
+                                    <div class="count">@ViewBag.AllCommentsCount</div>
+                                    <div>تعليق</div>
+                                </div>
+                                <div class="border pull-left"></div>
+                                <div class="pull-left views">
+                                    <div class="count">@Model.newArticle.ViewsCount</div>
+                                    <div>مشاهدة</div>
+                                </div>
+                                <div class="border pull-left"></div>
+                                <div class="pull-left likes">
+                                    <div class="count">@Model.newArticle.LikesCount</div>
+                                    <div>اعجابات</div>
+                                </div>
+                            </div>
                         }
-                        else if (@Model.newArticle.FeaturedVideo != null)
-                        {
-                            <iframe width="755" height="566" src="https://www.youtube.com/embed/@Model.newArticle.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
-                        }
+                        <div class="clear-fix"></div>
                     </div>
                 </div>
-            }
-            <div class="row">
-                <div class="article_display_content">
-                    @Html.Raw(@Model.newArticle.Content)
-                </div>
-            </div>
-            @if (Model.newArticle.PostTypeId == 2)
-            {
-                foreach (var item in Model.newArticle.ArticleTopXes)
+                @if ((@Model.newArticle.FeaturedImage != null) || (@Model.newArticle.FeaturedVideo != null))
                 {
-                   
-                <div class="topX-item">
                     <div class="row">
                         <div class="article_display_row">
-                            <div class="article_title_order pull-left"><span>@item.TopXOrder</span></div>
-                            <div class="article_title pull-left">
-                                @if (@item.TopXTitle != null)
-                                {
-                                    <div class="pull-left">@item.TopXTitle</div>
-                                }
-                            </div>
-                            <div class="clear-fix"></div>
-                        </div>
-                    </div>
-                    @if ((@item.TopXImage != null) || (@item.TopXVideo != null))
-                    {
-                        <div class="row">
-                            <div class="article_display_row">
-                                @if (@item.TopXVideo != null)
-                                {
-                                    <iframe width="755" height="566" src="https://www.youtube.com/embed/@item.TopXVideo" frameborder="0" allowfullscreen></iframe>
-                                }
-                                else if (@item.TopXImage != null)
-                                {
-                                    <img src="~/Content/Article_Images/@item.TopXImage?w=725&h=410&mode=crop" /> 
-                                }
-                            </div>
-                        </div>
-                    }
-                    <div class="row">
-                        <div class="article_display_content">
-                            @Html.Raw(@item.TopXContent)
-                        </div>
-                    </div>
-
-                </div> 
-                }
-            }
-        </div>
-        <div class="row">
-            <div class="article_display_row">
-                <div class="pull-left tags-title">كلمات مفتاحية :</div>
-                <div class="tags-container">
-                    @{ var allTagsCount = @Model.newArticle.Tags.Count;
-                       int count = 0; }
-                    @foreach (var tag in @Model.newArticle.Tags)
-                    {
-                        count = count + 1;
-                        <div class="pull-left">
-                            <a href="/?posts=&tags=@tag.TagName">
-                                <label class="pull-left tag-item" data-id="@tag.TagId">@tag.TagName</label>
-                            </a>
-                            @if (count != allTagsCount)
+                            @if (@Model.newArticle.FeaturedImage != null)
                             {
-                                <div class="pull-right border"></div>
+                                <span itemprop="image" itemscope itemtype="https://schema.org/ImageObject">
+                                    <img itemprop="url" src="~/Content/Article_Images/@Model.newArticle.FeaturedImage?w=725&h=410&mode=crop" /> 
+                                    <span class="hidden" itemprop="width">725</span> 
+                                    <span class="hidden" itemprop="height">420</span> 
+                                </span>
+                            }
+                            else if (@Model.newArticle.FeaturedVideo != null)
+                            {
+                                <input type="hidden" itemprop="embedUrl" value="https://www.youtube.com/embed/@Model.newArticle.FeaturedVideo" />
+                                <iframe width="755" height="566" src="https://www.youtube.com/embed/@Model.newArticle.FeaturedVideo" frameborder="0" allowfullscreen></iframe>
                             }
                         </div>
+                    </div>
+                }
+                <div class="row">
+                    <div class="article_display_content" itemprop="articleBody">
+                        @Html.Raw(@Model.newArticle.Content)
+                    </div>
+                </div>
+                @if (Model.newArticle.PostTypeId == 2)
+                {
+                    foreach (var item in Model.newArticle.ArticleTopXes)
+                    {
+                   
+                    <div class="topX-item">
+                        <div class="row">
+                            <div class="article_display_row">
+                                <div class="article_title_order pull-left"><span>@item.TopXOrder</span></div>
+                                <div class="article_title pull-left">
+                                    @if (@item.TopXTitle != null)
+                                    {
+                                        <div class="pull-left" itemprop="name">@item.TopXTitle</div>
+                                    }
+                                </div>
+                                <div class="clear-fix"></div>
+                            </div>
+                        </div>
+                        @if ((@item.TopXImage != null) || (@item.TopXVideo != null))
+                        {
+                            <div class="row">
+                                <div class="article_display_row" itemprop="image">
+                                    @if (@item.TopXVideo != null)
+                                    {
+                                        <iframe width="755" height="566" src="https://www.youtube.com/embed/@item.TopXVideo" frameborder="0" allowfullscreen></iframe>
+                                    }
+                                    else if (@item.TopXImage != null)
+                                    {
+                                        <img src="~/Content/Article_Images/@item.TopXImage?w=725&h=410&mode=crop" /> 
+                                    }
+                                </div>
+                            </div>
+                        }
+                        <div class="row">
+                            <div class="article_display_content" itemprop="articleBody">
+                                @Html.Raw(@item.TopXContent)
+                            </div>
+                        </div>
+
+                    </div> 
+                    }
+                }
+            </div>
+            <div class="row">
+                <div class="article_display_row">
+                    <div class="pull-left tags-title">كلمات بحثية :</div>
+                    <div class="tags-container">
+                        @{ var allTagsCount = @Model.newArticle.Tags.Count;
+                           int count = 0; }
+                        @foreach (var tag in @Model.newArticle.Tags)
+                        {
+                            count = count + 1;
+                            <div class="pull-left">
+                                <a href="/?posts=&tags=@tag.TagName">
+                                    <label class="pull-left tag-item" data-id="@tag.TagId" itemprop="keywords">@tag.TagName</label>
+                                </a>
+                                @if (count != allTagsCount)
+                                {
+                                    <div class="pull-right border"></div>
+                                }
+                            </div>
                         
+                        }
+                        <div class="clear-fix"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="article_display_row comments-container">
+                    <input type="hidden" id="AllCommentsCount" value="@ViewBag.AllCommentsCount" />
+                    <div class="title">تعليقات</div>
+                    <div class="clear-fix"></div>
+                    <div class="content comments-box">@Html.Partial("_CommentPartial", Model)</div>
+
+                    <div class="load-more-comments hidden">
+                        <button onclick="loadMore()">أظهر المزيد</button>
+                        <input type="hidden" id="index" value="0" />
+                    </div>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <div class="new-comment">
+                            <div class="pull-left user-img">
+                                <img src="@ViewBag.CurrentUserPicture?w=50&h=50&mode=crop" />
+                            </div>
+                            <div class="add-comment">
+                                <textarea id="add_comment" class="pull-left"></textarea>
+                            </div>
+                            <div class="clear-fix hidden-md hidden-lg"></div>
+                            <button class="pull-right" onclick="addComment()">أضف تعليق</button>
+                            <div class="clear-fix"></div>
+                            <div class="comment-validation hidden">يجب إدخال محتوى التعليق.</div>
+                        </div>
                     }
                     <div class="clear-fix"></div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="article_display_row comments-container">
-                <input type="hidden" id="AllCommentsCount" value="@ViewBag.AllCommentsCount" />
-                <div class="title">تعليقات</div>
-                <div class="clear-fix"></div>
-                <div class="content comments-box">@Html.Partial("_CommentPartial", Model)</div>
-
-                <div class="load-more-comments">
-                    <button onclick="loadMore()">أظهر المزيد</button>
-                    <input type="hidden" id="index" value="0" />
-                </div>
-                @if (User.Identity.IsAuthenticated)
-                {
-                    <div class="new-comment">
-                        <div class="pull-left user-img">
-                            <img src="@ViewBag.CurrentUserPicture?w=50&h=50&mode=crop" />
-                        </div>
-                        <textarea id="add_comment" class="pull-left"></textarea>
-                        <button class="pull-right" onclick="addComment()">أضف تعليق</button>
-                        <div class="clear-fix"></div>
-                        <div class="comment-validation hidden">يجب إدخال محتوى التعليق.</div>
+        <div class="col-md-4">
+            @if (!Request.IsAuthenticated)
+            {
+                <div class="sidebar">
+                    <div class="callToAction">
+                        <a href="/Article" class="pull-left article_anchor"><span class="pull-left">إكــــــتــــب</span><i class="fa fa-pencil-square-o pull-right article-write"></i>
+                        </a>
                     </div>
-                }
+                </div>
+            }
+            <div id="other_articles">
+                <div class="writer_title_div col-xs-12">
+                    مقالات أخرى للكاتب
+                </div>
                 <div class="clear-fix"></div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-4">
-        @if (!Request.IsAuthenticated)
-        {
-            <div class="sidebar">
-                <div class="callToAction">
-                    <a href="/Article" class="pull-left article_anchor"><span class="pull-left">إكــــــتــــب</span><i class="fa fa-pencil-square-o pull-right article-write"></i>
-                    </a>
+                <div class="writers_data_div">
+                    @foreach (var post in @Model.userArticles)
+                    {
+                        @Html.Partial("_RecentPostPartial", post)
+                    }
                 </div>
-            </div>
-        }
-        <div id="other_articles">
-            <div class="writer_title_div col-xs-12">
-                مقالات أخرى للكاتب
-            </div>
-            <div class="clear-fix"></div>
-            <div class="writers_data_div">
-                @foreach (var post in @Model.userArticles)
-                {
-                    @Html.Partial("_RecentPostPartial", post)
-                }
-            </div>
-            <div class="clear-fix"></div>
-            <div id="profile-user-data">
-                <div class="profile-sub-title">
-                    <div>معلومات شخصية</div>
-                </div>
-                <div class="form-group">
-                    <input class="form-control" value="@ViewBag.FavTeamName" disabled />
-                </div>
-                <div class="form-group">
-                    <input class="form-control" value="@ViewBag.FavCompName" disabled />
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" name="DisplayName" value="@Model.newArticle.RWSUser.UserName" disabled />
-                </div>
-                <div class="form-group">
-                    <textarea class="form-control" name="AboutYou" disabled>@Model.newArticle.RWSUser.AboutYou</textarea>
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" name="Twitter" value="@Model.newArticle.RWSUser.Twitter" disabled />
-                </div>
-                <div class="form-group">
-                    <input type="text" class="form-control" name="Google" value="@Model.newArticle.RWSUser.Google" disabled />
-                </div>
-                @if (Model.userArticles.Count > 0)
-                {
+                <div class="clear-fix"></div>
+                <div id="profile-user-data">
                     <div class="profile-sub-title">
-                        <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.newArticle.RWSUser.UserName">كل مقالات الكاتب</a>
+                        <div>معلومات شخصية</div>
                     </div>
-                }
+                    <div class="form-group">
+                        <input class="form-control" value="@ViewBag.FavTeamName" disabled />
+                    </div>
+                    <div class="form-group">
+                        <input class="form-control" value="@ViewBag.FavCompName" disabled />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="DisplayName" value="@Model.newArticle.RWSUser.UserName" disabled />
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" name="AboutYou" disabled>@Model.newArticle.RWSUser.AboutYou</textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="Twitter" value="@Model.newArticle.RWSUser.Twitter" disabled />
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="Google" value="@Model.newArticle.RWSUser.Google" disabled />
+                    </div>
+                    @if (Model.userArticles.Count > 0)
+                    {
+                        <div class="profile-sub-title">
+                            <a href="/UserPosts?posts=&tags=&Page=0&Username=@Model.newArticle.RWSUser.UserName">كل مقالات الكاتب</a>
+                        </div>
+                    }
+                </div>
             </div>
         </div>
-    </div>
-</div>
-
-@Html.Partial("_LoadingPartial", "overall")
+    </article>
+   
+    @Html.Partial("_LoadingPartial", "overall")
 }
 <script>
 
@@ -303,7 +334,9 @@
     $(document).ready(function () {
         var allCommentsCount = parseInt($("#AllCommentsCount").val());
         if (allCommentsCount <= 10) {
-            $(".load-more-comments").css("display", "none");
+            $(".load-more-comments").addClass("hidden");
+        } else {
+            $(".load-more-comments").removeClass("hidden");
         }
     });
     //end of view more button display //
@@ -324,7 +357,7 @@
         }
     });
     //end of isPostLikedByUser //
-    
+
     // start of adding a new comment //
     function addComment() {
         if ($("#add_comment").val().trim() == "") {
@@ -387,7 +420,9 @@
                 var allCommentsCount = parseInt($("#AllCommentsCount").val());
                 var displayedCommentCount = parseInt($(".comment-container").length);
                 if (allCommentsCount <= displayedCommentCount) {
-                    $(".load-more-comments").css("display", "none");
+                    $(".load-more-comments").addClass("hidden");
+                } else {
+                    $(".load-more-comments").removeClass("hidden");
                 }
                 $(".loading").addClass("hidden");
             },

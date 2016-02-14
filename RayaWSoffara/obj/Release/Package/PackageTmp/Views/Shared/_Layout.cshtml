@@ -2,14 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    @*<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>*@ <!--320-->
-    @*<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">*@
-    <meta name="HandheldFriendly" content="True">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="viewport" content="width=auto">
+    <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+    <meta name="description" content="أول موقــــــــع تواصــــــــل اجتمــــاعي لكــرة القــدم">
     <title>راية وصفارة - @ViewBag.Title</title>
-    <link href="~/favicon.ico" rel="shortcut icon" type="image/x-icon" />
-    <meta name="viewport" content="width=device-width" />
+    <link href="~/Content/Images/logo.ico" rel="shortcut icon" type="image/x-icon" />
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,300,300italic,400italic,600,700,700italic,800,800italic,600italic' rel='stylesheet' type='text/css'>
     <link href='http://fonts.googleapis.com/earlyaccess/droidarabickufi.css' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="~/Content/CSS/Site.css">
@@ -17,16 +13,11 @@
     <link rel="stylesheet" type="text/css" href="~/Content/CSS/bootstrap-arabic.css">
     <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/flick/jquery-ui.css">
     <link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.tagit.css">
-    @*<link rel="stylesheet" type="text/css" href="~/Content/CSS/tagit.ui-zendesk.css">*@
     <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
-    @*<link rel="stylesheet" type="text/css" href="~/Content/CSS/bootstrap-ar.min.css">
-    <link rel="stylesheet" type="text/css" href="~/Content/CSS/bootstrap-theme-ar.css">
-    <link rel="stylesheet" type="text/css" href="~/Content/CSS/bootstrap-theme-ar.min.css">*@
     <link href="~/Content/CSS/introjs.css" rel="stylesheet" />
     <link href="~/Content/CSS/introjs-rtl.css" rel="stylesheet" />
 
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js"></script>
-    @*<script src="~/Content/Scripts/jquery-1.4.2.min.js"></script>*@
     <link rel="stylesheet" type="text/css" href="~/Content/CSS/tinycarousel.css" />
     <link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.bxslider.css" />
     <link rel="stylesheet" type="text/css" href="~/Content/CSS/jquery.Jcrop.css" />
@@ -39,7 +30,7 @@
 <body>
     <div id="fb-root"></div>
     <header>
-        <div class="content-wrapper duplicate ">
+        <div class="content-wrapper duplicate hidden-sm hidden-xs">
             <div class="row header_divs duplicate header_div_1">
                 <div>
                     <div class="container-fluid container-sm">
@@ -87,9 +78,6 @@
                                 <li id="popular-dup" class=""><a href="/Popular"><i class="fa fa-area-chart pull-left"></i><span class="pull-left">الأشهر </span>
                                     <div class="clearfix"></div>
                                 </a></li>
-@*                                <li id="leaderboard-dup"><a href="/Leaderboard/"><i class="fa fa-area-chart pull-left"></i><span class="pull-left">أشهر الكتاب </span>
-                                    <div class="clearfix"></div>
-                                </a></li>*@
                             </ul>
                         </div>
                     </div>
@@ -136,11 +124,11 @@
                 </div>
             </div>
         </div>
-
         <div class="content-wrapper original">
             <div class="row header_divs header_div_1">
                 <div>
                     <div class="container-fluid container-sm">
+
                         <div class="logo_div">
                             <a href="/">
                                 <h1>راية وصفارة</h1>
@@ -148,47 +136,40 @@
                             </a>
                         </div>
                         <div class="navigation">
-                            <div class="pull-left">
-                                <nav class="navbar navbar-default no-margin">
-                                    <div class="container-fluid">
-                                        <div class="navbar-header">
-                                            <button type="button" class="navbar-toggle collapsed pull-left" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2" aria-expanded="false">
-                                                <span class="sr-only">Toggle navigation</span>
-                                                <span class="icon-bar"></span>
-                                                <span class="icon-bar"></span>
-                                                <span class="icon-bar"></span>
-                                            </button>
-                                        </div>
+                            <nav class="navbar navbar-default no-margin no-border">
+                                <div class="container-fluid">
+                                    <div class="navbar-header">
+                                        <button type="button" class="navbar-toggle collapsed pull-left" data-toggle="collapse" data-target="#bs-example-navbar-collapse-2" aria-expanded="true">
+                                            <span class="sr-only">Toggle navigation</span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                            <span class="icon-bar"></span>
+                                        </button>
                                     </div>
-                                </nav>
-                            </div>
-                        </div>
-                        <div class="pull-right">
-                            <ul class="nav-right">
-                                @if (Request.IsAuthenticated)
-                                {
-                                    <li id="step1">
-                                        <a href="/Article" class="pull-left article_anchor"><span>إكــــتــب</span><i class="fa fa-pencil-square-o pull-right article-write"></i>
-                                        </a>
-                                    </li>
-                                }
-                                <li class="pull-right">
-                                    @Html.Partial("_LoginPartial")
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="collapse navbar-collapse full_width" id="bs-example-navbar-collapse-2">
-                            <ul class="nav navbar-nav">
-                                <li id="home"><a href="/"><i class="fa fa-home pull-left"></i><span class="pull-left">الرئيسية </span>
-                                    <div class="clearfix"></div>
-                                </a></li>
-                                <li id="popular"><a href="/Popular/"><i class="fa fa-area-chart pull-left"></i><span class="pull-left">الأشهر </span>
-                                    <div class="clearfix"></div>
-                                </a></li>
-                                @*<li id="leaderboard"><a href="/Leaderboard/"><i class="fa fa-area-chart pull-left"></i><span class="pull-left">أشهر الكتاب </span>
-                                    <div class="clearfix"></div>
-                                </a></li>*@
-                            </ul>
+                                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-2">
+                                        <ul class="nav navbar-nav">
+                                            <li id="home"><a href="/"><i class="fa fa-home pull-left"></i><span class="pull-left">الرئيسية </span>
+                                                <div class="clearfix"></div>
+                                            </a></li>
+                                            <li id="popular"><a href="/Popular/"><i class="fa fa-area-chart pull-left"></i><span class="pull-left">الأشهر </span>
+                                                <div class="clearfix"></div>
+                                            </a></li>
+                                        </ul>
+                                    </div>
+                                    <ul class="nav-right">
+                                        @if (Request.IsAuthenticated)
+                                        {
+                                            <li id="step1">
+                                                <a href="/Article" class="pull-left article_anchor"><span>إكــــتــب</span><i class="fa fa-pencil-square-o pull-right article-write"></i>
+                                                </a>
+                                            </li>
+                                        }
+                                        <li class="pull-right">
+                                            @Html.Partial("_LoginPartial")
+                                        </li>
+                                    </ul>
+                                </div>
+                            </nav>
                         </div>
                     </div>
                 </div>
@@ -242,46 +223,6 @@
         @Html.Partial("_LoadingPartial", "overall")
     </div>
     <footer>
-        @*<div class="content-wrapper" id="footer_container">
-            <div class="container_margin">
-                <div class="row">
-                    <div class="col-lg-8 col-md-8 col-sm-8 col-xs-12">
-                        <div class="footer_title">
-                            من نحن
-                        </div>
-                        <div class="footer_cols">
-                            ذكرت صحيفة "أ س" الأسبانية في تحليل لها لأداء فريق ريال مدريد منذ بداية عام 2015 أن النادي الملكي يمر بأسوأ مراحله التاريخية بعد أن اختتم...
-                            5 أشياء يجب أن يعرفها صلاح قبل ظهوره الأول مع فيورنتينا
-                            من المنتظر أن يظهر محمد صلاح لأول مرة في قميص نادي فيورنتينا في لقاء اليوم أمام أتلانتا، وهذه مناسبة جيدة لتذكير النجم المصري ببعض الحقائق عن...
-                            هل تمت إقالة أنشيلوتي مع وقف التنفيذ؟
-                            لم تكن ليلة أمس مشكلة كبيرة لريال مدريد لأنه خسر بنتيجة كبيرة صفر-4 أمام أتلتيكو مدريد، فهذا أمر يحدث في كرة القدم، لكن المشكلة أن الفريق...
-                            فيديو - مشجع يستوقف لاعب النصر بسبب لون سيارته
-                            أوقف مشجع لفريق الهلال نجم نادي النصر والمنتخب السعودي لكرة القدم يحيي الشهري بجانب احد المحلات التجارية بوسط العاصمة السعودية الرياض وقام بإلتقاط مقطع فيديو للاعب...
-                        </div>
-                    </div>
-                    <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
-                        <div class="footer_title">
-                            تواصل معنا
-                        </div>
-                        <div class="footer_cols">
-                            <form>
-                                <input type="text" class="footer_inputs" name="footer_email" placeholder="البريد الالكتروني" />
-                                <textarea name="message" class="footer_inputs" rows="4" placeholder="رسالتك"></textarea>
-                                <input type="submit" name="submit" value="إرسل" id="footer_btn" />
-                            </form>
-                        </div>
-                        <div class="row">
-                            <div class="" id="footer_social_div">
-                                <img src="~/Content/Images/icon_youtube.png" />
-                                <img src="~/Content/Images/icon_gmail.png" />
-                                <img src="~/Content/Images/icon_twitter.png" />
-                                <img src="~/Content/Images/icon_fb.png" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>*@
     </footer>
 
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.12/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>

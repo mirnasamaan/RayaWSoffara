@@ -25,6 +25,7 @@ namespace RayaWSoffara.Controllers
         CompetitionRepository _compRepo = new CompetitionRepository();
         ArticleRepository _postRepo = new ArticleRepository();
         EngagementRepository _engRepo = new EngagementRepository();
+        TutorialRepository _tutRepo = new TutorialRepository();
 
         [AllowAnonymous]
         public ActionResult Signin(string RedirectUrl)
@@ -3900,6 +3901,328 @@ namespace RayaWSoffara.Controllers
             ws.Range("A3:H3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 
             ws.Range("A4:H4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
+
+            ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
+            ws.Row(2).Merge();
+
+            ws.Columns(2, 6).AdjustToContents();
+
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.UtcNow.ToLocalTime().ToShortDateString().Replace("/", "_") + ".xlsx");
+            MemoryStream stream = GetStream(wb);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.ms-excel";
+            Response.BinaryWrite(stream.ToArray());
+            Response.End();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult Advertisements()
+        {
+            ViewBag.SubSidebarItem = "advertisements";
+            ViewBag.SidebarItem = "reports-management";
+            ViewBag.PageHeader = "Advertisement Management";
+            return View();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult AjaxGetAdvertisements(int draw, int start, int length, string fromDate, string toDate)
+        {
+            string search = Request.Form["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != "" && fromDate != null)
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != "" && toDate != null)
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+
+            int total_rows = _tutRepo.GetAdvertisements(null, from, to, search, null).Count();
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+
+            // note: we only sort one column at a time
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.QueryString["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.QueryString["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            dataTableData.recordsTotal = total_rows;
+            int recordsFiltered = total_rows;
+            List<DataItem> advertisements = new List<DataItem>();
+            IQueryable<Advertisement> advs = _tutRepo.GetAdvertisements(start, from, to, search, length);
+            foreach (var item in advs)
+            {
+                advertisements.Add(new DataItem
+                {
+                    Email = item.AdvertisementUserEmail,
+                    ItemName = item.AdvertisementText,
+                    CreationDate = item.AdvertisementTimestamp.Value.ToShortDateString(),
+                    DT_RowId = item.AdvertisementId.ToString()
+                });
+            }
+            dataTableData.data = advertisements;
+            //dataTableData.data = FilterData(ref recordsFiltered, start, length, search, sortColumn, sortDirection);
+            dataTableData.recordsFiltered = recordsFiltered;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public void ExportAdvertisements(string fromDate, string toDate, string search)
+        {
+            List<DataItem> data = new List<DataItem>();
+            XLWorkbook wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("RWS Advertisements");
+            string fileNamePrefix = "";
+
+            ws.Cell("B2").Value = "Raya W Soffara Advertisements";
+
+            fileNamePrefix = "RWS_Ads_";
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != null && fromDate != "")
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != null && toDate != "")
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+            IQueryable<Advertisement> ads;
+            ads = _tutRepo.GetAdvertisements(null, from, to, search, null);
+
+            foreach (var item in ads)
+            {
+                string creation = "";
+                if (item.AdvertisementTimestamp != null)
+                {
+                    creation = item.AdvertisementTimestamp.Value.ToShortDateString();
+                }
+
+                data.Add(new DataItem
+                {
+                    Email = item.AdvertisementUserEmail,
+                    Description = item.AdvertisementText,
+                    CreationDate = creation,
+                    DT_RowId = item.AdvertisementId.ToString()
+                });
+            }
+
+            ws.Cell("B3").Value = "From:  " + from;
+            ws.Cell("C3").Value = "To:  " + to;
+
+            ws.Cell("A4").Value = "Id";
+            ws.Cell("B4").Value = "User Email";
+            ws.Cell("C4").Value = "Content";
+            ws.Cell("D4").Value = "Timestamp";
+            int rowNum = 5;
+
+            foreach (var item in data)
+            {
+                ws.Cell("A" + rowNum).Value = item.DT_RowId;
+                ws.Cell("B" + rowNum).Value = item.Email;
+                ws.Cell("C" + rowNum).Value = item.Description;
+                ws.Cell("D" + rowNum).Value = item.CreationDate;
+                rowNum++;
+            }
+
+            // From worksheet
+            var rngTable = ws.Range("B2:C6");
+
+            var rngHeaders = ws.Range("B2:C2"); // The address is relative to rngTable (NOT the worksheet)
+            rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rngHeaders.Style.Font.Bold = true;
+            rngHeaders.Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
+
+            ws.Range("A3:D3").Style.Font.Bold = true;
+            ws.Range("A3:D3").Style.Fill.BackgroundColor = XLColor.Aqua;
+            ws.Range("A3:D3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Range("A4:D4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
+
+            ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
+            ws.Row(2).Merge();
+
+            ws.Columns(2, 6).AdjustToContents();
+
+            string fileName = Server.UrlEncode(fileNamePrefix + DateTime.UtcNow.ToLocalTime().ToShortDateString().Replace("/", "_") + ".xlsx");
+            MemoryStream stream = GetStream(wb);
+
+            Response.Clear();
+            Response.Buffer = true;
+            Response.AddHeader("content-disposition", "attachment; filename=" + fileName);
+            Response.ContentType = "application/vnd.ms-excel";
+            Response.BinaryWrite(stream.ToArray());
+            Response.End();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult Suggestions()
+        {
+            ViewBag.SubSidebarItem = "suggestions";
+            ViewBag.SidebarItem = "reports-management";
+            ViewBag.PageHeader = "Suggestions Management";
+            return View();
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public ActionResult AjaxGetSuggestions(int draw, int start, int length, string fromDate, string toDate)
+        {
+            string search = Request.Form["search[value]"];
+            int sortColumn = -1;
+            string sortDirection = "asc";
+
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != "" && fromDate != null)
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != "" && toDate != null)
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+
+            int total_rows = _tutRepo.GetSuggestions(null, from, to, search, null).Count();
+            if (length == -1)
+            {
+                length = total_rows;
+            }
+
+            // note: we only sort one column at a time
+            if (Request.QueryString["order[0][column]"] != null)
+            {
+                sortColumn = int.Parse(Request.QueryString["order[0][column]"]);
+            }
+            if (Request.QueryString["order[0][dir]"] != null)
+            {
+                sortDirection = Request.QueryString["order[0][dir]"];
+            }
+
+            DataTableData dataTableData = new DataTableData();
+            dataTableData.draw = draw;
+            dataTableData.recordsTotal = total_rows;
+            int recordsFiltered = total_rows;
+            List<DataItem> suggestions = new List<DataItem>();
+            IQueryable<Suggestion> sugg_items = _tutRepo.GetSuggestions(start, from, to, search, length);
+            foreach (var item in sugg_items)
+            {
+                suggestions.Add(new DataItem
+                {
+                    Email = item.SuggestionUserEmail,
+                    ItemName = item.SuggestionText,
+                    CreationDate = item.SuggestionTimestamp.Value.ToShortDateString(),
+                    DT_RowId = item.SuggestionId.ToString()
+                });
+            }
+            dataTableData.data = suggestions;
+            //dataTableData.data = FilterData(ref recordsFiltered, start, length, search, sortColumn, sortDirection);
+            dataTableData.recordsFiltered = recordsFiltered;
+
+            return Json(dataTableData, JsonRequestBehavior.AllowGet);
+        }
+
+        [CustomAuthorize(Roles = "Admin")]
+        public void ExportSuggestions(string fromDate, string toDate, string search)
+        {
+            List<DataItem> data = new List<DataItem>();
+            XLWorkbook wb = new XLWorkbook();
+            var ws = wb.Worksheets.Add("RWS Suggestions");
+            string fileNamePrefix = "";
+
+            ws.Cell("B2").Value = "Raya W Soffara Suggestions";
+
+            fileNamePrefix = "RWS_Suggestions_";
+            DateTime? from = null;
+            DateTime? to = null;
+            string[] from_date, to_date;
+            if (fromDate != null && fromDate != "")
+            {
+                from_date = fromDate.Split('/');
+                from = new DateTime(Int32.Parse(from_date[2]), Int32.Parse(from_date[0]), Int32.Parse(from_date[1]));
+            }
+            if (toDate != null && toDate != "")
+            {
+                to_date = toDate.Split('/');
+                to = new DateTime(Int32.Parse(to_date[2]), Int32.Parse(to_date[0]), Int32.Parse(to_date[1]));
+            }
+            IQueryable<Suggestion> suggestions;
+            suggestions = _tutRepo.GetSuggestions(null, from, to, search, null);
+
+            foreach (var item in suggestions)
+            {
+                string creation = "";
+                if (item.SuggestionTimestamp != null)
+                {
+                    creation = item.SuggestionTimestamp.Value.ToShortDateString();
+                }
+
+                data.Add(new DataItem
+                {
+                    Email = item.SuggestionUserEmail,
+                    Description = item.SuggestionText,
+                    CreationDate = creation,
+                    DT_RowId = item.SuggestionId.ToString()
+                });
+            }
+
+            ws.Cell("B3").Value = "From:  " + from;
+            ws.Cell("C3").Value = "To:  " + to;
+
+            ws.Cell("A4").Value = "Id";
+            ws.Cell("B4").Value = "User Email";
+            ws.Cell("C4").Value = "Content";
+            ws.Cell("D4").Value = "Timestamp";
+            int rowNum = 5;
+
+            foreach (var item in data)
+            {
+                ws.Cell("A" + rowNum).Value = item.DT_RowId;
+                ws.Cell("B" + rowNum).Value = item.Email;
+                ws.Cell("C" + rowNum).Value = item.Description;
+                ws.Cell("D" + rowNum).Value = item.CreationDate;
+                rowNum++;
+            }
+
+            // From worksheet
+            var rngTable = ws.Range("B2:C6");
+
+            var rngHeaders = ws.Range("B2:C2"); // The address is relative to rngTable (NOT the worksheet)
+            rngHeaders.Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+            rngHeaders.Style.Font.Bold = true;
+            rngHeaders.Style.Fill.BackgroundColor = XLColor.CornflowerBlue;
+
+            ws.Range("A3:D3").Style.Font.Bold = true;
+            ws.Range("A3:D3").Style.Fill.BackgroundColor = XLColor.Aqua;
+            ws.Range("A3:D3").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
+
+            ws.Range("A4:D4").Style.Fill.BackgroundColor = XLColor.BlizzardBlue;
 
             ws.Row(1).Merge(); // We could've also used: rngTable.Range("A1:E1").Merge()
             ws.Row(2).Merge();

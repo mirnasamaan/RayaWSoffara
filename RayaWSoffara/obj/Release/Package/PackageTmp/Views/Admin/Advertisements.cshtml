@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "Articles List";
+    Layout = "~/Views/Admin/Shared/_AdminLayout.cshtml";
+}
+<link href="~/Content/CSS/jquery.datatables.css" rel="stylesheet" />
+<link href="~/Content/CSS/jquery.tagsinput.css" rel="stylesheet" />
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <div class="panel-btns">
+            <a href="" class="panel-close">&times;</a>
+            <a href="" class="minimize">&minus;</a>
+        </div>
+        <div class="add-user-btn pull-right">
+            <a class="btn btn-primary" href="javascript:void(0)" onclick="Export()">Export to Excel</a>
+        </div>
+        <h4 class="panel-title">Advertisements List</h4>
+    </div>
+    <div class="panel-body">
+        <div class="form-group">
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">From</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="fromDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-5">
+                <label class="col-sm-2 control-label">To</label>
+                <div class="input-group col-sm-10">
+                    <input type="text" class="form-control" placeholder="mm/dd/yyyy" id="toDate">
+                    <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                </div>
+            </div>
+            <div class="col-sm-2">
+                <a class="btn btn-primary" href="javascript:void(0)" onclick="submit()">Go</a>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table id="example" class="table table-primary">
+                <thead>
+                    <tr style="text-align: left;">
+                        <th>Id</th>
+                        <th>User Email</th>
+                        <th>Content</th>
+                        <th>Timestamp</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.datatables.net/1.10.10/js/jquery.dataTables.min.js"></script>
+<script src="~/Content/Scripts/jquery.tagsinput.min.js"></script>
+<script type="text/javascript">
+
+    $('#fromDate').datepicker();
+    $('#toDate').datepicker();
+
+    function getTableData(fromDate, toDate) {
+        var dt = $('#example').dataTable({
+            "processing": true,
+            "serverSide": true,
+            "info": true,
+            "stateSave": true,
+            "lengthMenu": [[10, 20, 50, -1], [10, 20, 50, "All"]],
+            "ajax": {
+                "url": "/Admin/AjaxGetAdvertisements",
+                "type": "POST",
+                "data": { "fromDate": fromDate, "toDate": toDate },
+                "beforeSend": function () {
+                    $(".loading").removeClass("hidden");
+                },
+                "complete": function () {
+                    $(".loading").addClass("hidden");
+                }
+            },
+            "columns": [
+                {
+                    "data": "DT_RowId"
+                },
+                {
+                    "data": "Email"
+                },
+                {
+                    "data": "ItemName"
+                },
+                {
+                    "data": "CreationDate"
+                }
+            ],
+            "order": [[0, "asc"]]
+        });
+    }
+
+    getTableData("", "");
+
+    function submit() {
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+
+        if ($.fn.DataTable.isDataTable('#example')) {
+            $("#example").DataTable().destroy();
+        }
+
+        getTableData(fromDate, toDate);
+    }
+
+    function Export() {
+        var fromDate = $("#fromDate").val();
+        var toDate = $("#toDate").val();
+        var search = $('#example_filter input').val();
+
+        window.location = "/Admin/ExportAdvertisements?fromDate=" + fromDate + "&toDate=" + toDate + "&search=" + search;
+    };
+</script>
